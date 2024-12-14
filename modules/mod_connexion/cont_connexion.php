@@ -33,12 +33,7 @@ class ContConnexion extends Connexion{
 //        if($_SERVER['REQUEST_METHOD'] === 'POST'){
 //
 //        }
-        $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT * FROM utilisateur WHERE id_utilisateur = 0");
-        $stmt->execute();
-        $user = $stmt->fetch();
-        echo "$user[id_utilisateur]";
-        echo "test";
+        $this->vue->formConnexion();
     }
     public function inscription(){}
     public function deconnexion(){}
