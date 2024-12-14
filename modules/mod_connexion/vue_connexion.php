@@ -9,10 +9,8 @@ class VueConnexion extends VueGenerique{
 
     public function formConnexion() {
         ?>
-
-        <label class="test">Test</label>
-        <div class="d-flex justify-content-center align-items-center vh-90">
-            <div class="bg-light p-4 rounded shadow" style="width: 300px; background-color: #6a1b9a;">
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="bg-light p-4 rounded shadow" style="width: 300px;">
                 <h2 class="text-center">Connexion</h2>
                 <form method="POST" action="cont_connexion.php?module=connexion&action=connexion">
                     <div class="mb-3">
