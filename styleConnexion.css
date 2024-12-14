@@ -1,0 +1,7 @@
+.formConnexion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    margin: 0;
+}
