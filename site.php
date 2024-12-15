@@ -7,7 +7,7 @@
 </head>
 <body>
 <header class="text-center m-0 bg-primary text-white py-3 mb-4">
-    <h1>SAE Manager</h1>
+    <h1>SAE MANAGER</h1>
 </header>
 <div>
     <?php echo $menu->getAffichage();  ?>

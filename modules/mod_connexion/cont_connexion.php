@@ -51,7 +51,24 @@ class ContConnexion {
         }
     }
 
-    public function inscription(){}
+    public function inscription() {
+        if (
+            isset($_POST['nom']) && !empty(trim($_POST['nom'])) &&
+            isset($_POST['prenom']) && !empty(trim($_POST['prenom'])) &&
+            isset($_POST['email']) && !empty(trim($_POST['email'])) &&
+            isset($_POST['login']) && !empty(trim($_POST['login'])) &&
+            isset($_POST['password']) && !empty(trim($_POST['password']))
+        ) {
+            $nom = trim($_POST['nom']);
+            $prenom = trim($_POST['prenom']);
+            $email = trim($_POST['email']);
+            $login = trim($_POST['login']);
+            $password = trim($_POST['password']);
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $this->modele->ajouterUtilisateur($nom, $prenom, $email, $login, $password_hash);
+        }
+        $this->vue->formInscription();
+    }
     public function deconnexion(){
         $this->vue->deconnexion();
         session_destroy();
