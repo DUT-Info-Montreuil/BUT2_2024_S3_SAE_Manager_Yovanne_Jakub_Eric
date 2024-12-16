@@ -29,18 +29,21 @@ class ContConnexion {
                 break;
         }
     }
-    public function connexion(){
-        if (isset($_SESSION['id_utilisateur'])) {
-            echo "<p>Vous êtes déjà connecté sous l'identifiant.</p>";
-        } else if (isset($_POST['login']) && isset($_POST['password'])) {
-            $login = $_POST['login'];
-            $password = $_POST['password'];
-            $this->testConnexion($login, $password);
-        }
-        else {
+    public function connexion() {
+       if (!isset($_SESSION['id_utilisateur']) && isset($_POST['login']) && isset($_POST['password'])) {
+            $login = trim($_POST['login']);
+            $password = trim($_POST['password']);
+
+            if (!empty($login) && !empty($password)) {
+                $this->testConnexion($login, $password);
+            } else {
+                $this->vue->formConnexion();
+            }
+        } else {
             $this->vue->formConnexion();
         }
     }
+
 
     public function testConnexion($identifiant,$mdp){
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
@@ -70,8 +73,8 @@ class ContConnexion {
         $this->vue->formInscription();
     }
     public function deconnexion(){
-        $this->vue->deconnexion();
         session_destroy();
+        $this->vue->formConnexion();
     }
 
 }
