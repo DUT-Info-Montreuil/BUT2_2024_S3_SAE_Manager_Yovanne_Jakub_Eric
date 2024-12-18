@@ -45,14 +45,19 @@ class ContConnexion {
     }
 
 
-    public function testConnexion($identifiant,$mdp){
+    public function testConnexion($identifiant, $mdp) {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
+            session_start();
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
             $_SESSION['mdp'] = $utilisateur['mdp'];
-            $this->vue->connecter();
+            header('Location: index.php');
+            exit();
+        } else {
+            $this->vue->formConnexion();
         }
     }
+
 
     public function inscription() {
         if (
@@ -72,9 +77,10 @@ class ContConnexion {
         }
         $this->vue->formInscription();
     }
-    public function deconnexion(){
+    public function deconnexion() {
         session_destroy();
-        $this->vue->formConnexion();
+        header('Location: index.php?module=connexion&action=connexion');
+        exit();
     }
 
 }

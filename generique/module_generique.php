@@ -11,7 +11,6 @@ class ModuleGenerique {
     public function exec () {
         $this->controleur->exec();
         $this->affichage = ob_get_clean();
-
     }
 
 
