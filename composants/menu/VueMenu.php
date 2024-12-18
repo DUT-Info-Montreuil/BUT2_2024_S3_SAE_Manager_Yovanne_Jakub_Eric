@@ -8,6 +8,5 @@ class VueCompMenu extends VueCompGenerique {
         if (isset($_SESSION['id_utilisateur'])) {
             $this->affichage = ' <a href="index.php?module=connexion&action=deconnexion">Déconnexion</a>';
         }
-
     }
 }

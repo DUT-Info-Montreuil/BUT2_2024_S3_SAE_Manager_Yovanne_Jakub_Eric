@@ -11,6 +11,9 @@ class ModuleName {
             case "connexion" :
                 require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
                 break;
+            case "acceuil_etudiant" :
+                require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
+                break;
         }
     }
 

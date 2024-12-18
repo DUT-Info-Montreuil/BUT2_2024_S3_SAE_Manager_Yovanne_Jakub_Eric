@@ -48,11 +48,9 @@ class ContConnexion {
     public function testConnexion($identifiant, $mdp) {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
-            session_start();
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
             $_SESSION['mdp'] = $utilisateur['mdp'];
-            header('Location: index.php');
-            exit();
+            header('Location: index.php?module=acceuil_etudiant');
         } else {
             $this->vue->formConnexion();
         }
@@ -79,8 +77,8 @@ class ContConnexion {
     }
     public function deconnexion() {
         session_destroy();
-        header('Location: index.php?module=connexion&action=connexion');
-        exit();
+        header('Location: index.php?action=connexion');
     }
+
 
 }

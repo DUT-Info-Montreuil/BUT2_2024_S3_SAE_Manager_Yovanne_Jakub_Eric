@@ -78,15 +78,4 @@ class VueConnexion extends VueGenerique{
         <?php
     }
 
-    public function connecter(){
-        ?>
-        Connexion réussie !
-        <?php
-    }
-    public function deconnexion(){
-        ?>
-        Deconnexion réussie !
-        <?php
-    }
-
 }
