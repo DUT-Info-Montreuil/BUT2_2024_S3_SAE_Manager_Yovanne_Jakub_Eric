@@ -50,7 +50,15 @@ class ContConnexion {
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
             $_SESSION['mdp'] = $utilisateur['mdp'];
-            header('Location: index.php?module=acceuil_etudiant');
+            $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
+            var_dump($typeUtilisateur);
+            if($typeUtilisateur=="etudiant"){
+                header('Location: index.php?module=etudiant');
+            }else if ($typeUtilisateur=="professeur"){
+                header('Location: index.php?module=professeur');
+            }else if ($typeUtilisateur=="admin"){
+                header('Location: index.php?module=administrateur');
+            }
         } else {
             $this->vue->formConnexion();
         }

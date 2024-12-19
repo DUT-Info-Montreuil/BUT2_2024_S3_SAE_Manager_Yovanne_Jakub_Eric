@@ -1,14 +1,14 @@
 <?php
-include_once "modules/mod_acceuil_etudiant/modele_acceuil_etudiant.php";
-include_once  "modules/mod_acceuil_etudiant/vue_acceuil_etudiant.php";
-Class ContAcceuilEtudiant {
+include_once "modules/mod_administrateur/modele_administrateur.php";
+include_once  "modules/mod_administrateur/vue_administrateur.php";
+Class ContAdministrateur {
     private $modele;
     private $vue;
     private $action;
 
     public function __construct() {
-        $this->modele = new ModeleAcceuilEtudiant();
-        $this->vue = new VueAcceuilEtudiant();
+        $this->modele = new ModeleAdministrateur();
+        $this->vue = new VueAdministrateur();
     }
 
     public function exec() {
@@ -25,7 +25,7 @@ Class ContAcceuilEtudiant {
     }
 
     public function sae() {
-        echo "sae";
+        echo "administrateur";
     }
 
 }

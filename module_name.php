@@ -11,9 +11,15 @@ class ModuleName {
             case "connexion" :
                 require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
                 break;
-            case "acceuil_etudiant" :
+            case "etudiant" :
                 require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
                 break;
+            case "professeur" :
+                 require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
+                 break;
+            case "administrateur" :
+                 require_once "modules/mod_".$this->module_name."/mod_".$this->module_name.".php";
+                 break;
         }
     }
 
