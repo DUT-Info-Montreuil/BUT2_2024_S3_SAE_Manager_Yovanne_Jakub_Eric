@@ -13,19 +13,20 @@ Class ContProfesseur {
     }
 
     public function exec() {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "sae";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
 
         switch ($this->action) {
-            case "sae":
-                $this->sae();
+            case "accueil":
+                $this->accueil();
                 break;
             default:
-                $this->sae();
+                $this->accueil();
                 break;
         }
     }
 
-    public function sae() {
-        echo "professeur";
+    public function accueil() {
+        $saeGerer = $this->modele->saeGerer($_SESSION['id_utilisateur']);
+        $this->vue->afficherSaeGerer($saeGerer);
     }
 }

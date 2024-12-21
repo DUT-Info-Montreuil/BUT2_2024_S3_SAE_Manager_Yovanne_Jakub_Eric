@@ -6,10 +6,10 @@ class ModeleConnexion extends Connexion {
 
     public function verifierUtilisateur($identifiant, $mdp) {
         $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login = ?");
+        $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login_utilisateur = ?");
         $stmt->execute([$identifiant]);
         $user = $stmt->fetch();
-        if ($user && password_verify($mdp, $user['mdp'])) {
+        if ($user && password_verify($mdp, $user['password_utilisateur'])) {
             return $user;
         }
         return false;
@@ -17,7 +17,7 @@ class ModeleConnexion extends Connexion {
 
     public function utilisateurExiste($login){
         $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login = ?");
+        $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login_utilisateur = ?");
         $stmt->execute([$login]);
         $user = $stmt->fetch();
         if($user){
@@ -28,7 +28,7 @@ class ModeleConnexion extends Connexion {
 
     public function typeUtilisateur($identifiant){
         $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT type_utilisateur FROM Utilisateur WHERE login = ?");
+        $stmt = $bdd->prepare("SELECT type_utilisateur FROM Utilisateur WHERE login_utilisateur = ?");
         $stmt->execute([$identifiant]);
         $type = $stmt->fetch();
         return $type[0];
@@ -39,7 +39,7 @@ class ModeleConnexion extends Connexion {
     public function ajouterUtilisateur ($nom, $prenom, $email, $login, $password_hash) {
         if(!$this->utilisateurExiste($login)){
             $bdd = $this->getBdd();
-            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login, mdp)
+            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur)
                                     VALUES (DEFAULT, ?, ?, ?, 'etudiant', ?, ?)");
             $stmt->execute([$nom,$prenom,$email,$login,$password_hash]);
         }
