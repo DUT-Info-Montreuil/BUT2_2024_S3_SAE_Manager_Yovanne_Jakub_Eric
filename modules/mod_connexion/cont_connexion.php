@@ -49,6 +49,7 @@ class ContConnexion {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
+            $_SESSION['login_utilisateur'] = $utilisateur['login_utilisateur'];
             $_SESSION['password_utilisateur'] = $utilisateur['password_utilisateur'];
             $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
             if($typeUtilisateur=="etudiant"){
