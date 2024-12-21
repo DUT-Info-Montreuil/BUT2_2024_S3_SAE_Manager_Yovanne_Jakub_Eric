@@ -35,5 +35,17 @@ Class ContProfesseur {
 
     public function creerSAE() {
         $this->vue->creerUneSAE();
+        if (
+            isset($_POST['titre']) && !empty(trim($_POST['titre'])) &&
+            isset($_POST['annee']) && !empty(trim($_POST['annee'])) &&
+            isset($_POST['semestre']) && !empty(trim($_POST['semestre'])) &&
+            isset($_POST['description']) && !empty(trim($_POST['description']))
+        ) {
+            $titre = trim($_POST['titre']);
+            $annee = trim($_POST['annee']);
+            $semestre = trim($_POST['semestre']);
+            $description = trim($_POST['description']);
+            $this->modele->ajouterProjet($titre, $annee, $semestre, $description);
+        }
     }
 }
