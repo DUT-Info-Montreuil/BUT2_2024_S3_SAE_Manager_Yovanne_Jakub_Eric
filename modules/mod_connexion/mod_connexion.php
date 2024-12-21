@@ -8,7 +8,6 @@ class ModConnexion extends ModuleGenerique{
         parent::__construct();
         $this->controleur=new ContConnexion();
     }
-
 }
 
 

@@ -19,6 +19,9 @@ Class ContProfesseur {
             case "accueil":
                 $this->accueil();
                 break;
+            case "creerSAE":
+                $this->creerSAE();
+                break;
             default:
                 $this->accueil();
                 break;
@@ -28,5 +31,9 @@ Class ContProfesseur {
     public function accueil() {
         $saeGerer = $this->modele->saeGerer($_SESSION['id_utilisateur']);
         $this->vue->afficherSaeGerer($saeGerer);
+    }
+
+    public function creerSAE() {
+        $this->vue->creerUneSAE();
     }
 }
