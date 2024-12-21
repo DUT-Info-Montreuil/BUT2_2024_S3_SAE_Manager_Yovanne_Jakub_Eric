@@ -42,5 +42,21 @@ Class ModeleProfesseur extends Connexion{
         return $saeDetails;
     }
 
+    public function modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description) {
+        $bdd = $this->getBdd();
+        $stmt = $bdd->prepare("UPDATE Projet 
+                           SET titre = ?, annee_universitaire = ?, semestre = ?, description_projet = ? 
+                           WHERE id_projet = ?");
+
+        $stmt->execute([$titre, $annee, $semestre, $description, $idSae]);
+
+        if ($stmt->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
 }

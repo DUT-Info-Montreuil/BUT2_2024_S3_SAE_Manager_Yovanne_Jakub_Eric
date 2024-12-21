@@ -22,13 +22,13 @@ Class ContProfesseur {
             case "creerSAE":
                 $this->creerSAE();
                 break;
-            case "detailsSAE":
-                $this->detailsSAE();
-                break;
             case "choixSae" :
                 $this->choixSae();
-            default:
-                $this->accueil();
+            case "infoGeneralSae" :
+                $this->infoGeneralSae();
+                break;
+            case "updateSae";
+                $this->updateSae();
                 break;
         }
     }
@@ -53,21 +53,35 @@ Class ContProfesseur {
             $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
         }
     }
-    public function detailsSAE() {
+    public function choixSae() {
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
-            $saeDetails = $this->modele->getSaeDetails($idProjet);
-            $this->vue->afficherSaeDetails($saeDetails);
+            $this->vue->afficherSaeDetails($idProjet);
         } else {
             $this->accueil();
         }
     }
-    public function choixSae() {
-        if (isset($_GET['id'])) {
-            $idProjet = $_GET['id'];
-            header("Location: index.php?module=professeur&action=detailsSAE&id=" . $idProjet);
-        } else {
-            $this->accueil();
+
+    public function infoGeneralSae() {
+        if(isset($_GET['saeId'])) {
+            $idProjet = $_GET['saeId'];
+            $saeTabDetails = $this->modele->getSaeDetails($idProjet);
+            $this->vue->afficherSaeInfoGeneral($saeTabDetails);
+
         }
+    }
+
+    public function updateSae() {
+        if(isset($_GET['saeId'])) {
+            $idSae = $_GET['saeId'];
+            if(isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
+                $titre = trim($_POST['titre']);
+                $annee = trim($_POST['annee_universitaire']);
+                $semestre = trim($_POST['semestre']);
+                $description = trim($_POST['description_projet']);
+                $this->modele->modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description);
+            }
+        }
+        $this->accueil();
     }
 }
