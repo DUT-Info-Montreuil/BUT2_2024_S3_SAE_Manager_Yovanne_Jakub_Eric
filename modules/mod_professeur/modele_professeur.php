@@ -17,10 +17,10 @@ Class ModeleProfesseur extends Connexion{
     }
     public function saeGerer($id_utilisateur) {
         $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT titre FROM Projet INNER JOIN Gerant ON Projet.id_projet = Gerant.id_projet WHERE id_utilisateur = ?");
+        $stmt = $bdd->prepare("SELECT * FROM Projet INNER JOIN Gerant ON Projet.id_projet = Gerant.id_projet WHERE id_utilisateur = ?");
         $stmt->execute([$id_utilisateur]);
-        $titres = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $titres;
+        $sae = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $sae;
     }
 
     public function ajouterProjet($titre, $annee, $description, $semestre) {
@@ -33,5 +33,14 @@ Class ModeleProfesseur extends Connexion{
 
         $insertionGerant->execute([$idProjet, $_SESSION['id_utilisateur'], 'Responsable']);
     }
+
+    public function getSaeDetails($idProjet) {
+        $bdd = $this->getBdd();
+        $stmt = $bdd->prepare("SELECT * FROM Projet WHERE id_projet = ?");
+        $stmt->execute([$idProjet]);
+        $saeDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $saeDetails;
+    }
+
 
 }

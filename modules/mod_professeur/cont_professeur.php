@@ -22,6 +22,11 @@ Class ContProfesseur {
             case "creerSAE":
                 $this->creerSAE();
                 break;
+            case "detailsSAE":
+                $this->detailsSAE();
+                break;
+            case "choixSae" :
+                $this->choixSae();
             default:
                 $this->accueil();
                 break;
@@ -45,7 +50,24 @@ Class ContProfesseur {
             $annee = trim($_POST['annee']);
             $semestre = trim($_POST['semestre']);
             $description = trim($_POST['description']);
-            $this->modele->ajouterProjet($titre, $annee, $semestre, $description);
+            $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
+        }
+    }
+    public function detailsSAE() {
+        if (isset($_GET['id'])) {
+            $idProjet = $_GET['id'];
+            $saeDetails = $this->modele->getSaeDetails($idProjet);
+            $this->vue->afficherSaeDetails($saeDetails);
+        } else {
+            $this->accueil();
+        }
+    }
+    public function choixSae() {
+        if (isset($_GET['id'])) {
+            $idProjet = $_GET['id'];
+            header("Location: index.php?module=professeur&action=detailsSAE&id=" . $idProjet);
+        } else {
+            $this->accueil();
         }
     }
 }
