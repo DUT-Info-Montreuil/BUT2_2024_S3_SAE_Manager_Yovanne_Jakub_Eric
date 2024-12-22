@@ -183,7 +183,7 @@ Class VueProfesseur extends VueGenerique {
         <?php
     }
 
-    public function afficherGroupeSAE($groupeSAE, $idSae) {
+    public function afficherGroupeSAE($groupeSAE) {
         ?>
         <div class="container mt-4">
             <h2>Gestion des Groupes pour la SAE</h2>
@@ -199,22 +199,27 @@ Class VueProfesseur extends VueGenerique {
                 if (!empty($groupeSAE)) {
                     $currentGroup = null;
                     $members = [];
+
                     foreach ($groupeSAE as $row) {
-                        if ($currentGroup !== $row['nom_groupe']) {
+                        if ($currentGroup === null || $currentGroup['id_groupe'] !== $row['id_groupe']) {
                             if ($currentGroup !== null) {
                                 echo "<tr>";
-                                echo "<td>$currentGroup</td>";
+                                echo "<td>{$currentGroup['nom_groupe']}</td>";
                                 echo "<td>" . implode(', ', $members) . "</td>";
                                 echo "</tr>";
                             }
-                            $currentGroup = $row['nom_groupe'];
+                            $currentGroup = [
+                                'id_groupe' => $row['id_groupe'],
+                                'nom_groupe' => $row['nom_groupe']
+                            ];
                             $members = [];
                         }
                         $members[] = $row['prenom_membre'] . " " . $row['nom_membre'];
                     }
-                    if ($currentGroup !== null) {
+
+                    if ($currentGroup !== null) { // affiche le dernier grp
                         echo "<tr>";
-                        echo "<td>$currentGroup</td>";
+                        echo "<td>{$currentGroup['nom_groupe']}</td>";
                         echo "<td>" . implode(', ', $members) . "</td>";
                         echo "</tr>";
                     }
@@ -226,34 +231,40 @@ Class VueProfesseur extends VueGenerique {
             </table>
 
             <div class="text-center mt-4">
-                <a href="?action=ajouterGroupe" class="btn btn-primary btn-lg">
+                <a href="index.php?module=professeur&action=ajouterGroupeFormulaire" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Groupe
                 </a>
             </div>
         </div>
         <?php
     }
-    public function afficherFormulaireAjoutGroupe() {
+    public function afficherFormulaireAjoutGroupe($etudiants) {
         ?>
         <div class="container mt-5">
             <h2>Ajouter un Nouveau Groupe</h2>
-            <form method="post" action="?action=ajouterGroupe">
+            <form method="post" action="index.php?module=professeur&action=creerGroupe">
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
                            placeholder="Entrez le nom du groupe" required>
                 </div>
                 <div class="form-group mt-3">
-                    <label for="membres">Membres du Groupe (séparés par des virgules)</label>
-                    <input type="text" class="form-control" id="membres" name="membres"
-                           placeholder="Exemple : Jean Dupont, Marie Curie, Albert Einstein" required>
+                    <label for="etudiants">Sélectionner des Étudiants</label>
+                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
+                        <?php foreach ($etudiants as $etudiant): ?>
+                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
+                                <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
-                <a href="?action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+                <a href="index.php?module=professeur&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
     }
+
 
 
 }

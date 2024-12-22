@@ -53,22 +53,54 @@ Class ModeleProfesseur extends Connexion{
     public function getSaeGroupe($idSae){
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("SELECT 
-                                g.nom AS nom_groupe,
-                                u.nom AS nom_membre,
-                                u.prenom AS prenom_membre
-                            FROM 
-                                Projet_Groupe pg
-                            INNER JOIN 
-                                Groupe g ON pg.id_groupe = g.id_groupe
-                            INNER JOIN 
-                                Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
-                            INNER JOIN 
-                                Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
-                            WHERE 
-                                pg.id_projet = ?");
+                            g.nom AS nom_groupe,
+                            g.id_groupe AS id_groupe,
+                            u.nom AS nom_membre,
+                            u.prenom AS prenom_membre
+                        FROM 
+                            Projet_Groupe pg
+                        INNER JOIN 
+                            Groupe g ON pg.id_groupe = g.id_groupe
+                        INNER JOIN 
+                            Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+                        INNER JOIN 
+                            Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+                        WHERE 
+                            pg.id_projet = ?");
         $stmt->execute([$idSae]);
-        $groupes = $stmt->fetch(PDO::FETCH_ASSOC);
+        $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $groupes;
+    }
+
+    public function getEtudiants() {
+        $bdd = $this->getBdd();
+        $query = "SELECT login_utilisateur, id_utilisateur, CONCAT(prenom, ' ', nom) AS nom_complet FROM Utilisateur WHERE type_utilisateur = 'etudiant'";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function ajouterGroupe($nomGroupe){
+        $bdd = $this->getBdd();
+        $query = "INSERT INTO Groupe (id_groupe, nom, image_titre, modifiable_par_groupe) VALUES (DEFAULT, ?, 'jsp', 'non')";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$nomGroupe]);
+
+        return $bdd->lastInsertId();
+    }
+
+    public function lieeProjetGrp($idGroupe, $idSae){
+        $bdd = $this->getBdd();
+        $projetgrp = "INSERT INTO projet_groupe (id_groupe, id_projet) VALUES (?, ?)";
+        $stmt2 = $bdd->prepare($projetgrp);
+        $stmt2->execute([$idGroupe, $idSae]);
+    }
+    public function ajouterEtudiantAuGroupe($idGroupe, $idEtudiant) {
+        $bdd = $this->getBdd();
+        $query = "INSERT INTO groupe_etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idEtudiant, $idGroupe]);
+
     }
 
 

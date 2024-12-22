@@ -32,9 +32,11 @@ Class ContProfesseur {
             case "gestionGroupeSAE" :
                 $this->gestionGroupeSAE();
                 break;
-            case "ajouterGroupe" :
-                $this->ajouterGroupe();
+            case "ajouterGroupeFormulaire" :
+                $this->ajouterGroupeFormulaire();
                 break;
+            case "creerGroupe" :
+                $this->creerGroupe();
         }
     }
 
@@ -96,14 +98,32 @@ Class ContProfesseur {
         $idSae = $_SESSION['id_projet'];
         if($idSae) {
             $groupe = $this->modele->getSaeGroupe($idSae);
-            $this->vue->afficherGroupeSAE($groupe, $idSae);
+            $this->vue->afficherGroupeSAE($groupe);
         }
     }
 
-    public function ajouterGroupe() {
+    public function ajouterGroupeFormulaire() {
         $idSae = $_SESSION['id_projet'];
         if($idSae) {
-            $this->vue->afficherFormulaireAjoutGroupe();
+            $etudiants = $this->modele->getEtudiants();
+            $this->vue->afficherFormulaireAjoutGroupe($etudiants);
+        }
+    }
+
+    public function creerGroupe() {
+        $idSae = $_SESSION['id_projet'];
+        if ($idSae) {
+            if (isset($_POST['nom_groupe']) && isset($_POST['etudiants'])) {
+                $nomGroupe = trim($_POST['nom_groupe']);
+                $etudiants = $_POST['etudiants'];
+                $idGroupe = $this->modele->ajouterGroupe($nomGroupe);
+                $this->modele->lieeProjetGrp($idGroupe, $idSae);
+                foreach ($etudiants as $etudiantId) {
+                    $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
+                }
+            }
+            $etudiants = $this->modele->getEtudiants();
+            $this->vue->afficherFormulaireAjoutGroupe($etudiants);
         }
     }
 }
