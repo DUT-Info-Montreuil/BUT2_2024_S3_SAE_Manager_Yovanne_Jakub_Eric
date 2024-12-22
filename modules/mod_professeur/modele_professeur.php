@@ -47,14 +47,28 @@ Class ModeleProfesseur extends Connexion{
         $stmt = $bdd->prepare("UPDATE Projet 
                            SET titre = ?, annee_universitaire = ?, semestre = ?, description_projet = ? 
                            WHERE id_projet = ?");
-
         $stmt->execute([$titre, $annee, $semestre, $description, $idSae]);
+    }
 
-        if ($stmt->rowCount() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+    public function getSaeGroupe($idSae){
+        $bdd = $this->getBdd();
+        $stmt = $bdd->prepare("SELECT 
+                                g.nom AS nom_groupe,
+                                u.nom AS nom_membre,
+                                u.prenom AS prenom_membre
+                            FROM 
+                                Projet_Groupe pg
+                            INNER JOIN 
+                                Groupe g ON pg.id_groupe = g.id_groupe
+                            INNER JOIN 
+                                Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+                            INNER JOIN 
+                                Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+                            WHERE 
+                                pg.id_projet = ?");
+        $stmt->execute([$idSae]);
+        $groupes = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $groupes;
     }
 
 

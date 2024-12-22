@@ -90,22 +90,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=professeur&action=consigne">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Consigne
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
-
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=professeur&action=gestionGroupe">
+                        <a class="text-decoration-none" href="index.php?module=professeur&action=gestionGroupeSAE&saeId=<?php echo $idProjet ?>">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Groupe
                             </h3>
@@ -197,6 +182,79 @@ Class VueProfesseur extends VueGenerique {
         </div>
         <?php
     }
+
+    public function afficherGroupeSAE($groupeSAE, $idSae) {
+        ?>
+        <div class="container mt-4">
+            <h2>Gestion des Groupes pour la SAE</h2>
+            <table class="table table-bordered table-striped mt-4">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Nom du Groupe</th>
+                    <th>Membres</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if (!empty($groupeSAE)) {
+                    $currentGroup = null;
+                    $members = [];
+                    foreach ($groupeSAE as $row) {
+                        if ($currentGroup !== $row['nom_groupe']) {
+                            if ($currentGroup !== null) {
+                                echo "<tr>";
+                                echo "<td>$currentGroup</td>";
+                                echo "<td>" . implode(', ', $members) . "</td>";
+                                echo "</tr>";
+                            }
+                            $currentGroup = $row['nom_groupe'];
+                            $members = [];
+                        }
+                        $members[] = $row['prenom_membre'] . " " . $row['nom_membre'];
+                    }
+                    if ($currentGroup !== null) {
+                        echo "<tr>";
+                        echo "<td>$currentGroup</td>";
+                        echo "<td>" . implode(', ', $members) . "</td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='2'>Aucun groupe trouvé pour cette SAE</td></tr>";
+                }
+                ?>
+                </tbody>
+            </table>
+
+            <div class="text-center mt-4">
+                <a href="?action=ajouterGroupe&id_sae=<?php echo $idSae ?>" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus"></i> Ajouter un Groupe
+                </a>
+            </div>
+        </div>
+        <?php
+    }
+    public function afficherFormulaireAjoutGroupe() {
+        ?>
+        <div class="container mt-5">
+            <h2>Ajouter un Nouveau Groupe</h2>
+            <form method="post" action="?action=ajouterGroupe&saeId=<?= $_GET['saeId'] ?>">
+                <div class="form-group mt-4">
+                    <label for="nom_groupe">Nom du Groupe</label>
+                    <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
+                           placeholder="Entrez le nom du groupe" required>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="membres">Membres du Groupe (séparés par des virgules)</label>
+                    <input type="text" class="form-control" id="membres" name="membres"
+                           placeholder="Exemple : Jean Dupont, Marie Curie, Albert Einstein" required>
+                </div>
+                <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
+                <a href="?action=gestionGroupeSAE&saeId=<?= $_GET['saeId'] ?>" class="btn btn-secondary mt-4">Retour</a>
+            </form>
+        </div>
+        <?php
+    }
+
 
 }
 ?>

@@ -1,6 +1,7 @@
 <?php
 include_once "modules/mod_professeur/modele_professeur.php";
 include_once  "modules/mod_professeur/vue_professeur.php";
+include "modules/mod_professeur/Sae.php";
 
 Class ContProfesseur {
     private $modele;
@@ -30,6 +31,10 @@ Class ContProfesseur {
             case "updateSae";
                 $this->updateSae();
                 break;
+            case "gestionGroupeSAE" :
+                $this->gestionGroupeSAE();
+            case "ajouterGroupe" :
+                $this->ajouterGroupe();
         }
     }
 
@@ -83,5 +88,20 @@ Class ContProfesseur {
             }
         }
         $this->accueil();
+    }
+
+    public function gestionGroupeSAE() {
+        if(isset($_GET['saeId'])) {
+            $idSae = $_GET['saeId'];
+            $groupe = $this->modele->getSaeGroupe($idSae);
+            $this->vue->afficherGroupeSAE($groupe, $idSae);
+        }
+    }
+
+    public function ajouterGroupe() {
+        if(isset($_GET['saeId'])) {
+            $idSae = $_GET['saeId'];
+            $this->vue->afficherFormulaireAjoutGroupe();
+        }
     }
 }
