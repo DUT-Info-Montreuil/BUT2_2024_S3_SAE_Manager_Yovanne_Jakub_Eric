@@ -1,13 +1,10 @@
 <?php
 include_once "modules/mod_professeur/modele_professeur.php";
 include_once  "modules/mod_professeur/vue_professeur.php";
-include "modules/mod_professeur/Sae.php";
-
 Class ContProfesseur {
     private $modele;
     private $vue;
     private $action;
-
     public function __construct() {
         $this->modele = new ModeleProfesseur();
         $this->vue = new VueProfesseur();
@@ -25,6 +22,7 @@ Class ContProfesseur {
                 break;
             case "choixSae" :
                 $this->choixSae();
+                break;
             case "infoGeneralSae" :
                 $this->infoGeneralSae();
                 break;
@@ -33,8 +31,10 @@ Class ContProfesseur {
                 break;
             case "gestionGroupeSAE" :
                 $this->gestionGroupeSAE();
+                break;
             case "ajouterGroupe" :
                 $this->ajouterGroupe();
+                break;
         }
     }
 
@@ -61,24 +61,26 @@ Class ContProfesseur {
     public function choixSae() {
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
-            $this->vue->afficherSaeDetails($idProjet);
+            $_SESSION['id_projet'] = $idProjet;
+            $this->vue->afficherSaeDetails();
         } else {
             $this->accueil();
         }
     }
 
     public function infoGeneralSae() {
-        if(isset($_GET['saeId'])) {
-            $idProjet = $_GET['saeId'];
+        $idProjet = $_SESSION['id_projet'];
+        if ($idProjet) {
             $saeTabDetails = $this->modele->getSaeDetails($idProjet);
             $this->vue->afficherSaeInfoGeneral($saeTabDetails);
-
+        } else {
+            $this->accueil();
         }
     }
 
     public function updateSae() {
-        if(isset($_GET['saeId'])) {
-            $idSae = $_GET['saeId'];
+        $idSae = $_SESSION['id_projet'];
+        if($idSae) {
             if(isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
                 $titre = trim($_POST['titre']);
                 $annee = trim($_POST['annee_universitaire']);
@@ -91,16 +93,16 @@ Class ContProfesseur {
     }
 
     public function gestionGroupeSAE() {
-        if(isset($_GET['saeId'])) {
-            $idSae = $_GET['saeId'];
+        $idSae = $_SESSION['id_projet'];
+        if($idSae) {
             $groupe = $this->modele->getSaeGroupe($idSae);
             $this->vue->afficherGroupeSAE($groupe, $idSae);
         }
     }
 
     public function ajouterGroupe() {
-        if(isset($_GET['saeId'])) {
-            $idSae = $_GET['saeId'];
+        $idSae = $_SESSION['id_projet'];
+        if($idSae) {
             $this->vue->afficherFormulaireAjoutGroupe();
         }
     }

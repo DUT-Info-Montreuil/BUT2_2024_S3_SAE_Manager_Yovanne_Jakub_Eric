@@ -68,7 +68,7 @@ Class VueProfesseur extends VueGenerique {
         <?php
     }
 
-    public function afficherSaeDetails($idProjet) {
+    public function afficherSaeDetails() {
         ?>
         <div class="container mt-4">
             <div class="row justify-content-center g-0">
@@ -77,7 +77,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=professeur&action=infoGeneralSae&saeId=<?php echo $idProjet ?>">
+                        <a class="text-decoration-none" href="index.php?module=professeur&action=infoGeneralSae">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Information General
                             </h3>
@@ -90,7 +90,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=professeur&action=gestionGroupeSAE&saeId=<?php echo $idProjet ?>">
+                        <a class="text-decoration-none" href="index.php?module=professeur&action=gestionGroupeSAE">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Groupe
                             </h3>
@@ -159,7 +159,7 @@ Class VueProfesseur extends VueGenerique {
         ?>
         <div class="container mt-4">
             <h2>Détails de la SAE</h2>
-            <form method="POST" action="index.php?module=professeur&action=updateSae&saeId=<?php echo $saeDetails['id_projet']; ?>">
+            <form method="POST" action="index.php?module=professeur&action=updateSae>">
                 <div class="mb-3">
                     <label for="titre" class="form-label"><strong>Titre :</strong></label>
                     <input type="text" class="form-control" id="titre" name="titre" value="<?php echo htmlspecialchars($saeDetails['titre']); ?>" required>
@@ -226,7 +226,7 @@ Class VueProfesseur extends VueGenerique {
             </table>
 
             <div class="text-center mt-4">
-                <a href="?action=ajouterGroupe&id_sae=<?php echo $idSae ?>" class="btn btn-primary btn-lg">
+                <a href="?action=ajouterGroupe" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Groupe
                 </a>
             </div>
@@ -237,7 +237,7 @@ Class VueProfesseur extends VueGenerique {
         ?>
         <div class="container mt-5">
             <h2>Ajouter un Nouveau Groupe</h2>
-            <form method="post" action="?action=ajouterGroupe&saeId=<?= $_GET['saeId'] ?>">
+            <form method="post" action="?action=ajouterGroupe">
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
@@ -249,7 +249,7 @@ Class VueProfesseur extends VueGenerique {
                            placeholder="Exemple : Jean Dupont, Marie Curie, Albert Einstein" required>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
-                <a href="?action=gestionGroupeSAE&saeId=<?= $_GET['saeId'] ?>" class="btn btn-secondary mt-4">Retour</a>
+                <a href="?action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
