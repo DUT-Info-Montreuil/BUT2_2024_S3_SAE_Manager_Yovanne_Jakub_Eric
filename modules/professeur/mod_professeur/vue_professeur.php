@@ -155,7 +155,7 @@ Class VueProfesseur extends VueGenerique {
         ?>
         <div class="container mt-4">
             <h2>Détails de la SAE</h2>
-            <form method="POST" action="index.php?module=professeur&action=updateSae>">
+            <form method="POST" action="index.php?module=professeur&action=updateSae">
                 <div class="mb-3">
                     <label for="titre" class="form-label"><strong>Titre :</strong></label>
                     <input type="text" class="form-control" id="titre" name="titre" value="<?php echo htmlspecialchars($saeDetails['titre']); ?>" required>

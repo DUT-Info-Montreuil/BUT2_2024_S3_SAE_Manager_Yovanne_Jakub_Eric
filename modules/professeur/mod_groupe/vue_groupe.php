@@ -30,7 +30,7 @@ Class VueGroupe extends VueGenerique{
                                 echo "<td>{$currentGroup['nom_groupe']}</td>";
                                 echo "<td>" . implode(', ', $members) . "</td>";
                                 echo "<td>
-                                    <a href='index.php?module=groupeprof&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                                    <a href='index.php?module=groupeprof&action=versModifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
                                         <i class='fas fa-cog'></i>
                                     </a>
                                   </td>";
@@ -50,7 +50,7 @@ Class VueGroupe extends VueGenerique{
                         echo "<td>{$currentGroup['nom_groupe']}</td>";
                         echo "<td>" . implode(', ', $members) . "</td>";
                         echo "<td>
-                            <a href='index.php?module=groupeprof&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                            <a href='index.php?module=groupeprof&action=versModifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
                                 <i class='fas fa-cog'></i>
                             </a>
                           </td>";
@@ -71,26 +71,45 @@ Class VueGroupe extends VueGenerique{
         </div>
         <?php
     }
-    public function formulaireModifierGroupe($detailsGroupe) {
+    public function formulaireModifierGroupe($detailsGroupe, $tabNvEtudiant, $idGroupe) {
         ?>
         <div class="container mt-4">
             <h2>Modifier le Groupe</h2>
-            <form action="index.php?module=groupeprof&action=supprimerMembresGroupe" method="post">
+            <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe" method="post">
                 <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
                 <div class="form-group">
-                    <label for="nom">Nom du Groupe</label>
-                    <input type="text" id="nom" name="nom" class="form-control"
+                    <label for="nomGroupe">Nom du Groupe</label>
+                    <input type="text" id="nomGroupe" name="nomGroupe" class="form-control"
                            value="<?php echo htmlspecialchars($detailsGroupe['nom_groupe']); ?>" required>
                 </div>
 
+                <label>Modifiable par le groupe</label>
                 <div class="form-group">
-                    <label for="modifiable">Modifiable par le groupe</label>
-                    <input type="checkbox" id="modifiable" name="modifiable" class="form-control"
-                        <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                    <div class="form-check form-check-inline">
+                        <input
+                                type="radio"
+                                id="modifiable_oui"
+                                name="modifiable_par_groupe"
+                                class="form-check-input"
+                                value="1"
+                            <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                        <label class="form-check-label" for="modifiable_oui">Oui</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input
+                                type="radio"
+                                id="modifiable_non"
+                                name="modifiable_par_groupe"
+                                class="form-check-input"
+                                value="0"
+                            <?php echo !$detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                        <label class="form-check-label" for="modifiable_non">Non</label>
+                    </div>
                 </div>
 
-                <h3>Membres</h3>
+
+                <h3>Supprimer des membres</h3>
                 <ul>
                     <?php foreach ($detailsGroupe['membres'] as $membre): ?>
                         <li>
@@ -101,7 +120,21 @@ Class VueGroupe extends VueGenerique{
                     <?php endforeach; ?>
                 </ul>
 
-                <button type="submit" class="btn btn-danger">Supprimer les membres sélectionnés</button>
+                <h3>Ajouter des étudiants</h3>
+                <div class="form-group mt-3">
+                    <label for="etudiants">Sélectionner des Étudiants</label>
+                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
+                        <?php foreach ($tabNvEtudiant as $etudiant): ?>
+                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
+                                <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4">Enregistrer les modifications</button>
+                <a href="index.php?module=groupeprof&action=supprimerGrp&idGroupe=<?php echo $idGroupe ?>" class="btn btn-danger mt-4">Supprimer le groupe</a>
+                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
@@ -127,27 +160,6 @@ Class VueGroupe extends VueGenerique{
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
-                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
-            </form>
-        </div>
-        <?php
-    }
-    public function ajouterEtudiantGrp($tabNvEtudiant, $idGroupe){
-        ?>
-        <div class="container mt-5">
-            <h2>Ajouter des membres</h2>
-            <form method="post" action="index.php?module=groupeprof&action=ajouterNouveauMembreGrp&idGroupe=<?php echo $idGroupe; ?>">
-                <div class="form-group mt-3">
-                    <label for="etudiants">Sélectionner des Étudiants</label>
-                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
-                        <?php foreach ($tabNvEtudiant as $etudiant): ?>
-                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
-                                <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-success mt-4">Ajouter les membres</button>
                 <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>

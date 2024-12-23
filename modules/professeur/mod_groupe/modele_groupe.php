@@ -128,6 +128,13 @@ Class ModeleGroupe extends Connexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function modifierModifiableParGroupe($modifiable, $idGroupe) {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$modifiable, $idGroupe]);
+    }
+
     public function supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur) {
         $bdd = $this->getBdd();
         $query = "DELETE FROM Groupe_Etudiant WHERE id_groupe = :id_groupe AND id_utilisateur = :id_utilisateur";
@@ -135,6 +142,20 @@ Class ModeleGroupe extends Connexion{
         $stmt->bindParam(':id_groupe', $idGroupe, PDO::PARAM_INT);
         $stmt->bindParam(':id_utilisateur', $idUtilisateur, PDO::PARAM_INT);
         $stmt->execute();
+    }
+
+    public function modifierNomGrp($idGroupe, $nomGroupe){
+        $bdd = $this->getBdd();
+        $query = "UPDATE Groupe SET nom = ? WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$nomGroupe, $idGroupe]);
+    }
+
+    public function supprimerGroupe($idGroupe){
+        $bdd = $this->getBdd();
+        $query = "DELETE FROM Groupe WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idGroupe]);
     }
 
 }

@@ -24,15 +24,22 @@ Class ContGroupe {
             case "creerGroupe" :
                 $this->creerGroupe();
                 break;
-            case "modifierGroupe" :
-                $this->modifierGroupe();
+            case "versModifierGroupe" :
+                $this->versModifierGroupe();
                 break;
             case "ajouterNouveauMembreGrp" :
                 $this->ajouterNouveauMembreGrp();
                 break;
-            case "supprimerMembresGroupe" :
-                $this->supprimerMembresGroupe();
+            case "modifierGroupe" :
+                $this->modifierGroupe();
                 break;
+            case "enregistrerModificationsGroupe" :
+                $this->enregistrerModificationsGroupe();
+                break;
+            case "supprimerGrp" :
+                $this->supprimerGrp();
+                break;
+
         }
     }
 
@@ -67,17 +74,46 @@ Class ContGroupe {
             $etudiants = $this->modele->getEtudiants();
             $this->vue->afficherFormulaireAjoutGroupe($etudiants);
         }
+        $this->gestionGroupeSAE();
     }
 
-    public function modifierGroupe() {
+    public function versModifierGroupe() {
         if (isset($_GET['idGroupe'])) {
             $idGroupe = $_GET['idGroupe'];
             $tabDetailsGrp = $this->modele->getGroupeById($idGroupe);
-            $this->vue->formulaireModifierGroupe($tabDetailsGrp);
             $tabNvEtudiant = $this->modele->ajouterNouveauMembre($idGroupe);
-            $this->vue->ajouterEtudiantGrp($tabNvEtudiant, $idGroupe);
+            $this->vue->formulaireModifierGroupe($tabDetailsGrp, $tabNvEtudiant, $idGroupe);
         }
     }
+    public function enregistrerModificationsGroupe() {
+        if (isset($_POST['id_groupe']) && isset($_POST['nomGroupe']) && isset($_POST['modifiable_par_groupe'])) {
+            $idGroupe = $_POST['id_groupe'];
+            $nomGroupe = $_POST['nomGroupe'];
+            if (isset($_POST['modifiable_par_groupe']) && $_POST['modifiable_par_groupe'] == "1"){
+                $modifiableParGroupe = 1;
+            }else{
+                $modifiableParGroupe = 0;
+            }
+
+            $this->modele->modifierNomGrp($idGroupe, $nomGroupe);
+            $this->modele->modifierModifiableParGroupe($modifiableParGroupe, $idGroupe);
+
+            if (isset($_POST['membres_a_supprimer'])) {
+                foreach ($_POST['membres_a_supprimer'] as $idUtilisateur) {
+                    $this->modele->supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur);
+                }
+            }
+
+            if (isset($_POST['etudiants'])) {
+                foreach ($_POST['etudiants'] as $idEtudiant) {
+                    $this->modele->ajouterEtudiantAuGroupe($idGroupe, $idEtudiant);
+                }
+            }
+        }
+
+        $this->gestionGroupeSAE();
+    }
+
 
     public function ajouterNouveauMembreGrp() {
         if (isset($_POST['etudiants']) && isset($_GET['idGroupe'])) {
@@ -87,16 +123,24 @@ Class ContGroupe {
                 $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
             }
         }
-        $this->gestionGroupeSAE();
     }
-    public function supprimerMembresGroupe() {
-        if (isset($_POST['membres_a_supprimer']) && isset($_POST['id_groupe'])) {
+    public function modifierGroupe() {
+        if (isset($_POST['membres_a_supprimer']) && isset($_POST['id_groupe']) && isset($_GET['nomGroupe'])) {
             $idGroupe = $_POST['id_groupe'];
             $membresASupprimer = $_POST['membres_a_supprimer'];
+            $nomGroupe = $_POST['nomGroupe'];
 
             foreach ($membresASupprimer as $idUtilisateur) {
                 $this->modele->supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur);
             }
+            $this->modele->modifierNomGrp($idGroupe, $nomGroupe);
+        }
+    }
+
+    public function supprimerGrp(){
+        if(isset($_GET['idGroupe'])){
+            $idGroupe = $_GET['idGroupe'];
+            $this->modele->supprimerGroupe($idGroupe);
         }
         $this->gestionGroupeSAE();
     }
