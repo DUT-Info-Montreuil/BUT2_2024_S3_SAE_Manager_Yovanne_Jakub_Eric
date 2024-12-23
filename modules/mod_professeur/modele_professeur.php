@@ -172,5 +172,15 @@ Class ModeleProfesseur extends Connexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur) {
+        $bdd = $this->getBdd();
+        $query = "DELETE FROM Groupe_Etudiant WHERE id_groupe = :id_groupe AND id_utilisateur = :id_utilisateur";
+        $stmt = $bdd->prepare($query);
+        $stmt->bindParam(':id_groupe', $idGroupe, PDO::PARAM_INT);
+        $stmt->bindParam(':id_utilisateur', $idUtilisateur, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+
 
 }

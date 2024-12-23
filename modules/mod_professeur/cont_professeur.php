@@ -43,6 +43,9 @@ Class ContProfesseur {
                 break;
             case "ajouterNouveauMembreGrp" :
                 $this->ajouterNouveauMembreGrp();
+                break;
+            case "supprimerMembresGroupe" :
+                $this->supprimerMembresGroupe();
         }
     }
 
@@ -153,4 +156,16 @@ Class ContProfesseur {
         }
         $this->gestionGroupeSAE();
     }
+    public function supprimerMembresGroupe() {
+        if (isset($_POST['membres_a_supprimer']) && isset($_POST['id_groupe'])) {
+            $idGroupe = $_POST['id_groupe'];
+            $membresASupprimer = $_POST['membres_a_supprimer'];
+
+            foreach ($membresASupprimer as $idUtilisateur) {
+                $this->modele->supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur);
+            }
+        }
+        $this->gestionGroupeSAE();
+    }
+
 }

@@ -248,7 +248,7 @@ Class VueProfesseur extends VueGenerique {
         ?>
         <div class="container mt-4">
             <h2>Modifier le Groupe</h2>
-            <form action="index.php?module=professeur&action=enregistrerModificationGroupe" method="post">
+            <form action="index.php?module=professeur&action=supprimerMembresGroupe" method="post">
                 <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
                 <div class="form-group">
@@ -267,12 +267,14 @@ Class VueProfesseur extends VueGenerique {
                 <ul>
                     <?php foreach ($detailsGroupe['membres'] as $membre): ?>
                         <li>
+                            <input type="checkbox" name="membres_a_supprimer[]" value="<?php echo htmlspecialchars($membre['id_utilisateur']); ?>">
                             <?php echo htmlspecialchars($membre['prenom'] . ' ' . $membre['nom']); ?>
                             (<?php echo htmlspecialchars($membre['email']); ?>)
-                            <button type="button" class="btn btn-danger btn-sm">Supprimer</button>
                         </li>
                     <?php endforeach; ?>
                 </ul>
+
+                <button type="submit" class="btn btn-danger">Supprimer les membres sélectionnés</button>
             </form>
         </div>
         <?php
