@@ -2,9 +2,8 @@
 include_once 'Connexion.php';
 Class ModeleProfesseur extends Connexion{
     public function __construct() {
+
     }
-
-
     public function utilisateurExiste($login){
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login_utilisateur = ?");
@@ -100,9 +99,78 @@ Class ModeleProfesseur extends Connexion{
         $query = "INSERT INTO groupe_etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idEtudiant, $idGroupe]);
-
     }
 
+    public function getGroupeById($idGroupe) {
+        $bdd = $this->getBdd();
+        $requete = $bdd->prepare("
+            SELECT 
+                g.id_groupe, 
+                g.nom AS nom_groupe, 
+                g.image_titre, 
+                g.modifiable_par_groupe,
+                u.id_utilisateur,
+                u.nom AS nom_membre,
+                u.prenom AS prenom_membre,
+                u.email
+            FROM 
+                Groupe g
+            LEFT JOIN 
+                Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+            LEFT JOIN 
+                Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+            WHERE 
+                g.id_groupe = :id_groupe
+        ");
+
+        $requete->execute(['id_groupe' => $idGroupe]);
+
+        $resultats = $requete->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($resultats)) {
+            return null;
+        }
+
+        $detailsGroupe = [
+            'id_groupe' => $resultats[0]['id_groupe'],
+            'nom_groupe' => $resultats[0]['nom_groupe'],
+            'image_titre' => $resultats[0]['image_titre'],
+            'modifiable_par_groupe' => $resultats[0]['modifiable_par_groupe'],
+            'membres' => []
+        ];
+
+        foreach ($resultats as $row) {
+            if ($row['id_utilisateur'] !== null) {
+                $detailsGroupe['membres'][] = [
+                    'id_utilisateur' => $row['id_utilisateur'],
+                    'nom' => $row['nom_membre'],
+                    'prenom' => $row['prenom_membre'],
+                    'email' => $row['email']
+                ];
+            }
+        }
+
+        return $detailsGroupe;
+    }
+
+    public function ajouterNouveauMembre($idGroupe) {
+        $bdd = $this->getBdd();
+        $query = "
+        SELECT u.login_utilisateur, u.id_utilisateur, CONCAT(u.prenom, ' ', u.nom) AS nom_complet
+        FROM Utilisateur u
+        WHERE u.type_utilisateur = 'etudiant'
+        AND u.id_utilisateur NOT IN (
+            SELECT ge.id_utilisateur
+            FROM Groupe_Etudiant ge
+            WHERE ge.id_groupe = :idGroupe
+        )
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->bindParam(':idGroupe', $idGroupe, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
 }

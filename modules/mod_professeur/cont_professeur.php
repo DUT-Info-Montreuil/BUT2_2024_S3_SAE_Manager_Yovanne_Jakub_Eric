@@ -37,6 +37,12 @@ Class ContProfesseur {
                 break;
             case "creerGroupe" :
                 $this->creerGroupe();
+                break;
+            case "modifierGroupe" :
+                $this->modifierGroupe();
+                break;
+            case "ajouterNouveauMembreGrp" :
+                $this->ajouterNouveauMembreGrp();
         }
     }
 
@@ -125,5 +131,26 @@ Class ContProfesseur {
             $etudiants = $this->modele->getEtudiants();
             $this->vue->afficherFormulaireAjoutGroupe($etudiants);
         }
+    }
+
+    public function modifierGroupe() {
+        if (isset($_GET['idGroupe'])) {
+            $idGroupe = $_GET['idGroupe'];
+            $tabDetailsGrp = $this->modele->getGroupeById($idGroupe);
+            $this->vue->formulaireModifierGroupe($tabDetailsGrp);
+            $tabNvEtudiant = $this->modele->ajouterNouveauMembre($idGroupe);
+            $this->vue->ajouterEtudiantGrp($tabNvEtudiant, $idGroupe);
+        }
+    }
+
+    public function ajouterNouveauMembreGrp() {
+        if (isset($_POST['etudiants']) && isset($_GET['idGroupe'])) {
+            $idGroupe = $_GET['idGroupe'];
+            $etudiants = $_POST['etudiants'];
+            foreach ($etudiants as $etudiantId) {
+                $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
+            }
+        }
+        $this->gestionGroupeSAE();
     }
 }

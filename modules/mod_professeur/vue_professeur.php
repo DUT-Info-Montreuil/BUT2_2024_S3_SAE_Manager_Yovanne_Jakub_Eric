@@ -2,11 +2,9 @@
 include_once 'generique/vue_generique.php';
 
 Class VueProfesseur extends VueGenerique {
-
     public function __construct() {
         parent::__construct();
     }
-
     public function afficherSaeGerer($saeGerer) {
         ?>
         <div class="container mt-4">
@@ -67,7 +65,6 @@ Class VueProfesseur extends VueGenerique {
         </div>
         <?php
     }
-
     public function afficherSaeDetails() {
         ?>
         <div class="container mt-4">
@@ -154,7 +151,6 @@ Class VueProfesseur extends VueGenerique {
         </div>
         <?php
     }
-
     public function afficherSaeInfoGeneral($saeDetails) {
         ?>
         <div class="container mt-4">
@@ -182,7 +178,6 @@ Class VueProfesseur extends VueGenerique {
         </div>
         <?php
     }
-
     public function afficherGroupeSAE($groupeSAE) {
         ?>
         <div class="container mt-4">
@@ -192,6 +187,7 @@ Class VueProfesseur extends VueGenerique {
                 <tr>
                     <th>Nom du Groupe</th>
                     <th>Membres</th>
+                    <th>Modifier</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -206,6 +202,11 @@ Class VueProfesseur extends VueGenerique {
                                 echo "<tr>";
                                 echo "<td>{$currentGroup['nom_groupe']}</td>";
                                 echo "<td>" . implode(', ', $members) . "</td>";
+                                echo "<td>
+                                    <a href='index.php?module=professeur&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                                        <i class='fas fa-cog'></i>
+                                    </a>
+                                  </td>";
                                 echo "</tr>";
                             }
                             $currentGroup = [
@@ -217,14 +218,19 @@ Class VueProfesseur extends VueGenerique {
                         $members[] = $row['prenom_membre'] . " " . $row['nom_membre'];
                     }
 
-                    if ($currentGroup !== null) { // affiche le dernier grp
+                    if ($currentGroup !== null) {
                         echo "<tr>";
                         echo "<td>{$currentGroup['nom_groupe']}</td>";
                         echo "<td>" . implode(', ', $members) . "</td>";
+                        echo "<td>
+                            <a href='index.php?module=professeur&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                                <i class='fas fa-cog'></i>
+                            </a>
+                          </td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='2'>Aucun groupe trouvé pour cette SAE</td></tr>";
+                    echo "<tr><td colspan='3'>Aucun groupe trouvé pour cette SAE</td></tr>";
                 }
                 ?>
                 </tbody>
@@ -235,6 +241,39 @@ Class VueProfesseur extends VueGenerique {
                     <i class="fas fa-plus"></i> Ajouter un Groupe
                 </a>
             </div>
+        </div>
+        <?php
+    }
+    public function formulaireModifierGroupe($detailsGroupe) {
+        ?>
+        <div class="container mt-4">
+            <h2>Modifier le Groupe</h2>
+            <form action="index.php?module=professeur&action=enregistrerModificationGroupe" method="post">
+                <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
+
+                <div class="form-group">
+                    <label for="nom">Nom du Groupe</label>
+                    <input type="text" id="nom" name="nom" class="form-control"
+                           value="<?php echo htmlspecialchars($detailsGroupe['nom_groupe']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="modifiable">Modifiable par le groupe</label>
+                    <input type="checkbox" id="modifiable" name="modifiable" class="form-control"
+                        <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                </div>
+
+                <h3>Membres</h3>
+                <ul>
+                    <?php foreach ($detailsGroupe['membres'] as $membre): ?>
+                        <li>
+                            <?php echo htmlspecialchars($membre['prenom'] . ' ' . $membre['nom']); ?>
+                            (<?php echo htmlspecialchars($membre['email']); ?>)
+                            <button type="button" class="btn btn-danger btn-sm">Supprimer</button>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </form>
         </div>
         <?php
     }
@@ -264,8 +303,26 @@ Class VueProfesseur extends VueGenerique {
         </div>
         <?php
     }
-
-
-
+    public function ajouterEtudiantGrp($tabNvEtudiant, $idGroupe){
+        ?>
+        <div class="container mt-5">
+            <h2>Ajouter des membres</h2>
+            <form method="post" action="index.php?module=professeur&action=ajouterNouveauMembreGrp&idGroupe=<?php echo $idGroupe; ?>">
+                <div class="form-group mt-3">
+                    <label for="etudiants">Sélectionner des Étudiants</label>
+                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
+                        <?php foreach ($tabNvEtudiant as $etudiant): ?>
+                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
+                                <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success mt-4">Ajouter les membres</button>
+                <a href="index.php?module=professeur&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+            </form>
+        </div>
+        <?php
+    }
 }
 ?>
