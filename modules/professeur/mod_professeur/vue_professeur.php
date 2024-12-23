@@ -87,7 +87,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=groupe&action=gestionGroupeSAE">
+                        <a class="text-decoration-none" href="index.php?module=groupeprof&action=gestionGroupeSAE">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Groupe
                             </h3>
@@ -100,7 +100,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=gerant">
+                        <a class="text-decoration-none" href="index.php?module=gerantprof">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Gérant
                             </h3>
@@ -113,7 +113,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=depot">
+                        <a class="text-decoration-none" href="index.php?module=depotprof">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Dépôt
                             </h3>
@@ -126,7 +126,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=ressource">
+                        <a class="text-decoration-none" href="index.php?module=ressourceprof">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Ressource
                             </h3>
@@ -139,7 +139,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=soutenance">
+                        <a class="text-decoration-none" href="index.php?module=soutenanceprof">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Soutenance
                             </h3>

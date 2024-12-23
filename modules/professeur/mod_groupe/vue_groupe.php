@@ -30,7 +30,7 @@ Class VueGroupe extends VueGenerique{
                                 echo "<td>{$currentGroup['nom_groupe']}</td>";
                                 echo "<td>" . implode(', ', $members) . "</td>";
                                 echo "<td>
-                                    <a href='index.php?module=professeur&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                                    <a href='index.php?module=groupeprof&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
                                         <i class='fas fa-cog'></i>
                                     </a>
                                   </td>";
@@ -50,7 +50,7 @@ Class VueGroupe extends VueGenerique{
                         echo "<td>{$currentGroup['nom_groupe']}</td>";
                         echo "<td>" . implode(', ', $members) . "</td>";
                         echo "<td>
-                            <a href='index.php?module=professeur&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
+                            <a href='index.php?module=groupeprof&action=modifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
                                 <i class='fas fa-cog'></i>
                             </a>
                           </td>";
@@ -64,7 +64,7 @@ Class VueGroupe extends VueGenerique{
             </table>
 
             <div class="text-center mt-4">
-                <a href="index.php?module=professeur&action=ajouterGroupeFormulaire" class="btn btn-primary btn-lg">
+                <a href="index.php?module=groupeprof&action=ajouterGroupeFormulaire" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Groupe
                 </a>
             </div>
@@ -75,7 +75,7 @@ Class VueGroupe extends VueGenerique{
         ?>
         <div class="container mt-4">
             <h2>Modifier le Groupe</h2>
-            <form action="index.php?module=professeur&action=supprimerMembresGroupe" method="post">
+            <form action="index.php?module=groupeprof&action=supprimerMembresGroupe" method="post">
                 <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
                 <div class="form-group">
@@ -110,7 +110,7 @@ Class VueGroupe extends VueGenerique{
         ?>
         <div class="container mt-5">
             <h2>Ajouter un Nouveau Groupe</h2>
-            <form method="post" action="index.php?module=professeur&action=creerGroupe">
+            <form method="post" action="index.php?module=groupeprof&action=creerGroupe">
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
@@ -127,7 +127,7 @@ Class VueGroupe extends VueGenerique{
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
-                <a href="index.php?module=professeur&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
@@ -136,7 +136,7 @@ Class VueGroupe extends VueGenerique{
         ?>
         <div class="container mt-5">
             <h2>Ajouter des membres</h2>
-            <form method="post" action="index.php?module=professeur&action=ajouterNouveauMembreGrp&idGroupe=<?php echo $idGroupe; ?>">
+            <form method="post" action="index.php?module=groupeprof&action=ajouterNouveauMembreGrp&idGroupe=<?php echo $idGroupe; ?>">
                 <div class="form-group mt-3">
                     <label for="etudiants">Sélectionner des Étudiants</label>
                     <select multiple class="form-control" id="etudiants" name="etudiants[]">
@@ -148,7 +148,7 @@ Class VueGroupe extends VueGenerique{
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Ajouter les membres</button>
-                <a href="index.php?module=professeur&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
