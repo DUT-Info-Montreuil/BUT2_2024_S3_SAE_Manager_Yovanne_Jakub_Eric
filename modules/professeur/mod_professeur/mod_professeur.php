@@ -1,6 +1,6 @@
 <?php
 include_once 'generique/module_generique.php';
-include_once 'modules/mod_professeur/cont_professeur.php';
+include_once 'modules/professeur/mod_professeur/cont_professeur.php';
 
 Class ModProfesseur extends ModuleGenerique{
 
