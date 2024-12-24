@@ -27,5 +27,8 @@ class ContDepot{
 
     public function gestionDepotSAE(){
         $idSae = $_SESSION['id_projet'];
+        if($idSae){
+            $this->modele->getAllDepotSAE($idSae);
+        }
     }
 }
