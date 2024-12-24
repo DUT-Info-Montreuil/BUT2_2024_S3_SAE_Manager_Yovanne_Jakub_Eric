@@ -29,6 +29,9 @@ class ContGerant
             case "ajouterGerantFormulaire" :
                 $this->ajouterGerantFormulaire();
                 break;
+            case "ajouterGerants" :
+                $this->ajouterGerants();
+                break;
         }
     }
 
@@ -41,11 +44,34 @@ class ContGerant
     }
 
     public function versModifierGerant(){
-        echo "versModifierGerant";
+        $idSae = $_SESSION['id_projet'];
+        if (isset($_GET['idGerant'])) {
+            $idGerant = $_GET['idGerant'];
+            $tabDetailsGerant= $this->modele->getGerantById($idSae, $idGerant);
+            $this->vue->formulaireModifierGerant($tabDetailsGerant, $idGerant);
+        }
     }
 
     public function ajouterGerantFormulaire() {
-        echo "ajouterGerantFormulaire";
+        $idSae = $_SESSION['id_projet'];
+        if($idSae) {
+            $professeurs = $this->modele->getProfesseur();
+            $this->vue->afficherFormulaireAjoutGerant($professeurs);
+        }
+    }
+
+    public function ajouterGerants() {
+        $idSae = $_SESSION['id_projet'];
+        if ($idSae) {
+            if (isset($_POST['role_gerant']) && isset($_POST['gerants'])) {
+                $roleGerant = $_POST['role_gerant'];
+                $gerantsId = $_POST['gerants'];
+                foreach ($gerantsId as $gerantId) {
+                    $this->modele->ajouterGerantSAE($gerantId, $roleGerant, $idSae);
+                }
+            }
+        }
+        $this->gestionGerantSAE();
     }
 }
 
