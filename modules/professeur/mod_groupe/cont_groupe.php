@@ -138,8 +138,8 @@ Class ContGroupe {
     }
 
     public function supprimerGrp(){
-        if(isset($_GET['idGroupe'])){
-            $idGroupe = $_GET['idGroupe'];
+        if(isset($_POST['idGroupe'])){
+            $idGroupe = $_POST['idGroupe'];
             $this->modele->supprimerGroupe($idGroupe);
         }
         $this->gestionGroupeSAE();

@@ -26,6 +26,6 @@ class ContDepot{
     }
 
     public function gestionDepotSAE(){
-        echo "gestionDepotSAE";
+        $idSae = $_SESSION['id_projet'];
     }
 }

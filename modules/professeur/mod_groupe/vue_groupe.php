@@ -87,27 +87,16 @@ Class VueGroupe extends VueGenerique{
                 <label>Modifiable par le groupe</label>
                 <div class="form-group">
                     <div class="form-check form-check-inline">
-                        <input
-                                type="radio"
-                                id="modifiable_oui"
-                                name="modifiable_par_groupe"
-                                class="form-check-input"
-                                value="1"
+                        <input type="radio" id="modifiable_oui" name="modifiable_par_groupe" class="form-check-input" value="1"
                             <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="modifiable_oui">Oui</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input
-                                type="radio"
-                                id="modifiable_non"
-                                name="modifiable_par_groupe"
-                                class="form-check-input"
-                                value="0"
+                        <input type="radio" id="modifiable_non" name="modifiable_par_groupe" class="form-check-input" value="0"
                             <?php echo !$detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="modifiable_non">Non</label>
                     </div>
                 </div>
-
 
                 <h3>Supprimer des membres</h3>
                 <ul>
@@ -133,10 +122,16 @@ Class VueGroupe extends VueGenerique{
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-4">Enregistrer les modifications</button>
-                <a href="index.php?module=groupeprof&action=supprimerGrp&idGroupe=<?php echo $idGroupe ?>" class="btn btn-danger mt-4">Supprimer le groupe</a>
-                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
             </form>
+
+            <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="mt-4">
+                <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
+                <button type="submit" class="btn btn-danger">Supprimer le groupe</button>
+            </form>
+
+            <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
         </div>
+
         <?php
     }
     public function afficherFormulaireAjoutGroupe($etudiants) {
