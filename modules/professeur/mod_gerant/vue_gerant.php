@@ -160,5 +160,4 @@ class VueGerant extends VueGenerique{
         </div>
         <?php
     }
-
 }
