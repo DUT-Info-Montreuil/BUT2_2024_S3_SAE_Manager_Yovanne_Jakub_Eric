@@ -77,47 +77,43 @@ class VueGerant extends VueGenerique{
         <div class="container mt-4">
             <h2>Modifier le Gérant</h2>
             <form action="index.php?module=gerantprof&action=enregistrerModificationsGerant" method="post">
-                <input type="hidden" name="id_groupe"
-                       value="<?php echo htmlspecialchars($tabDetailsGerant['id_utilisateur']); ?>">
-
+                <input type="hidden" name="id_utilisateur" value="<?php echo htmlspecialchars($tabDetailsGerant['id_utilisateur']); ?>">
                 <div class="form-group">
-                    <label for="nomGroupe">Nom du Gérant</label>
-                    <p> <?php echo $tabDetailsGerant['nom_complet'] ?></p>
+                    <label for="nomGerant">Nom du Gérant</label>
+                    <p id="nomGerant"><?php echo htmlspecialchars($tabDetailsGerant['nom_complet']); ?></p>
                 </div>
-
-                <label>Rôle Gérant</label>
                 <div class="form-group">
-                    <div class="form-check form-check-inline">
-                        <input
-                                type="radio"
-                                id="coreponsable"
-                                name="role_gerant"
-                                class="form-check-input"
-                                value="1"
-                            <?php echo $tabDetailsGerant['role_utilisateur'] == "Co-Responsable" ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="modifiable_oui">Co-Responsable</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input
-                                type="radio"
-                                id="intervenant"
-                                name="role_gerant"
-                                class="form-check-input"
-                                value="0"
-                            <?php echo !$tabDetailsGerant['role_utilisateur'] == "Intervenant" ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="modifiable_non">Intervenant</label>
+                    <label>Choisissez un rôle pour le gérant :</label>
+                    <div class="btn-group btn-group-toggle d-flex mt-2" data-toggle="buttons">
+                        <label class="btn btn-outline-primary flex-fill <?php echo $tabDetailsGerant['role_utilisateur'] === "Co-Responsable" ? 'active' : ''; ?>">
+                            <input type="radio" id="coreponsable" name="role_gerant" value="Co-Responsable" autocomplete="off"
+                                <?php echo $tabDetailsGerant['role_utilisateur'] === "Co-Responsable" ? 'checked' : ''; ?>>
+                            Co-Responsable
+                        </label>
+                        <label class="btn btn-outline-primary flex-fill <?php echo $tabDetailsGerant['role_utilisateur'] === "Intervenant" ? 'active' : ''; ?>">
+                            <input type="radio" id="intervenant" name="role_gerant" value="Intervenant" autocomplete="off"
+                                <?php echo $tabDetailsGerant['role_utilisateur'] === "Intervenant" ? 'checked' : ''; ?>>
+                            Intervenant
+                        </label>
                     </div>
                 </div>
-
-                <button type="submit" class="btn btn-primary mt-4">Enregistrer les modifications</button>
-                <a href="index.php?module=gerantprof&action=supprimerGerant&idGerant=<?php echo $idGerant ?>"
-                   class="btn btn-danger mt-4">Supprimer le Gérant</a>
-                <a href="index.php?module=gerantprof&action=gestionGerantSAE" class="btn btn-secondary mt-4">Retour</a>
+                <div class="d-flex mt-4 gap-3">
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                </div>
             </form>
+            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post"">
+                <input type="hidden" name="idGerant" value="<?php echo htmlspecialchars($idGerant); ?>">
+                <div class="d-flex mt-3 gap-3">
+                    <button type="submit" class="btn btn-danger">Supprimer le Gérant</button>
+                </div>
+            </form>
+            <div class="d-flex mt-4 gap-3">
+                <a href="index.php?module=gerantprof&action=gestionGerantSAE" class="btn btn-secondary">Retour</a>
+            </div>
         </div>
+
         <?php
     }
-
     public function afficherFormulaireAjoutGerant($tabGerant){
         ?>
         <div class="container mt-5">

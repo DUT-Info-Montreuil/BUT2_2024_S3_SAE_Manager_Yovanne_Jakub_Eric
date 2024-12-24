@@ -44,13 +44,24 @@ Class ModeleGerant extends Connexion {
         return $gerant;
     }
 
-    public function getProfesseur() {
+    public function getProfesseurNonGerant($idSae) {
         $bdd = $this->getBdd();
-        $query = "SELECT login_utilisateur, id_utilisateur, CONCAT(prenom, ' ', nom) AS nom_complet FROM Utilisateur WHERE type_utilisateur = 'professeur'";
+        $query = "
+        SELECT u.login_utilisateur, u.id_utilisateur, CONCAT(u.prenom, ' ', u.nom) AS nom_complet
+        FROM Utilisateur u
+        WHERE u.type_utilisateur = 'professeur'
+        AND u.id_utilisateur NOT IN (
+            SELECT g.id_utilisateur
+            FROM Gerant g
+            WHERE g.id_projet = :idSae
+        )
+    ";
         $stmt = $bdd->prepare($query);
+        $stmt->bindParam(':idSae', $idSae, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function ajouterGerantSAE($gerantId, $roleGerant, $idSae) {
         $bdd = $this->getBdd();
@@ -64,5 +75,20 @@ Class ModeleGerant extends Connexion {
             ':role_utilisateur' => $roleGerant == 1 ? 'Co-Responsable' : 'Intervenant'
         ]);
     }
+
+    public function modifierRoleGerant($idSae, $id_utilisateur, $roleGerant){
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Gerant SET role_utilisateur = ? WHERE id_utilisateur = ? AND id_projet = ?";
+        $query = $bdd->prepare($sql);
+        $query->execute([$roleGerant, $id_utilisateur, $idSae]);
+    }
+
+    public function supprimerGerantSAE($idSae, $idGerant) {
+        $bdd = $this->getBdd();
+        $sql = "DELETE FROM Gerant WHERE id_projet = ? AND id_utilisateur = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idSae, $idGerant]);
+    }
+
 
 }
