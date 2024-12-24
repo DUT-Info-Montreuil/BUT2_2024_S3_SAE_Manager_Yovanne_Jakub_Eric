@@ -22,13 +22,34 @@ class ContDepot{
             case "gestionDepotSAE":
                 $this->gestionDepotSAE();
                 break;
+            case "creerDepot" :
+                $this->creerDepot();
+                break;
+            case "submitDepot" :
+                $this->submitDepot();
+                break;
         }
     }
 
     public function gestionDepotSAE(){
         $idSae = $_SESSION['id_projet'];
         if($idSae){
-            $this->modele->getAllDepotSAE($idSae);
+            $allDepot = $this->modele->getAllDepotSAE($idSae);
+            $this->vue->afficheAllDepotSAE($allDepot);
         }
+    }
+
+    public function creerDepot(){
+        $this->vue->formulaireCreerDepot();
+    }
+
+    public function submitDepot(){
+        if (isset($_POST['titre']) && trim($_POST['titre']) !== '' && isset($_POST['date_limite'])) {
+            $titre = trim($_POST['titre']);
+            $dateLimite = $_POST['date_limite'];
+            $idSae = $_SESSION['id_projet'];
+            $this->modele->creerDepot($titre, $dateLimite, $idSae);
+        }
+        $this->gestionDepotSAE();
     }
 }
