@@ -30,6 +30,8 @@ class ContDepot{
                 break;
             case "modifierDepot" :
                 $this->modifierDepot();
+            case "supprimerDepot" :
+                $this->supprimerDepot();
         }
     }
 
@@ -63,5 +65,13 @@ class ContDepot{
             $this->modele->modifierRendu($id_rendu, $titre, $dateLimite);
         }
         $this->gestionDepotSAE();
+    }
+
+    public function supprimerDepot(){
+        if(isset($_POST['id_rendu'])){
+            $id_rendu = $_POST['id_rendu'];
+            $this->modele->supprimerDepot($id_rendu);
+            header("Location: index.php?module=depotprof&action=gestionDepotSAE"); // si  je met $this->gestionDepotSAE(); = 2x affichage
+        }
     }
 }

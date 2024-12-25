@@ -58,6 +58,13 @@ class VueDepot extends VueGenerique
                                                    name="date_limite"
                                                    value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
                                         </div>
+
+                                        <!-- Formulaire pour supprimer le dépôt -->
+                                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
+                                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                        </form>
+
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>

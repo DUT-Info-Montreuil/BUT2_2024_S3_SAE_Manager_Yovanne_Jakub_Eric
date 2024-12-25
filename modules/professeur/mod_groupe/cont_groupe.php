@@ -71,8 +71,6 @@ Class ContGroupe {
                     $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
                 }
             }
-            $etudiants = $this->modele->getEtudiants();
-            $this->vue->afficherFormulaireAjoutGroupe($etudiants);
         }
         $this->gestionGroupeSAE();
     }

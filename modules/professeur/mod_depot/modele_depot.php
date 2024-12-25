@@ -50,5 +50,22 @@ Class ModeleDepot extends Connexion {
         $stmt->execute([$titre, $dateLimite, $id_rendu]);
     }
 
+    public function supprimerDepot($id_rendu) {
+        $bdd = $this->getBdd();
+
+        $sql = "DELETE FROM Rendu_Evaluation WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$id_rendu]);
+
+        $sql = "DELETE FROM Rendu_Groupe WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$id_rendu]);
+
+        $sql = "DELETE FROM Rendu WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$id_rendu]);
+    }
+
+
 
 }
