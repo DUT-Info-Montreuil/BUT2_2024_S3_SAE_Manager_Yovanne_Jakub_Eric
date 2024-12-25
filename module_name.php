@@ -24,8 +24,6 @@ class ModuleName {
             die("Module '{$this->module_name}' introuvable.");
         }
     }
-
-
     public function exec_module() {
         $module_class = "Mod" . ucfirst($this->module_name);
         if (class_exists($module_class)) {
