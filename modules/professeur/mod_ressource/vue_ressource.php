@@ -67,15 +67,22 @@ class VueRessource extends VueGenerique
                                                 Mettre en avant
                                             </label>
                                         </div>
+
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
                                         </div>
                                     </form>
+
+                                    <form action="index.php?module=ressourceprof&action=supprimerRessource" method="post" class="d-inline">
+                                        <input type="hidden" name="id_ressource" value="<?= htmlspecialchars($ressource['id_ressource']) ?>">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">

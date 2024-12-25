@@ -36,8 +36,7 @@ class VueDepot extends VueGenerique
                         </div>
                     </div>
 
-                    <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1"
-                         aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
+                    <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1" aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -55,25 +54,24 @@ class VueDepot extends VueGenerique
                                         <div class="mb-3">
                                             <label for="date_limite-<?= $index ?>" class="form-label">Date limite</label>
                                             <input type="date" class="form-control" id="date_limite-<?= $index ?>"
-                                                   name="date_limite"
-                                                   value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
+                                                   name="date_limite" value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
                                         </div>
-
-                                        <!-- Formulaire pour supprimer le dépôt -->
-                                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
-                                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                                        </form>
 
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
                                         </div>
                                     </form>
+
+                                    <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
+                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">

@@ -21,6 +21,12 @@ Class ModeleRessource extends Connexion
                           VALUES (DEFAULT, ?, ?, ?, ?)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$titre, $targetFile, $mise_en_avant, $id_projet]);
+    }
 
+    public function supprimerRessource($idRessource){
+        $bdd = $this->getBdd();
+        $sql = "DELETE FROM Ressource WHERE id_ressource = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idRessource]);
     }
 }

@@ -27,6 +27,9 @@ class ContRessource{
             case "submitRessource" :
                 $this->submitRessource();
                 break;
+            case "supprimerRessource" :
+                $this->supprimerRessource();
+                break;
         }
     }
 
@@ -45,7 +48,6 @@ class ContRessource{
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
             $idSae = $_SESSION['id_projet'];
-            echo "test";
 
             // Verif si aucun problème n'est survenu lors de l'upload
             if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
@@ -70,7 +72,14 @@ class ContRessource{
 
         }
         $this->gestionRessourceSAE();
+    }
 
+    public function supprimerRessource(){
+        if(isset($_POST['id_ressource'])){
+            $idRessource = $_POST['id_ressource'];
+            $this->modele->supprimerRessource($idRessource);
+        }
+        $this->gestionRessourceSAE();
     }
 
 
