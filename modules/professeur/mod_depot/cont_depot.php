@@ -28,6 +28,8 @@ class ContDepot{
             case "submitDepot" :
                 $this->submitDepot();
                 break;
+            case "modifierDepot" :
+                $this->modifierDepot();
         }
     }
 
@@ -49,6 +51,16 @@ class ContDepot{
             $dateLimite = $_POST['date_limite'];
             $idSae = $_SESSION['id_projet'];
             $this->modele->creerDepot($titre, $dateLimite, $idSae);
+        }
+        $this->gestionDepotSAE();
+    }
+
+    public function modifierDepot(){
+        if(isset($_POST['id_rendu']) && isset($_POST['date_limite']) && trim($_POST['titre']) !== ''){
+            $titre = trim($_POST['titre']);
+            $dateLimite = $_POST['date_limite'];
+            $id_rendu = $_POST['id_rendu'];
+            $this->modele->modifierRendu($id_rendu, $titre, $dateLimite);
         }
         $this->gestionDepotSAE();
     }

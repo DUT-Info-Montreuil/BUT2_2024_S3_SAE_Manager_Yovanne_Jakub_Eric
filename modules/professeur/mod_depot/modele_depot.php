@@ -43,5 +43,12 @@ Class ModeleDepot extends Connexion {
         }
     }
 
+    public function modifierRendu($id_rendu, $titre, $dateLimite){
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Rendu SET titre = ?, date_limite = ? WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$titre, $dateLimite, $id_rendu]);
+    }
+
 
 }

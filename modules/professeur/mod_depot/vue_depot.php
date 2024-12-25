@@ -27,6 +27,43 @@ class VueDepot extends VueGenerique
                              aria-labelledby="heading-<?= $index ?>" data-bs-parent="#depotAccordion">
                             <div class="accordion-body">
                                 <strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?>
+                                <button type="button" class="btn btn-link float-end p-0" data-bs-toggle="modal"
+                                        data-bs-target="#editModal-<?= $index ?>">
+                                    <img src="assets/edit-icon.png" alt="Modifier" width="24" height="24"
+                                         style="cursor: pointer;">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1"
+                         aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel-<?= $index ?>">Modifier le dépôt</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="index.php?module=depotprof&action=modifierDepot" method="post">
+                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                        <div class="mb-3">
+                                            <label for="titre-<?= $index ?>" class="form-label">Titre</label>
+                                            <input type="text" class="form-control" id="titre-<?= $index ?>" name="titre"
+                                                   value="<?= htmlspecialchars($depot['titre']) ?>" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="date_limite-<?= $index ?>" class="form-label">Date limite</label>
+                                            <input type="date" class="form-control" id="date_limite-<?= $index ?>"
+                                                   name="date_limite"
+                                                   value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -40,6 +77,7 @@ class VueDepot extends VueGenerique
         </div>
         <?php
     }
+
 
     public function formulaireCreerDepot()
     {
