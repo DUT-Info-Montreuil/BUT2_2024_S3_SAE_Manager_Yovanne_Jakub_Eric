@@ -8,7 +8,7 @@ class ModuleName {
     public function __construct() {
         $this->module_name = isset($_GET['module']) ? $_GET['module'] : "connexion";
 
-        if (strpos($this->module_name, 'professeur') !== false || in_array($this->module_name, ['groupeprof', 'gerantprof', 'depotprof', 'ressourceprof', 'soutenanceprof'])) {
+        if (in_array($this->module_name, ['groupeprof', 'gerantprof', 'depotprof', 'ressourceprof', 'soutenanceprof', "accueilprof"])) {
             if (substr($this->module_name, -4) === 'prof') {
                 $this->module_name = substr($this->module_name, 0, -4);
             }

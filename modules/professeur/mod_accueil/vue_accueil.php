@@ -1,7 +1,7 @@
 <?php
 include_once 'generique/vue_generique.php';
 
-Class VueProfesseur extends VueGenerique {
+Class VueAccueil extends VueGenerique {
     public function __construct() {
         parent::__construct();
     }
@@ -15,7 +15,7 @@ Class VueProfesseur extends VueGenerique {
                              style="width: 250px; height: 250px; border-radius: 10px;
                         background-color: #c6c6c6; display: flex; justify-content: center;
                         align-items: center; text-align: center;">
-                            <a class="text-decoration-none" href="index.php?module=professeur&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>">
+                            <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>">
                                 <h3 class="text-center" style="color: #333; font-weight: bold;">
                                     <?php echo htmlspecialchars($sae['titre']); ?>
                                 </h3>
@@ -25,7 +25,7 @@ Class VueProfesseur extends VueGenerique {
                 <?php endforeach; ?>
 
                 <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <a href="index.php?module=professeur&action=creerSAE" class="text-center"
+                    <a href="index.php?module=accueilprof&action=creerSAE" class="text-center"
                        style="color: #333; font-weight: bold; margin: 0; text-decoration: none;">
                         <div class="card shadow-sm border-light"
                              style="width: 250px; height: 250px; border-radius: 10px;
@@ -43,7 +43,7 @@ Class VueProfesseur extends VueGenerique {
         ?>
         <div class="container mt-4">
             <h2>Formulaire de création d'une SAE</h2>
-            <form action="index.php?module=professeur&action=creerSAE" method="post">
+            <form action="index.php?module=accueilprof&action=creerSAE" method="post">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la SAE :</label>
                     <input type="text" class="form-control" id="titre" name="titre" required>
@@ -74,7 +74,7 @@ Class VueProfesseur extends VueGenerique {
                          style="width: 250px; height: 250px; border-radius: 10px;
                                 background-color: #c6c6c6; display: flex; justify-content: center;
                                 align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=professeur&action=infoGeneralSae">
+                        <a class="text-decoration-none" href="index.php?module=accueilprof&action=infoGeneralSae">
                             <h3 class="text-center" style="color: #333; font-weight: bold;">
                                 Information General
                             </h3>

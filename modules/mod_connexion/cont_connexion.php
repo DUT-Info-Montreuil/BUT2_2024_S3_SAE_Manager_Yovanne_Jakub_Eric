@@ -55,7 +55,7 @@ class ContConnexion {
             if($typeUtilisateur=="etudiant"){
                 header('Location: index.php?module=etudiant');
             }else if ($typeUtilisateur=="professeur"){
-                header('Location: index.php?module=professeur');
+                header('Location: index.php?module=accueilprof');
             }else if ($typeUtilisateur=="admin"){
                 header('Location: index.php?module=administrateur');
             }

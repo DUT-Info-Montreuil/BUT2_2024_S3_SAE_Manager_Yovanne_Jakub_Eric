@@ -1,13 +1,13 @@
 <?php
-include_once "modules/professeur/mod_professeur/modele_professeur.php";
-include_once "modules/professeur/mod_professeur/vue_professeur.php";
-Class ContProfesseur {
+include_once "modules/professeur/mod_accueil/modele_accueil.php";
+include_once "modules/professeur/mod_accueil/vue_accueil.php";
+Class ContAccueil {
     private $modele;
     private $vue;
     private $action;
     public function __construct() {
-        $this->modele = new ModeleProfesseur();
-        $this->vue = new VueProfesseur();
+        $this->modele = new ModeleAccueil();
+        $this->vue = new VueAccueil();
     }
 
     public function exec() {
