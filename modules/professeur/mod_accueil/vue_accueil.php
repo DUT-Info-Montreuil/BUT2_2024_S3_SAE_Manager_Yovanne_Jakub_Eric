@@ -147,6 +147,19 @@ Class VueAccueil extends VueGenerique {
                     </div>
                 </div>
 
+                <div class="col-md-4 d-flex justify-content-center mb-2">
+                    <div class="card shadow-sm border-light"
+                         style="width: 250px; height: 250px; border-radius: 10px;
+                                background-color: #c6c6c6; display: flex; justify-content: center;
+                                align-items: center; text-align: center;">
+                        <a class="text-decoration-none" href="index.php?module=evaluationprof">
+                            <h3 class="text-center" style="color: #333; font-weight: bold;">
+                                Evaluation
+                            </h3>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
         <?php
