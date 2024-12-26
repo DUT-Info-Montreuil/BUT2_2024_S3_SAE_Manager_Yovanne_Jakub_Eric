@@ -32,15 +32,18 @@ class ContEvaluation
     {
         $this->gestionEvaluationsRendu();
     }
-
     public function gestionEvaluationsRendu(){
         $idSae = $_SESSION['id_projet'];
         $rendueEvaluations = $this->modele->getRenduEvaluation($idSae);
         $this->vue->afficherTableauRendu($rendueEvaluations);
     }
-
     public function traiterNote(){
-
+        if(isset($_POST['id_groupe']) && isset($_POST['id_rendu'])){
+            $id_groupe = $_POST['id_groupe'];
+            $id_rendu = $_POST['id_rendu'];
+            $allMembres = $this->modele->getAllMembreSAE($id_groupe);
+            $this->vue->afficherFormulaireNotation($allMembres);
+        }
     }
 
 }

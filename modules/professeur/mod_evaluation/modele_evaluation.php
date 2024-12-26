@@ -17,7 +17,7 @@ class ModeleEvaluation extends Connexion
                     r.date_limite AS rendu_date_limite, 
                     rg.statut AS rendu_statut, 
                     re.note AS note_rendu,
-                    rg.id_groupe,
+                    ge.id_groupe,
                     r.id_rendu,
                     GROUP_CONCAT(u.nom, ' ', u.prenom ORDER BY u.nom) AS etudiants,
                     COUNT(u.id_utilisateur) AS nombre_etudiants
@@ -49,6 +49,18 @@ class ModeleEvaluation extends Connexion
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllMembreSAE($id_groupe){
+        $bdd = self::getBdd();
+        $query = "SELECT u.id_utilisateur, u.nom, u.prenom, u.email
+              FROM Utilisateur u
+              INNER JOIN Groupe_Etudiant ge ON u.id_utilisateur = ge.id_utilisateur
+              WHERE ge.id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_groupe]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
 
 }
