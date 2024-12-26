@@ -23,9 +23,24 @@ class ContEvaluation
             case "gestionEvaluationsSAE":
                 $this->gestionEvaluationsSAE();
                 break;
+            case "traiterNote" :
+                $this->traiterNote();
+                break;
         }
     }
-    public function gestionEvaluationsSAE(){
-        echo "gestionEvaluationsSAE";
+    public function gestionEvaluationsSAE()
+    {
+        $this->gestionEvaluationsRendu();
     }
+
+    public function gestionEvaluationsRendu(){
+        $idSae = $_SESSION['id_projet'];
+        $rendueEvaluations = $this->modele->getRenduEvaluation($idSae);
+        $this->vue->afficherTableauRendu($rendueEvaluations);
+    }
+
+    public function traiterNote(){
+
+    }
+
 }
