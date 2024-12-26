@@ -9,7 +9,6 @@ Class ContAccueil {
         $this->modele = new ModeleAccueil();
         $this->vue = new VueAccueil();
     }
-
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
 

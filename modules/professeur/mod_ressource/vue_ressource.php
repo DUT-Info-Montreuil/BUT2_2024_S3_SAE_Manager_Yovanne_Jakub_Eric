@@ -7,7 +7,6 @@ class VueRessource extends VueGenerique
     {
         parent::__construct();
     }
-
     public function afficherAllRessource($allRessources){
         ?>
         <div class="container mt-4">
@@ -93,7 +92,6 @@ class VueRessource extends VueGenerique
         </div>
         <?php
     }
-
     public function formulaireCreerRessource()
     {
         ?>
@@ -119,6 +117,4 @@ class VueRessource extends VueGenerique
         </div>
         <?php
     }
-
-
 }

@@ -20,7 +20,6 @@ Class ModeleAccueil extends Connexion{
         $sae = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $sae;
     }
-
     public function ajouterProjet($titre, $annee, $description, $semestre) {
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("INSERT INTO Projet (id_projet, titre, annee_universitaire, description_projet, semestre) VALUES (DEFAULT, ?, ?, ?, ?)");
@@ -31,7 +30,6 @@ Class ModeleAccueil extends Connexion{
 
         $insertionGerant->execute([$idProjet, $_SESSION['id_utilisateur'], 'Responsable']);
     }
-
     public function getSaeDetails($idProjet) {
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("SELECT * FROM Projet WHERE id_projet = ?");
@@ -39,7 +37,6 @@ Class ModeleAccueil extends Connexion{
         $saeDetails = $stmt->fetch(PDO::FETCH_ASSOC);
         return $saeDetails;
     }
-
     public function modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description) {
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("UPDATE Projet 

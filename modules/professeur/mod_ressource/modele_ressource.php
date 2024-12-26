@@ -15,12 +15,12 @@ Class ModeleRessource extends Connexion
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function creerRessource($titre, $mise_en_avant, $id_projet, $targetFile){
+    public function creerRessource($titre, $mise_en_avant, $id_projet, $fichier){
         $bdd = $this->getBdd();
         $query = "INSERT INTO Ressource (id_ressource, titre, lien, mise_en_avant, id_projet) 
                           VALUES (DEFAULT, ?, ?, ?, ?)";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$titre, $targetFile, $mise_en_avant, $id_projet]);
+        $stmt->execute([$titre, $fichier, $mise_en_avant, $id_projet]);
     }
 
     public function supprimerRessource($idRessource){

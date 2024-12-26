@@ -51,21 +51,21 @@ class ContRessource{
 
             // Verif si aucun problème n'est survenu lors de l'upload
             if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = 'uploads/ressources/'; // Répertoire de destination pour les fichiers uploadés
+                $uploadDossier = 'uploads/ressources/'; // Répertoire de destination pour les fichiers uploadés
                 $filename = basename($_FILES['fichier']['name']); // Extraire le nom du fichier téléchargé
-                $targetFile = $uploadDir . uniqid() . '-' . $filename; // Créer un nom de fichier unique
-                $allowedExtensions = ['pdf', 'docx', 'png', 'jpg']; // Liste d'extensions autorisées
+                $fichier = $uploadDossier . uniqid() . '-' . $filename; // Créer un nom de fichier unique
+                $extensionAutorises = ['pdf', 'docx', 'png', 'jpg']; // Liste d'extensions autorisées
 
                 // strtolower = met en minuscule
                 $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION)); // Extraire l'extension du fichier téléchargé
                 $maxFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier
 
                 // Extension dans la liste et taille autorisé
-                if (in_array($fileExtension, $allowedExtensions) && $_FILES['fichier']['size'] <= $maxFileSize) {
+                if (in_array($fileExtension, $extensionAutorises) && $_FILES['fichier']['size'] <= $maxFileSize) {
 
                     // Déplace le fichier dans le répertoire 'uploads/ressources/' et retourn true si il est déplacé
-                    if (move_uploaded_file($_FILES['fichier']['tmp_name'], $targetFile)) {
-                        $this->modele->creerRessource($titre, $mise_en_avant, $idSae, $targetFile);
+                    if (move_uploaded_file($_FILES['fichier']['tmp_name'], $fichier)) {
+                        $this->modele->creerRessource($titre, $mise_en_avant, $idSae, $fichier);
                     }
                 }
             }
