@@ -23,8 +23,8 @@ class ContEvaluation
             case "gestionEvaluationsSAE":
                 $this->gestionEvaluationsSAE();
                 break;
-            case "choixNotation" :
-                $this->choixNotation();
+            case "choixNotationRendu" :
+                $this->choixNotationRendu();
                 break;
             case "traitementNotationIndividuelle" :
                 $this->traitementNotationIndividuelle();
@@ -35,12 +35,19 @@ class ContEvaluation
             case "creerEvaluation" :
                 $this->creerEvaluation();
                 break;
+            case "traitementNotationGroupe" :
+                $this->traitementNotationGroupe();
+                break;
+            case "choixNotationSoutenance" :
+                $this->choixNotationSoutenance();
+                break;
         }
     }
     public function gestionEvaluationsSAE()
     {
         $this->creationEvaluation();
         $this->gestionEvaluationsRendu();
+        $this->gestionEvaluationsSoutenance();
     }
 
     public function formEvaluation()
@@ -93,13 +100,23 @@ class ContEvaluation
         $rendueEvaluations = $this->modele->getRenduEvaluation($idSae);
         $this->vue->afficherTableauRendu($rendueEvaluations);
     }
-    public function choixNotation(){
+
+    public function gestionEvaluationsSoutenance(){
+        $idSae = $_SESSION['id_projet'];
+        $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae);
+        $this->vue->afficherTableauSoutenance($soutenanceEvaluations);
+    }
+    public function choixNotationRendu(){
         if(isset($_POST['id_groupe']) && isset($_POST['id_rendu'])){
             $id_groupe = $_POST['id_groupe'];
             $id_rendu = $_POST['id_rendu'];
             $allMembres = $this->modele->getAllMembreSAE($id_groupe);
             $this->vue->afficherFormulaireNotation($allMembres ,$id_groupe, $id_rendu);
         }
+    }
+
+    public function choixNotationSoutenance(){
+
     }
 
     public function traitementNotationIndividuelle()
@@ -109,12 +126,28 @@ class ContEvaluation
             $notes = $_POST['notes'];
             $id_rendu = $_POST['id_rendu'];
             foreach ($notes as $idUtilisateur => $note) {
-                if (is_numeric($note) && $note >= 0 && $note <= 20) {
-                    $this->modele->sauvegarderNoteIndividuelle((int)$idUtilisateur, (float)$note, $id_rendu, $id_groupe);
+                if (is_numeric($note) && $note >= 0 && $note <= $this->modele->infNoteMax($id_rendu, $note)) {
+                    $this->modele->sauvegarderNote((int)$idUtilisateur, (float)$note, $id_rendu, $id_groupe);
                 }
             }
         }
         $this->gestionEvaluationsSAE();
+    }
+
+    public function traitementNotationGroupe(){
+        if (isset($_POST['note_groupe']) && isset($_POST['id_rendu']) && isset($_POST['id_groupe'])) {
+            $id_groupe = $_POST['id_groupe'];
+            $id_rendu = $_POST['id_rendu'];
+            $note_groupe = $_POST['note_groupe'];
+            $allMembres = $this->modele->getAllMembreGroupe($id_groupe);
+            foreach ($allMembres as $membre) {
+                if (is_numeric($note_groupe) && $note_groupe >= 0 && $note_groupe <= $this->modele->infNoteMax($id_rendu, $note_groupe)) {
+                    $this->modele->sauvegarderNote($membre['id_utilisateur'], $note_groupe, $id_rendu, $id_groupe);
+                }
+            }
+            $this->gestionEvaluationsSAE();
+
+        }
     }
 
 

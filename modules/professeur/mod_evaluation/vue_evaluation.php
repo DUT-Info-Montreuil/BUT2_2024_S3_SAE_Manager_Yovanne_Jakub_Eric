@@ -8,7 +8,6 @@ class VueEvaluation extends VueGenerique
     {
         parent::__construct();
     }
-
     public function formulaireCreationEvaluation($id, $type_evaluation)
     {
         ?>
@@ -114,6 +113,7 @@ class VueEvaluation extends VueGenerique
         <?php
     }
 
+
     public function afficherTableauRendu($rendueEvaluations)
     {
         ?>
@@ -143,7 +143,7 @@ class VueEvaluation extends VueGenerique
                         <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
                         <td>
-                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotation">
+                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotationRendu">
                                 <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
                                 <button type="submit" class="btn btn-sm btn-primary">Noter</button>
@@ -157,6 +157,46 @@ class VueEvaluation extends VueGenerique
         <?php
     }
 
+    public function afficherTableauSoutenance($soutenanceEvaluations)
+    {
+        ?>
+        <div class="container mt-4">
+            <h1 class="mb-4">Gestion des Soutenances</h1>
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>Groupe</th>
+                    <th>Soutenance</th>
+                    <th>Date Soutenance</th>
+                    <th>Note Soutenance</th>
+                    <th>Note Max</th>
+                    <th>Coefficient</th>
+                    <th>Noter</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($soutenanceEvaluations as $evaluation): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
+                        <td><?= htmlspecialchars($evaluation['soutenance_titre']) ?></td>
+                        <td><?= htmlspecialchars($evaluation['soutenance_date']) ?></td>
+                        <td><?= htmlspecialchars($evaluation['note_soutenance']) ?></td>
+                        <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
+                        <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
+                        <td>
+                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotationSoutenance">
+                                <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
+                                <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($evaluation['id_soutenance']) ?>">
+                                <button type="submit" class="btn btn-sm btn-primary">Noter</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+    }
 
     public function afficherFormulaireNotation($allMembres, $id_groupe, $id_rendu)
     {
@@ -169,7 +209,7 @@ class VueEvaluation extends VueGenerique
                 <button class="btn btn-secondary" id="btn-groupe">Noter en Groupe</button>
             </div>
 
-            <form method="POST" action="traitementNotationIndividuelle" id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
+            <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationIndividuelle" id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
                 <input type="hidden" name="id_rendu" value="<?= $id_rendu ?>">
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe?>">
                 <div class="table-responsive">
@@ -208,7 +248,7 @@ class VueEvaluation extends VueGenerique
                 </div>
             </form>
 
-            <form method="POST" action="traitementNotationGroupe" id="form-groupe" <?= $mode === "individuel" ? 'style="display:none;"' : '' ?>>
+            <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationGroupe" id="form-groupe" <?= $mode === "individuel" ? 'style="display:none;"' : '' ?>>
                 <div class="table-responsive mt-4">
                     <table class="table table-bordered table-hover">
                         <thead class="table-dark">
@@ -230,10 +270,10 @@ class VueEvaluation extends VueGenerique
                     </table>
                 </div>
                 <div class="mb-3">
-                    <label for="note-groupe" class="form-label">Note pour le groupe</label>
+                    <label for="note_groupe" class="form-label">Note pour le groupe</label>
                     <input type="number"
                            class="form-control"
-                           id="note-groupe"
+                           id="note_groupe"
                            name="note_groupe"
                            step="0.01"
                            min="0"

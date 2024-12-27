@@ -7,6 +7,26 @@ class ModeleEvaluation extends Connexion
     {
     }
 
+    public function infNoteMax($id_rendu, $note)
+    {
+        $bdd = $this->getBdd();
+
+        $query = "
+        SELECT e.note_max
+        FROM Rendu r
+        JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
+        WHERE r.id_rendu = ?
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_rendu]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && $note <= $result['note_max']) {
+            return true;
+        }
+        return false;
+    }
+
     public function getRenduEvaluation($idSae)
     {
         $bdd = self::getBdd();
@@ -55,6 +75,51 @@ class ModeleEvaluation extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getSoutenanceEvaluation($idSae)
+    {
+        $bdd = self::getBdd();
+        $query = "
+        SELECT 
+            g.nom AS groupe_nom, 
+            s.titre AS soutenance_titre, 
+            s.date_soutenance AS soutenance_date, 
+            se.note AS note_soutenance,
+            ge.id_groupe,
+            s.id_soutenance,
+            e.coefficient AS note_coef,
+            e.note_max AS note_max,
+            GROUP_CONCAT(u.nom, ' ', u.prenom ORDER BY u.nom) AS etudiants,
+            COUNT(u.id_utilisateur) AS nombre_etudiants
+        FROM 
+            Projet p
+        JOIN 
+            Soutenance s ON s.id_projet = p.id_projet
+        LEFT JOIN 
+            Soutenance_Groupe sg ON sg.id_soutenance = s.id_soutenance
+        LEFT JOIN 
+            Soutenance_Evaluation se ON se.id_soutenance = s.id_soutenance AND se.id_groupe = sg.id_groupe
+        JOIN 
+            Projet_Groupe pg ON pg.id_projet = p.id_projet
+        JOIN 
+            Groupe g ON g.id_groupe = pg.id_groupe
+        JOIN 
+            Groupe_Etudiant ge ON ge.id_groupe = g.id_groupe
+        JOIN 
+            Utilisateur u ON u.id_utilisateur = ge.id_utilisateur
+        LEFT JOIN 
+            Evaluation e ON e.id_evaluation = s.id_evaluation
+        WHERE 
+            p.id_projet = ?
+            AND s.id_evaluation IS NOT NULL
+        GROUP BY 
+            g.id_groupe, s.id_soutenance
+        ORDER BY 
+            g.nom, s.date_soutenance;
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     public function checkEvaluationSoutenanceExist($id_soutenance)
     {
@@ -155,25 +220,69 @@ class ModeleEvaluation extends Connexion
         $stmtLink->execute([$id_evaluation, $id_soutenance]);
     }
 
-    public function sauvegarderNoteIndividuelle($idUtilisateur, $note, $id_rendu, $id_groupe)
+    public function sauvegarderNote($idUtilisateur, $note, $id_rendu, $id_groupe)
     {
-        $bdd = self::getBdd();
+        $bdd = $this->getBdd();
+
+        $queryEval = "
+                        SELECT id_evaluation
+                        FROM Rendu
+                        WHERE id_rendu = ?
+                     ";
+
+        $stmtEval = $bdd->prepare($queryEval);
+        $stmtEval->execute([$id_rendu]);
+        $resultEval = $stmtEval->fetch(PDO::FETCH_ASSOC);
+
+        if (!$resultEval) {
+            return false;
+        }
+
+        $id_evaluation = $resultEval['id_evaluation'];
+
         $query = "
-        INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, groupeOuIndividuelle, note)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE note = VALUES(note);
-    ";
+                    SELECT id_evaluation
+                    FROM Rendu_Evaluation
+                    WHERE id_rendu = ? AND id_groupe = ? AND id_etudiant = ?
+                ";
 
         $stmt = $bdd->prepare($query);
-        $stmt->execute([
-            $idEvaluation,
-            $id_rendu,
-            $id_groupe,
-            $idUtilisateur,
-            true,
-            $note
-        ]);
+        $stmt->execute([$id_rendu, $id_groupe, $idUtilisateur]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $updateQuery = "
+                            UPDATE Rendu_Evaluation
+                            SET note = ?
+                            WHERE id_rendu = ? AND id_groupe = ? AND id_etudiant = ?
+                            ";
+            $updateStmt = $bdd->prepare($updateQuery);
+            $updateStmt->execute([$note, $id_rendu, $id_groupe, $idUtilisateur]);
+
+            return true;
+        } else {
+            $insertQuery = "
+                            INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, groupeOuIndividuelle, note)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            ";
+            $insertStmt = $bdd->prepare($insertQuery);
+            $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idUtilisateur,$_SESSION['id_utilisateur'], 1, $note]);
+
+            return true;
+        }
     }
+
+    public function getAllMembreGroupe($id_groupe){
+        $bdd = $this->getBdd();
+        $query = "SELECT * FROM Utilisateur u INNER JOIN 
+                                Groupe_Etudiant g ON u.id_utilisateur = g.id_utilisateur WHERE g.id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_groupe]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 
 
 
