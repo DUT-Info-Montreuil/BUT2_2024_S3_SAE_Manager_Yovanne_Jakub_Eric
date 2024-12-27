@@ -38,6 +38,9 @@ class ContEvaluation
             case "traitementNotationGroupe" :
                 $this->traitementNotationGroupe();
                 break;
+            case "modifierEvaluation" :
+                $this->modifierEvaluation();
+                break;
         }
     }
     public function gestionEvaluationsSAE()
@@ -51,23 +54,33 @@ class ContEvaluation
     {
         if (isset($_POST['id_soutenance'])) {
             $id_soutenance = $_POST['id_soutenance'];
-            $evaluation = $this->modele->checkEvaluationSoutenanceExist($id_soutenance);
-            if ($evaluation) {
-                $this->vue->formulaireModificationEvaluation($id_soutenance, 'soutenance');
+            $evaluation_id = $this->modele->checkEvaluationSoutenanceExist($id_soutenance);
+            if ($evaluation_id) {
+                $this->vue->formulaireModificationEvaluation($evaluation_id);
             } else {
                 $this->vue->formulaireCreationEvaluation($id_soutenance, 'soutenance');
             }
         } else if (isset($_POST['id_rendu'])) {
             $id_rendu = $_POST['id_rendu'];
-            $evaluation = $this->modele->checkEvaluationRenduExist($id_rendu);
-            if ($evaluation) {
-                $this->vue->formulaireModificationEvaluation($id_rendu, 'rendu');
+            $evaluation_id = $this->modele->checkEvaluationRenduExist($id_rendu);
+            if ($evaluation_id) {
+                $this->vue->formulaireModificationEvaluation($evaluation_id);
             } else {
                 $this->vue->formulaireCreationEvaluation($id_rendu, 'rendu');
             }
         }
     }
 
+    public function modifierEvaluation(){
+        if(isset($_POST['id']) && isset($_POST['note_max']) && isset($_POST['coefficient'])){
+            $id = $_POST['id'];
+            $note_max = $_POST['note_max'];
+            $coefficient = $_POST['coefficient'];
+            $this->modele->modifierEvaluation($id, $note_max,$coefficient);
+        }
+        $this->gestionEvaluationsSAE();
+
+    }
 
     public function creerEvaluation()
     {

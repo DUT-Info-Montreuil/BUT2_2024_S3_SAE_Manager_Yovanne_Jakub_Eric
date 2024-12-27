@@ -33,14 +33,13 @@ class VueEvaluation extends VueGenerique
         </div>
         <?php
     }
-    public function formulaireModificationEvaluation($id, $type_evaluation)
+    public function formulaireModificationEvaluation($id)
     {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Modifier l'Évaluation</h1>
             <form method="POST" action="index.php?module=evaluationprof&action=modifierEvaluation">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
-                <input type="hidden" name="type_evaluation" value="<?= htmlspecialchars($type_evaluation) ?>">
                 <div class="mb-3">
                     <label for="coefficient" class="form-label">Coefficient</label>
                     <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
@@ -81,7 +80,7 @@ class VueEvaluation extends VueGenerique
                             <form method="POST" action="index.php?module=evaluationprof&action=formEvaluation">
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($rendue['id_rendu']) ?>">
                                 <?php if ($rendue['id_evaluation'] !== null): ?>
-                                    <button type="submit" class="btn btn-sm btn-warning">Modifier une évaluation</button>
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier l'évaluation</button>
                                 <?php else: ?>
                                     <button type="submit" class="btn btn-sm btn-primary">Créer une évaluation</button>
                                 <?php endif; ?>
@@ -98,7 +97,7 @@ class VueEvaluation extends VueGenerique
                                 <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
 
                                 <?php if ($soutenance['id_evaluation'] !== null): ?>
-                                    <button type="submit" class="btn btn-sm btn-warning">Modifier une évaluation</button>
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier l'évaluation</button>
                                 <?php else: ?>
                                     <button type="submit" class="btn btn-sm btn-primary">Créer une évaluation</button>
                                 <?php endif; ?>
@@ -139,7 +138,7 @@ class VueEvaluation extends VueGenerique
                         <td><?= htmlspecialchars($evaluation['rendu_titre']) ?></td>
                         <td><?= htmlspecialchars($evaluation['rendu_date_limite']) ?></td>
                         <td><?= htmlspecialchars($evaluation['rendu_statut']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['note_rendu']) ?></td>
+                        <td><?= nl2br(htmlspecialchars($evaluation['notes_individuelles'])) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
                         <td>
@@ -153,6 +152,7 @@ class VueEvaluation extends VueGenerique
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
+
             </table>
         </div>
         <?php
@@ -181,7 +181,7 @@ class VueEvaluation extends VueGenerique
                         <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
                         <td><?= htmlspecialchars($evaluation['soutenance_titre']) ?></td>
                         <td><?= htmlspecialchars($evaluation['soutenance_date']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['note_soutenance']) ?></td>
+                        <td><?= nl2br(htmlspecialchars(str_replace(', ', "\n", $evaluation['notes_individuelles']))) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
                         <td>
