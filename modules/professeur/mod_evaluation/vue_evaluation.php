@@ -143,8 +143,9 @@ class VueEvaluation extends VueGenerique
                         <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
                         <td>
-                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotationRendu">
+                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotation">
                                 <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
+                                <input type="hidden" name="type_evaluation" value="rendu">
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
                                 <button type="submit" class="btn btn-sm btn-primary">Noter</button>
                             </form>
@@ -184,8 +185,9 @@ class VueEvaluation extends VueGenerique
                         <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
                         <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
                         <td>
-                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotationSoutenance">
+                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotation">
                                 <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
+                                <input type="hidden" name="type_evaluation" value="soutenance">
                                 <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($evaluation['id_soutenance']) ?>">
                                 <button type="submit" class="btn btn-sm btn-primary">Noter</button>
                             </form>
@@ -198,7 +200,7 @@ class VueEvaluation extends VueGenerique
         <?php
     }
 
-    public function afficherFormulaireNotation($allMembres, $id_groupe, $id_rendu)
+    public function afficherFormulaireNotation($allMembres, $id_groupe, $id_eval, $type_evaluation)
     {
         $mode = "individuel";
         ?>
@@ -210,7 +212,8 @@ class VueEvaluation extends VueGenerique
             </div>
 
             <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationIndividuelle" id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
-                <input type="hidden" name="id_rendu" value="<?= $id_rendu ?>">
+                <input type="hidden" name="id_eval" value="<?= $id_eval ?>">
+                <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe?>">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -282,7 +285,8 @@ class VueEvaluation extends VueGenerique
                            required>
                 </div>
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe?>">
-                <input type="hidden" name="id_rendu" value="<?= $id_rendu ?>">
+                <input type="hidden" name="id_eval" value="<?= $id_eval ?>">
+                <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
                 <div class="text-center mt-3">
                     <button type="submit" class="btn btn-success">Soumettre la Note de Groupe</button>
                 </div>
@@ -290,6 +294,5 @@ class VueEvaluation extends VueGenerique
         </div>
         <?php
     }
-
 }
 ?>
