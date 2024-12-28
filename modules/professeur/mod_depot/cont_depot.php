@@ -17,7 +17,10 @@ class ContDepot{
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionDepotSAE";
-
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "gestionDepotSAE":
                 $this->gestionDepotSAE();
@@ -33,6 +36,9 @@ class ContDepot{
             case "supprimerDepot" :
                 $this->supprimerDepot();
         }
+    }
+    public function estProf(){
+        return $_SESSION['type_utilisateur']==="professeur";
     }
 
     public function gestionDepotSAE(){

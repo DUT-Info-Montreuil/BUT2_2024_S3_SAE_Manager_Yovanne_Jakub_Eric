@@ -13,7 +13,10 @@ Class ContGroupe {
 
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGroupeSAE";
-
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "gestionGroupeSAE":
                 $this->gestionGroupeSAE();
@@ -42,7 +45,9 @@ Class ContGroupe {
 
         }
     }
-
+    public function estProf(){
+        return $_SESSION['type_utilisateur']==="professeur";
+    }
     public function gestionGroupeSAE() {
         $idSae = $_SESSION['id_projet'];
         if($idSae) {

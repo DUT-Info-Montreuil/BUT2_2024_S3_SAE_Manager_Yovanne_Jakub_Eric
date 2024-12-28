@@ -18,7 +18,10 @@ class ContGerant
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGerantSAE";
-
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "gestionGerantSAE":
                 $this->gestionGerantSAE();
@@ -40,7 +43,9 @@ class ContGerant
                 break;
         }
     }
-
+    public function estProf(){
+        return $_SESSION['type_utilisateur']==="professeur";
+    }
     public function gestionGerantSAE(){
         $idSae = $_SESSION['id_projet'];
         if ($idSae) {

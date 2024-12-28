@@ -12,20 +12,18 @@ Class ContAccueil {
     }
 
     public function exec() {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "sae";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
 
         switch ($this->action) {
-            case "sae":
-                $this->sae();
-                break;
-            default:
-                $this->sae();
+            case "accueil":
+                $this->accueil();
                 break;
         }
     }
 
-    public function sae() {
-        echo "etudiant";
+    public function accueil() {
+        $saeInscrit = $this->modele->saeInscrit($_SESSION['id_utilisateur']);
+        $this->vue->afficherSaeGerer($saeInscrit);
     }
 
 }

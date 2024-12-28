@@ -1,17 +1,26 @@
 <?php
 include_once "modules/professeur/mod_accueil/modele_accueil.php";
 include_once "modules/professeur/mod_accueil/vue_accueil.php";
-Class ContAccueil {
+
+class ContAccueil
+{
     private $modele;
     private $vue;
     private $action;
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->modele = new ModeleAccueil();
         $this->vue = new VueAccueil();
     }
-    public function exec() {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
 
+    public function exec()
+    {
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "accueil":
                 $this->accueil();
@@ -37,16 +46,19 @@ Class ContAccueil {
         }
     }
 
-    public function accueil() {
+    public function accueil()
+    {
         $saeGerer = $this->modele->saeGerer($_SESSION['id_utilisateur']);
         $this->vue->afficherSaeGerer($saeGerer);
     }
 
-    public function creerSAEForm() {
+    public function creerSAEForm()
+    {
         $this->vue->creerUneSAEForm();
     }
 
-    public function creerSAE(){
+    public function creerSAE()
+    {
         if (
             isset($_POST['titre']) && !empty(trim($_POST['titre'])) &&
             isset($_POST['annee']) && !empty(trim($_POST['annee'])) &&
@@ -61,7 +73,14 @@ Class ContAccueil {
         }
         $this->accueil();
     }
-    public function choixSae() {
+
+    public function estProf()
+    {
+        return $_SESSION['type_utilisateur'] === "professeur";
+    }
+
+    public function choixSae()
+    {
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
@@ -73,7 +92,8 @@ Class ContAccueil {
     }
 
 
-    public function infoGeneralSae() {
+    public function infoGeneralSae()
+    {
         $idProjet = $_SESSION['id_projet'];
         if ($idProjet) {
             $saeTabDetails = $this->modele->getSaeDetails($idProjet);
@@ -83,10 +103,11 @@ Class ContAccueil {
         }
     }
 
-    public function updateSae() {
+    public function updateSae()
+    {
         $idSae = $_SESSION['id_projet'];
-        if($idSae) {
-            if(isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
+        if ($idSae) {
+            if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
                 $titre = trim($_POST['titre']);
                 $annee = trim($_POST['annee_universitaire']);
                 $semestre = trim($_POST['semestre']);
@@ -97,9 +118,11 @@ Class ContAccueil {
         $this->accueil();
     }
 
-    public function supprimerSAE(){
+    public function supprimerSAE()
+    {
         $idSae = $_SESSION['id_projet'];
         $this->modele->supprimerSAE($idSae);
         $this->accueil();
     }
+
 }

@@ -18,7 +18,10 @@ class ContEvaluation
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionEvaluationsSAE";
-
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "gestionEvaluationsSAE":
                 $this->gestionEvaluationsSAE();
@@ -50,6 +53,10 @@ class ContEvaluation
         }
     }
 
+    public function estProf()
+    {
+        return $_SESSION['type_utilisateur'] === "professeur";
+    }
     public function gestionEvaluationsSAE()
     {
         $this->creationEvaluation();

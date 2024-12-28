@@ -18,7 +18,10 @@ class ContSoutenance
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionSoutenancesSAE";
-
+        if (!$this->estProf()) {
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+            return;
+        }
         switch ($this->action) {
             case "gestionSoutenancesSAE":
                 $this->gestionSoutenancesSAE();
@@ -36,6 +39,9 @@ class ContSoutenance
                 $this->submitSoutenance();
                 break;
         }
+    }
+    public function estProf(){
+        return $_SESSION['type_utilisateur']==="professeur";
     }
 
     private function gestionSoutenancesSAE()
