@@ -74,7 +74,7 @@ class ModeleEvaluation extends Connexion
             AND rg.id_groupe = re.id_groupe 
             AND re.id_etudiant = u.id_utilisateur
         LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
-        WHERE r.id_projet = ?
+        WHERE r.id_projet = ? AND r.id_evaluation IS NOT NULL
         GROUP BY rg.id_rendu, rg.id_groupe
         ORDER BY g.nom, r.date_limite;
     ";
@@ -89,50 +89,36 @@ class ModeleEvaluation extends Connexion
     {
         $bdd = self::getBdd();
         $query = "
-    SELECT 
-        g.nom AS groupe_nom, 
-        s.titre AS soutenance_titre, 
-        s.date_soutenance AS soutenance_date, 
-        se.note AS note_soutenance,
-        ge.id_groupe,
-        s.id_soutenance,
-        e.coefficient AS note_coef,
-        e.note_max AS note_max,
-        GROUP_CONCAT(DISTINCT CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(se.note, 'Non noté')) 
-                     ORDER BY u.nom SEPARATOR ', ') AS notes_individuelles,
-        COUNT(u.id_utilisateur) AS nombre_etudiants
-    FROM 
-        Projet p
-    JOIN 
-        Soutenance s ON s.id_projet = p.id_projet
-    LEFT JOIN 
-        Soutenance_Groupe sg ON sg.id_soutenance = s.id_soutenance
-    LEFT JOIN 
-        Soutenance_Evaluation se ON se.id_soutenance = s.id_soutenance AND se.id_groupe = sg.id_groupe
-    JOIN 
-        Projet_Groupe pg ON pg.id_projet = p.id_projet
-    JOIN 
-        Groupe g ON g.id_groupe = pg.id_groupe
-    JOIN 
-        Groupe_Etudiant ge ON ge.id_groupe = g.id_groupe
-    JOIN 
-        Utilisateur u ON u.id_utilisateur = ge.id_utilisateur
-    LEFT JOIN 
-        Evaluation e ON e.id_evaluation = s.id_evaluation
-    WHERE 
-        p.id_projet = ?
-        AND s.id_evaluation IS NOT NULL
-    GROUP BY 
-        g.id_groupe, s.id_soutenance
-    ORDER BY 
-        g.nom, s.date_soutenance;
+        SELECT 
+            g.nom AS groupe_nom,
+            s.titre AS soutenance_titre,
+            s.date_soutenance AS soutenance_date,
+            GROUP_CONCAT(
+                CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(se.note, 'Non noté'))
+                SEPARATOR '\n'
+            ) AS notes_individuelles,
+            e.note_max AS note_max,
+            e.coefficient AS note_coef,
+            sg.id_soutenance,
+            sg.id_groupe
+        FROM Soutenance s
+        INNER JOIN Soutenance_Groupe sg ON s.id_soutenance = sg.id_soutenance
+        INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
+        INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+        INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+        LEFT JOIN Soutenance_Evaluation se 
+            ON sg.id_soutenance = se.id_soutenance 
+            AND sg.id_groupe = se.id_groupe 
+            AND se.id_etudiant = u.id_utilisateur
+        LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
+        WHERE s.id_projet = ? AND s.id_evaluation IS NOT NULL
+        GROUP BY sg.id_soutenance, sg.id_groupe
+        ORDER BY g.nom, s.date_soutenance;
     ";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
     public function checkEvaluationSoutenanceExist($id_soutenance)
     {
         $bdd = self::getBdd();
@@ -150,7 +136,6 @@ class ModeleEvaluation extends Connexion
 
         return null;
     }
-
 
     public function checkEvaluationRenduExist($id_rendu)
     {
@@ -281,7 +266,6 @@ class ModeleEvaluation extends Connexion
                     ";
         $insertStmt = $bdd->prepare($insertQuery);
         $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $_SESSION['id_utilisateur'], $grpOuIndividuelle, $note]);
-
     }
 
 
