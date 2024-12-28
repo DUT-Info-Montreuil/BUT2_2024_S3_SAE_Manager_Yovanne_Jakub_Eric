@@ -20,14 +20,46 @@ class ModeleEvaluation extends Connexion
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$id_evaluation]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['note_max'])) {
+            return $result['note_max'];
+        } else {
+            return null;
+        }
     }
 
-    public function modifierEvaluation($id, $note_max, $coefficient){
+    public function getIdEvaluationByRendu($id_rendu){
+        $bdd = $this->getBdd();
+        $query = "SELECT id_evaluation FROM Rendu WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_rendu]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['id_evaluation'])) {
+            return $result['id_evaluation'];
+        } else {
+            return null;
+        }
+    }
+
+    public function getIdEvaluationBySoutenance($id_soutenance){
+        $bdd = $this->getBdd();
+        $query = "SELECT id_evaluation FROM Soutenance WHERE id_soutenance = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_soutenance]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['id_evaluation'])) {
+            return $result['id_evaluation'];
+        } else {
+            return null;
+        }
+    }
+
+    public function modifierEvaluation($id, $note_max, $coefficient)
+    {
         $bdd = $this->getBdd();
         $query = "UPDATE Evaluation SET note_max = ? , coefficient = ? WHERE id_evaluation = ?";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$note_max,$coefficient,$id]);
+        $stmt->execute([$note_max, $coefficient, $id]);
     }
 
     public function infNoteMaxSoutenance($id_evaluation)
@@ -43,7 +75,12 @@ class ModeleEvaluation extends Connexion
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$id_evaluation]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['note_max'])) {
+            return $result['note_max'];
+        } else {
+            return null;
+        }
     }
 
     public function getRenduEvaluation($idSae)
@@ -123,6 +160,7 @@ class ModeleEvaluation extends Connexion
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function checkEvaluationSoutenanceExist($id_soutenance)
     {
         $bdd = self::getBdd();
@@ -340,7 +378,36 @@ class ModeleEvaluation extends Connexion
         $stmt->execute();
     }
 
+    public function supprimerEvaluation($id_evaluation)
+    {
+        $bdd = $this->getBdd();
 
+        $bdd->beginTransaction();
+
+        try {
+
+            $queryEvaluation = "UPDATE Soutenance SET id_evaluation = NULL WHERE id_evaluation = ?";
+            $stmtEvaluation = $bdd->prepare($queryEvaluation);
+            $stmtEvaluation->execute([$id_evaluation]);
+            $stmtEvaluation->execute();
+
+            $queryEvaluation = "UPDATE Rendu SET id_evaluation = NULL WHERE id_evaluation = ?";
+            $stmtEvaluation = $bdd->prepare($queryEvaluation);
+            $stmtEvaluation->execute([$id_evaluation]);
+            $stmtEvaluation->execute();
+
+            $queryEvaluation = "DELETE FROM Evaluation WHERE id_evaluation = ?";
+            $stmtEvaluation = $bdd->prepare($queryEvaluation);
+            $stmtEvaluation->execute([$id_evaluation]);
+            $stmtEvaluation->execute();
+
+            $bdd->commit();
+
+        } catch (Exception $e) {
+            $bdd->rollBack();
+            echo "Erreur lors de la suppression de l'évaluation : " . $e->getMessage();
+        }
+    }
 
 
 }

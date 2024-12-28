@@ -44,6 +44,9 @@ class ContEvaluation
             case "traitementModificationNote" :
                 $this->traitementModificationNote();
                 break;
+            case "supprimerEvaluation" :
+                $this->supprimerEvaluation();
+                break;
         }
     }
 
@@ -192,25 +195,21 @@ class ContEvaluation
 
     public function traitementNotationIndividuelle()
     {
-        if (isset($_POST['notes']) && isset($_POST['id_eval']) && isset($_POST['id_groupe']) && isset($_POST['type_evaluation'])) {
+        if (isset($_POST['notes'], $_POST['id'], $_POST['id_groupe'], $_POST['type_evaluation'])) {
             $id_groupe = $_POST['id_groupe'];
             $type_evaluation = $_POST['type_evaluation'];
             $notes = $_POST['notes'];
+            $id = $_POST['id'];
 
-            if ($type_evaluation === 'rendu') {
-                $id_rendu = $_POST['id_eval'];
-                $noteMax = $this->modele->infNoteMaxRendu($id_rendu);
-            } else {
-                $id_soutenance = $_POST['id_eval'];
-                $noteMax = $this->modele->infNoteMaxSoutenance($id_soutenance);
-            }
+            $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
+            $noteMax = $evaluationData['noteMax'];
 
             foreach ($notes as $idUtilisateur => $note) {
-                if (is_numeric($note) && $note >= 0 && $note <= $noteMax) {
+                if ($this->isValidNote($note, $noteMax)) {
                     if ($type_evaluation === 'rendu') {
-                        $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id_rendu, $id_groupe, 0);
+                        $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0);
                     } else {
-                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id_soutenance, $id_groupe, 0);
+                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0);
                     }
                 }
             }
@@ -221,30 +220,48 @@ class ContEvaluation
 
     public function traitementNotationGroupe()
     {
-        if (isset($_POST['note_groupe']) && isset($_POST['id_eval']) && isset($_POST['id_groupe']) && isset($_POST['type_evaluation'])) {
+        if (isset($_POST['note_groupe'], $_POST['id'], $_POST['id_groupe'], $_POST['type_evaluation'])) {
             $id_groupe = $_POST['id_groupe'];
             $note_groupe = $_POST['note_groupe'];
             $type_evaluation = $_POST['type_evaluation'];
-
-            if ($type_evaluation === 'rendu') {
-                $id_rendu = $_POST['id_eval'];
-                $noteMax = $this->modele->infNoteMaxRendu($id_rendu);
-            } else {
-                $id_soutenance = $_POST['id_eval'];
-                $noteMax = $this->modele->infNoteMaxSoutenance($id_soutenance);
-            }
-
+            $id = $_POST['id'];
+            $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
+            $noteMax = $evaluationData['noteMax'];
             if (is_numeric($note_groupe) && $note_groupe >= 0 && $note_groupe <= $noteMax) {
                 $allMembres = $this->modele->getAllMembreSAE($id_groupe);
 
                 foreach ($allMembres as $membre) {
                     if ($type_evaluation === 'rendu') {
-                        $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id_rendu, $id_groupe, 1);
+                        $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1);
                     } else {
-                        $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id_soutenance, $id_groupe, 1);
+                        $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1);
                     }
                 }
             }
+        }
+        $this->gestionEvaluationsSAE();
+    }
+
+
+    private function getEvaluationAndMaxNote($id, $type_evaluation)
+
+    {
+        if ($type_evaluation === 'rendu') {
+            $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
+            $noteMax = $this->modele->infNoteMaxRendu($id_evaluation);
+        } else {
+            $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
+            $noteMax = $this->modele->infNoteMaxSoutenance($id_evaluation);
+        }
+
+        return ['id_evaluation' => $id_evaluation, 'noteMax' => $noteMax];
+    }
+
+
+    public function supprimerEvaluation(){
+        if(isset($_POST['id_evaluation'])){
+            $id_evaluation = $_POST['id_evaluation'];
+            $this->modele->supprimerEvaluation($id_evaluation);
         }
         $this->gestionEvaluationsSAE();
     }

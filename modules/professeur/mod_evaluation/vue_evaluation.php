@@ -108,6 +108,10 @@ class VueEvaluation extends VueGenerique
                     <button type="submit" class="btn btn-primary">Modifier l'Évaluation</button>
                 </div>
             </form>
+            <form method="POST" action="index.php?module=evaluationprof&action=supprimerEvaluation">
+                <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
+                <button type="submit" class="btn btn-danger">Supprimer l'évaluation</button>
+            </form>
         </div>
         <?php
     }
@@ -202,7 +206,7 @@ class VueEvaluation extends VueGenerique
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
                                 <?php if ($evaluation['rendu_note'] !== null): ?>
                                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
-                                    <button type="submit" class="btn btn-sm btn-warning">Modifier la note</button>
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier les notes</button>
                                 <?php else: ?>
                                     <button type="submit" class="btn btn-sm btn-primary">Noter</button>
                                 <?php endif; ?>
@@ -250,7 +254,7 @@ class VueEvaluation extends VueGenerique
                                 <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($evaluation['id_soutenance']) ?>">
                                 <?php if ($evaluation['soutenance_note'] !== null): ?>
                                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
-                                    <button type="submit" class="btn btn-sm btn-warning">Modifier la note</button>
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier les notes</button>
                                 <?php else: ?>
                                     <button type="submit" class="btn btn-sm btn-primary">Noter</button>
                                 <?php endif; ?>
@@ -264,7 +268,7 @@ class VueEvaluation extends VueGenerique
         <?php
     }
 
-    public function afficherFormulaireNotation($allMembres, $id_groupe, $id_eval, $type_evaluation)
+    public function afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation)
     {
         $mode = "individuel";
         ?>
@@ -276,7 +280,7 @@ class VueEvaluation extends VueGenerique
             </div>
 
             <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationIndividuelle" id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
-                <input type="hidden" name="id_eval" value="<?= $id_eval ?>">
+                <input type="hidden" name="id" value="<?= $id ?>">
                 <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe?>">
                 <div class="table-responsive">
@@ -349,7 +353,7 @@ class VueEvaluation extends VueGenerique
                            required>
                 </div>
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe?>">
-                <input type="hidden" name="id_eval" value="<?= $id_eval ?>">
+                <input type="hidden" name="id" value="<?= $id ?>">
                 <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
                 <div class="text-center mt-3">
                     <button type="submit" class="btn btn-success">Soumettre la Note de Groupe</button>
