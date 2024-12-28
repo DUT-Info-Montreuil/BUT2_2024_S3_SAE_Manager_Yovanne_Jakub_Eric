@@ -7,7 +7,7 @@ class ModeleEvaluation extends Connexion
     {
     }
 
-    public function infNoteMaxRendu($id_rendu)
+    public function infNoteMaxRendu($id_evaluation)
     {
         $bdd = $this->getBdd();
 
@@ -15,11 +15,11 @@ class ModeleEvaluation extends Connexion
         SELECT e.note_max
         FROM Rendu r
         JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
-        WHERE r.id_rendu = ?
+        WHERE r.id_evaluation = ?
     ";
 
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$id_rendu]);
+        $stmt->execute([$id_evaluation]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -30,7 +30,7 @@ class ModeleEvaluation extends Connexion
         $stmt->execute([$note_max,$coefficient,$id]);
     }
 
-    public function infNoteMaxSoutenance($id_soutenance)
+    public function infNoteMaxSoutenance($id_evaluation)
     {
         $bdd = $this->getBdd();
 
@@ -38,11 +38,11 @@ class ModeleEvaluation extends Connexion
         SELECT e.note_max
         FROM Soutenance s
         JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
-        WHERE s.id_soutenance = ?
+        WHERE s.id_evaluation = ?
     ";
 
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$id_soutenance]);
+        $stmt->execute([$id_evaluation]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

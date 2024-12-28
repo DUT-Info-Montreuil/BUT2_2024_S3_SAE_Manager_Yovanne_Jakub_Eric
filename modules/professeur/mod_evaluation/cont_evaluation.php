@@ -157,7 +157,6 @@ class ContEvaluation
             $type_evaluation = $_POST['type_evaluation'];
             $notes = $_POST['notes'];
             $noteMax = $this->getNoteMaxByType($type_evaluation, $id_evaluation);
-
             foreach ($notes as $id_etudiant => $note) {
                 if ($this->isValidNote($note, $noteMax)) {
                     $this->updateNote($id_etudiant, $note, $id_evaluation, $id_groupe, $type_evaluation);
@@ -171,7 +170,7 @@ class ContEvaluation
     {
         if ($type_evaluation === 'rendu') {
             return $this->modele->infNoteMaxRendu($id_evaluation);
-        } else {
+        } else{
             return $this->modele->infNoteMaxSoutenance($id_evaluation);
         }
     }
@@ -185,6 +184,7 @@ class ContEvaluation
         if ($type_evaluation === 'rendu') {
             $this->modele->modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note);
         } else {
+            echo "soutenance";
             $this->modele->modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note);
         }
     }
