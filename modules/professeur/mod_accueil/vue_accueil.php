@@ -1,37 +1,45 @@
 <?php
 include_once 'generique/vue_generique.php';
 
-Class VueAccueil extends VueGenerique {
-    public function __construct() {
+class VueAccueil extends VueGenerique
+{
+    public function __construct()
+    {
         parent::__construct();
     }
-    public function afficherSaeGerer($saeGerer) {
+
+    public function afficherSaeGerer($saeGerer)
+    {
         ?>
-        <div class="container mt-4">
-            <div class="row justify-content-center g-0">
+        <div class="container mt-5">
+            <div class="row justify-content-center g-4">
                 <?php foreach ($saeGerer as $sae): ?>
-                    <div class="col-md-4 d-flex justify-content-center mb-2">
-                        <div class="card shadow-sm border-light"
-                             style="width: 250px; height: 250px; border-radius: 10px;
-                        background-color: #c6c6c6; display: flex; justify-content: center;
-                        align-items: center; text-align: center;">
-                            <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>">
-                                <h3 class="text-center" style="color: #333; font-weight: bold;">
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <div class="card shadow border-0"
+                             style="width: 250px; height: 250px; border-radius: 15px;
+                             background-color: #f8f9fa; display: flex; flex-direction: column;
+                             justify-content: center; align-items: center; text-align: center;">
+                            <form method="POST" action="index.php?module=accueilprof&action=choixSae">
+                                <input type="hidden" name="id"
+                                       value="<?php echo htmlspecialchars($sae['id_projet']); ?>">
+                                <button type="submit" class="btn btn-link text-decoration-none"
+                                        style="color: #495057; font-size: 1.2rem; font-weight: 600;">
                                     <?php echo htmlspecialchars($sae['titre']); ?>
-                                </h3>
-                            </a>
+                                </button>
+                            </form>
                         </div>
+
                     </div>
                 <?php endforeach; ?>
 
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <a href="index.php?module=accueilprof&action=creerSAE" class="text-center"
-                       style="color: #333; font-weight: bold; margin: 0; text-decoration: none;">
-                        <div class="card shadow-sm border-light"
-                             style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; cursor: pointer; text-align: center;">
-                            <h1 style="color: #333; font-weight: bold; margin: 0; font-size: 3rem;">+</h1>
+                <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                    <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
+                        <div class="card shadow border-0"
+                             style="width: 250px; height: 250px; border-radius: 15px;
+                         background-color: #e9ecef; display: flex; flex-direction: column;
+                         justify-content: center; align-items: center; cursor: pointer; text-align: center;">
+                            <h1 style="font-weight: bold; color: #6c757d; font-size: 3rem;">+</h1>
+                            <p style="font-size: 1rem; color: #6c757d; font-weight: 500;">Ajouter une SAE</p>
                         </div>
                     </a>
                 </div>
@@ -39,7 +47,9 @@ Class VueAccueil extends VueGenerique {
         </div>
         <?php
     }
-    public function creerUneSAE() {
+
+    public function creerUneSAEForm()
+    {
         ?>
         <div class="container mt-4">
             <h2>Formulaire de création d'une SAE</h2>
@@ -65,131 +75,79 @@ Class VueAccueil extends VueGenerique {
         </div>
         <?php
     }
-    public function afficherSaeDetails() {
+
+    public function afficherSaeDetails($titre)
+    {
         ?>
-        <div class="container mt-4">
-            <div class="row justify-content-center g-0">
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=accueilprof&action=infoGeneralSae">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Information General
-                            </h3>
-                        </a>
-                    </div>
-                </div>
+        <div class="container mt-5">
+            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;"><?= htmlspecialchars($titre) ?></h2>
+            <div class="row justify-content-center g-4">
+                <?php
+                $sections = [
+                    ["href" => "index.php?module=accueilprof&action=infoGeneralSae", "title" => "Modifier la SAE"],
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"],
+                ];
 
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=groupeprof&action=gestionGroupeSAE">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Groupe
-                            </h3>
-                        </a>
+                foreach ($sections as $section): ?>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <div class="card border-0"
+                             style="width: 250px; height: 250px; border-radius: 10px;
+                         background-color: #f5f5f5; display: flex; justify-content: center;
+                         align-items: center; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                            <a class="text-decoration-none" href="<?php echo htmlspecialchars($section['href']); ?>"
+                               style="color: #495057; text-align: center;">
+                                <h3 style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">
+                                    <?php echo htmlspecialchars($section['title']); ?>
+                                </h3>
+                            </a>
+                        </div>
                     </div>
-                </div>
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=gerantprof">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Gérant
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=depotprof">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Dépôt
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=ressourceprof">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Ressource
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=soutenanceprof">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Soutenance
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-4 d-flex justify-content-center mb-2">
-                    <div class="card shadow-sm border-light"
-                         style="width: 250px; height: 250px; border-radius: 10px;
-                                background-color: #c6c6c6; display: flex; justify-content: center;
-                                align-items: center; text-align: center;">
-                        <a class="text-decoration-none" href="index.php?module=evaluationprof">
-                            <h3 class="text-center" style="color: #333; font-weight: bold;">
-                                Evaluation
-                            </h3>
-                        </a>
-                    </div>
-                </div>
-
+                <?php endforeach; ?>
             </div>
         </div>
         <?php
     }
-    public function afficherSaeInfoGeneral($saeDetails) {
+
+    public function afficherSaeInfoGeneral($saeDetails)
+    {
         ?>
         <div class="container mt-4">
             <h2>Détails de la SAE</h2>
-            <form method="POST" action="index.php?module=professeur&action=updateSae">
+            <form method="POST" action="index.php?module=accueilprof&action=updateSae">
                 <div class="mb-3">
                     <label for="titre" class="form-label"><strong>Titre :</strong></label>
-                    <input type="text" class="form-control" id="titre" name="titre" value="<?php echo htmlspecialchars($saeDetails['titre']); ?>" required>
+                    <input type="text" class="form-control" id="titre" name="titre"
+                           value="<?php echo htmlspecialchars($saeDetails['titre']); ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="annee_universitaire" class="form-label"><strong>Année universitaire :</strong></label>
-                    <input type="text" class="form-control" id="annee_universitaire" name="annee_universitaire" value="<?php echo htmlspecialchars($saeDetails['annee_universitaire']); ?>" required>
+                    <input type="text" class="form-control" id="annee_universitaire" name="annee_universitaire"
+                           value="<?php echo htmlspecialchars($saeDetails['annee_universitaire']); ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="semestre" class="form-label"><strong>Semestre :</strong></label>
-                    <input type="text" class="form-control" id="semestre" name="semestre" value="<?php echo htmlspecialchars($saeDetails['semestre']); ?>" required>
+                    <input type="text" class="form-control" id="semestre" name="semestre"
+                           value="<?php echo htmlspecialchars($saeDetails['semestre']); ?>" required>
                 </div>
                 <div class="mb-3">
                     <label for="description_projet" class="form-label"><strong>Description :</strong></label>
-                    <textarea class="form-control" id="description_projet" name="description_projet" rows="4" required><?php echo htmlspecialchars($saeDetails['description_projet']); ?></textarea>
+                    <textarea class="form-control" id="description_projet" name="description_projet" rows="4"
+                              required><?php echo htmlspecialchars($saeDetails['description_projet']); ?></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
+            <form action="index.php?module=accueilprof&action=supprimerSAE" method="post">
+                <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
             </form>
         </div>
         <?php
     }
 }
+
 ?>

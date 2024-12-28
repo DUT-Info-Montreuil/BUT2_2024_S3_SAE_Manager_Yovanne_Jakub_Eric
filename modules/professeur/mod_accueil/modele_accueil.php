@@ -44,4 +44,24 @@ Class ModeleAccueil extends Connexion{
                            WHERE id_projet = ?");
         $stmt->execute([$titre, $annee, $semestre, $description, $idSae]);
     }
+    public function getTitreSAE($idProjet){
+        $bdd = $this->getBdd();
+        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $sae['titre'];
+    }
+    public function supprimerSAE($idSae) {
+        $bdd = $this->getBdd();
+        try {
+            $bdd->beginTransaction();
+            $requete = $bdd->prepare("DELETE FROM Projet WHERE id_projet = ?");
+            $requete->execute([$idSae]);
+            $bdd->commit();
+        } catch (Exception $e) {
+            $bdd->rollBack();
+            echo "erreur pdt suppression de la SAE : " . $e->getMessage();
+        }
+    }
 }

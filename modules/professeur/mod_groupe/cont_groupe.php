@@ -54,7 +54,7 @@ Class ContGroupe {
     public function ajouterGroupeFormulaire() {
         $idSae = $_SESSION['id_projet'];
         if($idSae) {
-            $etudiants = $this->modele->getEtudiants();
+            $etudiants = $this->modele->getEtudiantsSansGroupe($idSae);
             $this->vue->afficherFormulaireAjoutGroupe($etudiants);
         }
     }

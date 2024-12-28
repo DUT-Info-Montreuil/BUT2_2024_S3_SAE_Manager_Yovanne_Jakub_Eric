@@ -26,14 +26,29 @@ Class ModeleGroupe extends Connexion{
         $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $groupes;
     }
-
-    public function getEtudiants() {
+    public function getEtudiantsSansGroupe($idSae) {
         $bdd = $this->getBdd();
-        $query = "SELECT login_utilisateur, id_utilisateur, CONCAT(prenom, ' ', nom) AS nom_complet FROM Utilisateur WHERE type_utilisateur = 'etudiant'";
+        $query = "
+        SELECT 
+            login_utilisateur, 
+            id_utilisateur, 
+            CONCAT(prenom, ' ', nom) AS nom_complet 
+        FROM 
+            Utilisateur 
+        WHERE 
+            type_utilisateur = 'etudiant' 
+            AND id_utilisateur NOT IN (
+                SELECT ge.id_utilisateur 
+                FROM Groupe_Etudiant ge
+                JOIN Projet_Groupe pg ON ge.id_groupe = pg.id_groupe
+                WHERE pg.id_projet = ?
+            )
+    ";
         $stmt = $bdd->prepare($query);
-        $stmt->execute();
+        $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function ajouterGroupe($nomGroupe, $idProjet)
     {

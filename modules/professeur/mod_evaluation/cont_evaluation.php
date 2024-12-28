@@ -203,13 +203,13 @@ class ContEvaluation
 
             $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
             $noteMax = $evaluationData['noteMax'];
-
+            $id_evaluateur = $_SESSION['id_utilisateur'];
             foreach ($notes as $idUtilisateur => $note) {
                 if ($this->isValidNote($note, $noteMax)) {
                     if ($type_evaluation === 'rendu') {
-                        $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0);
+                        $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0, $id_evaluateur);
                     } else {
-                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0);
+                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 0, $id_evaluateur);
                     }
                 }
             }

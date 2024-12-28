@@ -30,11 +30,13 @@ class VueGerant extends VueGenerique{
                                 echo "<tr>";
                                 echo "<td>{$currentGroup['nom_complet']}</td>";
                                 echo "<td>{$currentGroup['role_utilisateur']}</td>";
-                                echo "<td>
-                                    <a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
+                                echo "<td>";
+                                if ($currentGroup['role_utilisateur'] !== 'Responsable') {
+                                    echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
                                         <i class='fas fa-cog'></i>
-                                    </a>
-                                  </td>";
+                                      </a>";
+                                }
+                                echo "</td>";
                                 echo "</tr>";
                             }
                             $currentGroup = [
@@ -49,11 +51,13 @@ class VueGerant extends VueGenerique{
                         echo "<tr>";
                         echo "<td>{$currentGroup['nom_complet']}</td>";
                         echo "<td>{$currentGroup['role_utilisateur']}</td>";
-                        echo "<td>
-                            <a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
+                        echo "<td>";
+                        if ($currentGroup['role_utilisateur'] !== 'Responsable') {
+                            echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
                                 <i class='fas fa-cog'></i>
-                            </a>
-                          </td>";
+                              </a>";
+                        }
+                        echo "</td>";
                         echo "</tr>";
                     }
                 } else {
@@ -71,6 +75,7 @@ class VueGerant extends VueGenerique{
         </div>
         <?php
     }
+
     public function formulaireModifierGerant($tabDetailsGerant, $idGerant)
     {
         ?>
@@ -101,7 +106,7 @@ class VueGerant extends VueGenerique{
                     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                 </div>
             </form>
-            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post"">
+            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post">
                 <input type="hidden" name="idGerant" value="<?php echo htmlspecialchars($idGerant); ?>">
                 <div class="d-flex mt-3 gap-3">
                     <button type="submit" class="btn btn-danger">Supprimer le Gérant</button>

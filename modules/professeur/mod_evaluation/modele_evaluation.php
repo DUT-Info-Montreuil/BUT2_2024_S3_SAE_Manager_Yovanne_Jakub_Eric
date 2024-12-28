@@ -262,7 +262,7 @@ class ModeleEvaluation extends Connexion
         $stmtLink->execute([$id_evaluation, $id_soutenance]);
     }
 
-    public function sauvegarderNoteRendu($idUtilisateur, $note, $id_rendu, $id_groupe, $grpOuIndividuelle)
+    public function sauvegarderNoteRendu($idUtilisateur, $note, $id_rendu, $id_groupe, $grpOuIndividuelle, $id_evaluateur)
     {
         $bdd = $this->getBdd();
 
@@ -282,13 +282,13 @@ class ModeleEvaluation extends Connexion
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                             ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idUtilisateur, $_SESSION['id_utilisateur'], $grpOuIndividuelle, $note]);
+        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idUtilisateur, $id_evaluateur, $grpOuIndividuelle, $note]);
 
         return true;
 
     }
 
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $grpOuIndividuelle)
+    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $grpOuIndividuelle, $id_evaluateur)
     {
         $bdd = $this->getBdd();
         $queryEval = "
@@ -307,7 +307,7 @@ class ModeleEvaluation extends Connexion
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $_SESSION['id_utilisateur'], $grpOuIndividuelle, $note]);
+        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $id_evaluateur, $grpOuIndividuelle, $note]);
     }
 
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
@@ -408,6 +408,4 @@ class ModeleEvaluation extends Connexion
             echo "Erreur lors de la suppression de l'évaluation : " . $e->getMessage();
         }
     }
-
-
 }

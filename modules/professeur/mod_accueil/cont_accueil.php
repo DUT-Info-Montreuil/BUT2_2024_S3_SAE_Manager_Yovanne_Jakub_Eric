@@ -16,8 +16,8 @@ Class ContAccueil {
             case "accueil":
                 $this->accueil();
                 break;
-            case "creerSAE":
-                $this->creerSAE();
+            case "creerSAEForm":
+                $this->creerSAEForm();
                 break;
             case "choixSae" :
                 $this->choixSae();
@@ -28,6 +28,12 @@ Class ContAccueil {
             case "updateSae";
                 $this->updateSae();
                 break;
+            case "creerSAE":
+                $this->creerSAE();
+                break;
+            case "supprimerSAE" :
+                $this->supprimerSAE();
+                break;
         }
     }
 
@@ -36,8 +42,11 @@ Class ContAccueil {
         $this->vue->afficherSaeGerer($saeGerer);
     }
 
-    public function creerSAE() {
-        $this->vue->creerUneSAE();
+    public function creerSAEForm() {
+        $this->vue->creerUneSAEForm();
+    }
+
+    public function creerSAE(){
         if (
             isset($_POST['titre']) && !empty(trim($_POST['titre'])) &&
             isset($_POST['annee']) && !empty(trim($_POST['annee'])) &&
@@ -50,12 +59,14 @@ Class ContAccueil {
             $description = trim($_POST['description']);
             $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
         }
+        $this->accueil();
     }
     public function choixSae() {
-        if (isset($_GET['id'])) {
-            $idProjet = $_GET['id'];
+        if (isset($_POST['id'])) {
+            $idProjet = $_POST['id'];
             $_SESSION['id_projet'] = $idProjet;
-            $this->vue->afficherSaeDetails();
+            $titre = $this->modele->getTitreSAE($idProjet);
+            $this->vue->afficherSaeDetails($titre);
         } else {
             $this->accueil();
         }
@@ -82,6 +93,12 @@ Class ContAccueil {
                 $this->modele->modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description);
             }
         }
+        $this->accueil();
+    }
+
+    public function supprimerSAE(){
+        $idSae = $_SESSION['id_projet'];
+        $this->modele->supprimerSAE($idSae);
         $this->accueil();
     }
 }
