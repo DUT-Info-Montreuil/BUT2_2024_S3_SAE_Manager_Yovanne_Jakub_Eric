@@ -65,7 +65,7 @@ Class ContGroupe {
             if (isset($_POST['nom_groupe']) && isset($_POST['etudiants'])) {
                 $nomGroupe = trim($_POST['nom_groupe']);
                 $etudiants = $_POST['etudiants'];
-                $idGroupe = $this->modele->ajouterGroupe($nomGroupe);
+                $idGroupe = $this->modele->ajouterGroupe($nomGroupe, $idSae);
                 $this->modele->lieeProjetGrp($idGroupe, $idSae);
                 foreach ($etudiants as $etudiantId) {
                     $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);

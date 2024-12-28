@@ -35,13 +35,61 @@ Class ModeleGroupe extends Connexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function ajouterGroupe($nomGroupe){
+    public function ajouterGroupe($nomGroupe, $idProjet)
+    {
         $bdd = $this->getBdd();
-        $query = "INSERT INTO Groupe (id_groupe, nom, image_titre, modifiable_par_groupe) VALUES (DEFAULT, ?, 'jsp', FALSE)";
+
+        try {
+            $bdd->beginTransaction();
+
+            $idGroupe = $this->ajouterGroupeDansBase($bdd, $nomGroupe);
+            $this->lierRendusAuGroupe($bdd, $idProjet, $idGroupe);
+            $this->lierSoutenancesAuGroupe($bdd, $idProjet, $idGroupe);
+            $bdd->commit();
+
+            return $idGroupe;
+        } catch (Exception $e) {
+            $bdd->rollBack();
+            throw new Exception("erreur pdt ajout du groupe : " . $e->getMessage());
+        }
+    }
+
+    private function ajouterGroupeDansBase($bdd, $nomGroupe)
+    {
+        $query = "INSERT INTO Groupe (id_groupe, nom, image_titre, modifiable_par_groupe) VALUES (DEFAULT, ?, NULL, FALSE)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$nomGroupe]);
-
         return $bdd->lastInsertId();
+    }
+    private function lierRendusAuGroupe($bdd, $idProjet, $idGroupe)
+    {
+        $query = "SELECT id_rendu FROM Rendu WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $rendus = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($rendus)) {
+            $query = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $stmt = $bdd->prepare($query);
+            foreach ($rendus as $rendu) {
+                $stmt->execute([$rendu['id_rendu'], $idGroupe]);
+            }
+        }
+    }
+    private function lierSoutenancesAuGroupe($bdd, $idProjet, $idGroupe)
+    {
+        $query = "SELECT id_soutenance FROM Soutenance WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $soutenances = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($soutenances)) {
+            $query = "INSERT INTO Soutenance_Groupe (id_soutenance, id_groupe) VALUES (?, ?)";
+            $stmt = $bdd->prepare($query);
+            foreach ($soutenances as $soutenance) {
+                $stmt->execute([$soutenance['id_soutenance'], $idGroupe]);
+            }
+        }
     }
 
     public function lieeProjetGrp($idGroupe, $idSae){
