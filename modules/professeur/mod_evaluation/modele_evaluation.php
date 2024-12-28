@@ -48,52 +48,41 @@ class ModeleEvaluation extends Connexion
 
     public function getRenduEvaluation($idSae)
     {
-        $bdd = self::getBdd();
+        $bdd = $this->getBdd();
+
         $query = "
-SELECT 
-    g.nom AS groupe_nom, 
-    r.titre AS rendu_titre, 
-    r.date_limite AS rendu_date_limite, 
-    rg.statut AS rendu_statut, 
-    GROUP_CONCAT(DISTINCT CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté')) 
-                 ORDER BY u.nom SEPARATOR '\n') AS notes_individuelles,
-    ge.id_groupe,
-    r.id_rendu,
-    e.coefficient AS note_coef,
-    e.note_max AS note_max
-FROM 
-    Projet p
-JOIN 
-    Rendu r ON r.id_projet = p.id_projet
-LEFT JOIN 
-    Rendu_Groupe rg ON rg.id_rendu = r.id_rendu
-LEFT JOIN 
-    Rendu_Evaluation re ON re.id_rendu = r.id_rendu AND re.id_groupe = rg.id_groupe
-JOIN 
-    Projet_Groupe pg ON pg.id_projet = p.id_projet
-JOIN 
-    Groupe g ON g.id_groupe = pg.id_groupe
-JOIN 
-    Groupe_Etudiant ge ON ge.id_groupe = g.id_groupe
-JOIN 
-    Utilisateur u ON u.id_utilisateur = ge.id_utilisateur
-LEFT JOIN 
-    Evaluation e ON e.id_evaluation = r.id_evaluation
-WHERE 
-    p.id_projet = ?
-    AND r.id_evaluation IS NOT NULL
-GROUP BY 
-    g.id_groupe, r.id_rendu
-ORDER BY 
-    g.nom, r.date_limite;
-
-
-
+        SELECT 
+            g.nom AS groupe_nom,
+            r.titre AS rendu_titre,
+            r.date_limite AS rendu_date_limite,
+            rg.statut AS rendu_statut,
+            GROUP_CONCAT(
+                CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté'))
+                SEPARATOR '\n'
+            ) AS notes_individuelles,
+            e.note_max AS note_max,
+            e.coefficient AS note_coef,
+            rg.id_rendu,
+            rg.id_groupe
+        FROM Rendu r
+        INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
+        INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
+        INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+        INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+        LEFT JOIN Rendu_Evaluation re 
+            ON rg.id_rendu = re.id_rendu 
+            AND rg.id_groupe = re.id_groupe 
+            AND re.id_etudiant = u.id_utilisateur
+        LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
+        WHERE r.id_projet = ?
+        GROUP BY rg.id_rendu, rg.id_groupe
+        ORDER BY g.nom, r.date_limite;
     ";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     }
 
     public function getSoutenanceEvaluation($idSae)
