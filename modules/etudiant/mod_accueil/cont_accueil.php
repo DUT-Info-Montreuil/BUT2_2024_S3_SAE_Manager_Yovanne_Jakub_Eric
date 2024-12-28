@@ -1,14 +1,14 @@
 <?php
-include_once "modules/mod_etudiant/modele_etudiant.php";
-include_once  "modules/mod_etudiant/vue_etudiant.php";
-Class ContEtudiant {
+include_once "modules/etudiant/mod_accueil/modele_accueil.php";
+include_once  "modules/etudiant/mod_accueil/vue_accueil.php";
+Class ContAccueil {
     private $modele;
     private $vue;
     private $action;
 
     public function __construct() {
-        $this->modele = new ModeleEtudiant();
-        $this->vue = new VueEtudiant();
+        $this->modele = new ModeleAccueil();
+        $this->vue = new VueAccueil();
     }
 
     public function exec() {

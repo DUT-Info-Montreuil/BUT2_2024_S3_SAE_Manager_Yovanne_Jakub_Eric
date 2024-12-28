@@ -62,8 +62,8 @@ Class ContAccueil {
         $this->accueil();
     }
     public function choixSae() {
-        if (isset($_POST['id'])) {
-            $idProjet = $_POST['id'];
+        if (isset($_GET['id'])) {
+            $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
             $titre = $this->modele->getTitreSAE($idProjet);
             $this->vue->afficherSaeDetails($titre);
@@ -71,6 +71,7 @@ Class ContAccueil {
             $this->accueil();
         }
     }
+
 
     public function infoGeneralSae() {
         $idProjet = $_SESSION['id_projet'];

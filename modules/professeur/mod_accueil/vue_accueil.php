@@ -8,8 +8,7 @@ class VueAccueil extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherSaeGerer($saeGerer)
-    {
+    public function afficherSaeGerer($saeGerer) {
         ?>
         <div class="container mt-5">
             <div class="row justify-content-center g-4">
@@ -17,18 +16,15 @@ class VueAccueil extends VueGenerique
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
                         <div class="card shadow border-0"
                              style="width: 250px; height: 250px; border-radius: 15px;
-                             background-color: #f8f9fa; display: flex; flex-direction: column;
-                             justify-content: center; align-items: center; text-align: center;">
-                            <form method="POST" action="index.php?module=accueilprof&action=choixSae">
-                                <input type="hidden" name="id"
-                                       value="<?php echo htmlspecialchars($sae['id_projet']); ?>">
-                                <button type="submit" class="btn btn-link text-decoration-none"
-                                        style="color: #495057; font-size: 1.2rem; font-weight: 600;">
+                         background-color: #f8f9fa; display: flex; flex-direction: column;
+                         justify-content: center; align-items: center; text-align: center;">
+                            <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>"
+                               style="color: #495057;">
+                                <h3 style="font-weight: 600; font-size: 1.2rem;">
                                     <?php echo htmlspecialchars($sae['titre']); ?>
-                                </button>
-                            </form>
+                                </h3>
+                            </a>
                         </div>
-
                     </div>
                 <?php endforeach; ?>
 

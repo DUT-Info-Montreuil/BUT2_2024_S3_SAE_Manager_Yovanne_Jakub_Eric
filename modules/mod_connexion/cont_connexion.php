@@ -53,7 +53,7 @@ class ContConnexion {
             $_SESSION['password_utilisateur'] = $utilisateur['password_utilisateur'];
             $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
             if($typeUtilisateur=="etudiant"){
-                header('Location: index.php?module=etudiant');
+                header('Location: index.php?module=accueiletud');
             }else if ($typeUtilisateur=="professeur"){
                 header('Location: index.php?module=accueilprof');
             }else if ($typeUtilisateur=="admin"){

@@ -13,6 +13,11 @@ class ModuleName {
                 $this->module_name = substr($this->module_name, 0, -4);
             }
             $module_path = "modules/professeur/mod_{$this->module_name}/mod_{$this->module_name}.php";
+        }else if(in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'renduetud'])){
+            if (substr($this->module_name, -4) === 'etud') {
+                $this->module_name = substr($this->module_name, 0, -4);
+            }
+            $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else {
             $module_path = "modules/mod_{$this->module_name}/mod_{$this->module_name}.php";
         }
