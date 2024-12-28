@@ -172,25 +172,6 @@ Class ModeleGroupe extends Connexion{
         return $detailsGroupe;
     }
 
-    public function ajouterNouveauMembre($idGroupe) {
-        $bdd = $this->getBdd();
-        $query = "
-        SELECT u.login_utilisateur, u.id_utilisateur, CONCAT(u.prenom, ' ', u.nom) AS nom_complet
-        FROM Utilisateur u
-        WHERE u.type_utilisateur = 'etudiant'
-        AND u.id_utilisateur NOT IN (
-            SELECT ge.id_utilisateur
-            FROM Groupe_Etudiant ge
-            WHERE ge.id_groupe = :idGroupe
-        )
-    ";
-
-        $stmt = $bdd->prepare($query);
-        $stmt->bindParam(':idGroupe', $idGroupe, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function modifierModifiableParGroupe($modifiable, $idGroupe) {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";

@@ -81,10 +81,11 @@ Class ContGroupe {
     }
 
     public function versModifierGroupe() {
+        $idSae = $_SESSION['id_projet'];
         if (isset($_GET['idGroupe'])) {
             $idGroupe = $_GET['idGroupe'];
             $tabDetailsGrp = $this->modele->getGroupeById($idGroupe);
-            $tabNvEtudiant = $this->modele->ajouterNouveauMembre($idGroupe);
+            $tabNvEtudiant = $this->modele->getEtudiantsSansGroupe($idSae);
             $this->vue->formulaireModifierGroupe($tabDetailsGrp, $tabNvEtudiant, $idGroupe);
         }
     }

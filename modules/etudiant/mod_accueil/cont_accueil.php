@@ -40,6 +40,7 @@ Class ContAccueil {
     {
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
+            $_SESSION['id_groupe'] = $this->modele->getGroupeForUser($idProjet, $_SESSION['id_utilisateur']);
             $_SESSION['id_projet'] = $idProjet;
             $titre = $this->modele->getTitreSAE($idProjet);
             $this->vue->afficherSaeDetails($titre);

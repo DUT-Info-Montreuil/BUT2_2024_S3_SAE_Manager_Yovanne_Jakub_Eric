@@ -15,14 +15,14 @@ Class ContDepot
 
     public function exec()
     {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherDepot";
         if (!$this->estEtudiant()) {
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
-            case "accueil":
-                $this->accueil();
+            case "afficherDepot":
+                $this->afficherDepot();
                 break;
         }
     }
@@ -31,7 +31,10 @@ Class ContDepot
         return $_SESSION["type_utilisateur"] === "etudiant";
     }
 
-    public function accueil(){
-        echo "accueil";
+    public function afficherDepot(){
+        $id_groupe = $_SESSION["id_groupe"];
+        $id_projet = $_SESSION["id_projet"];
+        $tabAllDepot = $this->modele->afficherAllDepot($id_groupe, $id_projet);
+        $this->vue->afficherAllDepot($tabAllDepot);
     }
 }
