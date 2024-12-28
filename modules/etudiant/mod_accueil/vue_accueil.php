@@ -37,4 +37,38 @@ Class VueAccueil extends VueGenerique{
         <?php
     }
 
+    public function afficherSaeDetails($titre)
+    {
+        ?>
+        <div class="container mt-5">
+            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;"><?= htmlspecialchars($titre) ?></h2>
+            <div class="row justify-content-center g-4">
+                <?php
+                $sections = [
+                    ["href" => "index.php?module=groupeetud", "title" => "Groupe"],
+                    ["href" => "index.php?module=depotetud", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceetud", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceetud", "title" => "Soutenance"],
+                ];
+
+                foreach ($sections as $section): ?>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <div class="card border-0"
+                             style="width: 250px; height: 250px; border-radius: 10px;
+                         background-color: #f5f5f5; display: flex; justify-content: center;
+                         align-items: center; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                            <a class="text-decoration-none" href="<?php echo htmlspecialchars($section['href']); ?>"
+                               style="color: #495057; text-align: center;">
+                                <h3 style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">
+                                    <?php echo htmlspecialchars($section['title']); ?>
+                                </h3>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+    }
+
 }
