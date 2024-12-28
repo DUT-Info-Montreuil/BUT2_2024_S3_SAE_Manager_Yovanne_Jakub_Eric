@@ -56,6 +56,7 @@ class ModeleEvaluation extends Connexion
             r.titre AS rendu_titre,
             r.date_limite AS rendu_date_limite,
             rg.statut AS rendu_statut,
+            re.note AS rendu_note,
             GROUP_CONCAT(
                 CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté'))
                 SEPARATOR '\n'
@@ -63,7 +64,8 @@ class ModeleEvaluation extends Connexion
             e.note_max AS note_max,
             e.coefficient AS note_coef,
             rg.id_rendu,
-            rg.id_groupe
+            rg.id_groupe,
+            r.id_evaluation
         FROM Rendu r
         INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
         INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
@@ -100,6 +102,8 @@ class ModeleEvaluation extends Connexion
             e.note_max AS note_max,
             e.coefficient AS note_coef,
             sg.id_soutenance,
+            s.id_evaluation,
+            se.note AS soutenance_note,
             sg.id_groupe
         FROM Soutenance s
         INNER JOIN Soutenance_Groupe sg ON s.id_soutenance = sg.id_soutenance
@@ -267,6 +271,76 @@ class ModeleEvaluation extends Connexion
         $insertStmt = $bdd->prepare($insertQuery);
         $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $_SESSION['id_utilisateur'], $grpOuIndividuelle, $note]);
     }
+
+    public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
+    {
+        $bdd = $this->getBdd();
+        $query = "";
+
+        if ($type_evaluation === 'rendu') {
+            $query = "
+            SELECT 
+                r.titre, u.nom, u.prenom, u.email, re.note, u.id_utilisateur
+            FROM Rendu_Groupe rg
+            INNER JOIN Rendu r ON rg.id_rendu = r.id_rendu
+            INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
+            INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+            INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+            LEFT JOIN Rendu_Evaluation re ON r.id_rendu = re.id_rendu
+                AND rg.id_groupe = re.id_groupe
+                AND re.id_etudiant = u.id_utilisateur
+            WHERE rg.id_groupe = ? AND r.id_evaluation = ?
+        ";
+        } elseif ($type_evaluation === 'soutenance') {
+            $query = "
+            SELECT 
+                s.titre, u.nom, u.prenom, se.note, u.id_utilisateur, u.email
+            FROM Soutenance_Groupe sg
+            INNER JOIN Soutenance s ON sg.id_soutenance = s.id_soutenance
+            INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
+            INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+            INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+            LEFT JOIN Soutenance_Evaluation se ON sg.id_soutenance = se.id_soutenance
+                AND sg.id_groupe = se.id_groupe
+                AND se.id_etudiant = u.id_utilisateur
+            WHERE sg.id_groupe = ? AND s.id_evaluation = ?
+        ";
+        }
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_groupe, $id_evaluation]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)
+    {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Rendu_Evaluation
+              SET note = ?
+              WHERE id_evaluation = ?
+              AND id_groupe = ?
+              AND id_etudiant = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$note, $id_evaluation, $id_groupe, $id_etudiant]);
+        $stmt->execute();
+    }
+
+    public function modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note)
+    {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Soutenance_Evaluation
+              SET note = ?
+              WHERE id_evaluation = ?
+              AND id_groupe = ?
+              AND id_etudiant = ?";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$note, $id_evaluation, $id_groupe, $id_etudiant]);
+        $stmt->execute();
+    }
+
+
 
 
 }

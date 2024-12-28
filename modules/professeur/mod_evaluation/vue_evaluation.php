@@ -33,6 +33,60 @@ class VueEvaluation extends VueGenerique
         </div>
         <?php
     }
+
+    public function afficherFormulaireModifierNote($notes, $id_groupe, $id_evaluation, $type_evaluation)
+    {
+        ?>
+        <div class="container mt-5">
+            <h2 class="mb-4 text-center">Modifier les Notes</h2>
+            <form method="POST" action="index.php?module=evaluationprof&action=traitementModificationNote">
+                <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($id_groupe) ?>">
+                <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id_evaluation) ?>">
+                <input type="hidden" name="type_evaluation" value="<?= htmlspecialchars($type_evaluation) ?>">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Soutenance/Rendu</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($notes as $note): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($note['titre']) ?></td>
+                                <td><?= htmlspecialchars($note['nom']) ?></td>
+                                <td><?= htmlspecialchars($note['prenom']) ?></td>
+                                <td><?= htmlspecialchars($note['email']) ?></td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control"
+                                           name="notes[<?= htmlspecialchars($note['id_utilisateur']) ?>]"
+                                           value="<?= htmlspecialchars($note['note']) ?>"
+                                           step="0.01"
+                                           min="0"
+                                           max="20"
+                                           placeholder="Note"
+                                           required>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-success">Soumettre les Modifications</button>
+                </div>
+            </form>
+        </div>
+        <?php
+    }
+
     public function formulaireModificationEvaluation($id)
     {
         ?>
@@ -146,7 +200,12 @@ class VueEvaluation extends VueGenerique
                                 <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
                                 <input type="hidden" name="type_evaluation" value="rendu">
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
-                                <button type="submit" class="btn btn-sm btn-primary">Noter</button>
+                                <?php if ($evaluation['rendu_note'] !== null): ?>
+                                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier la note</button>
+                                <?php else: ?>
+                                    <button type="submit" class="btn btn-sm btn-primary">Noter</button>
+                                <?php endif; ?>
                             </form>
                         </td>
                     </tr>
@@ -189,7 +248,12 @@ class VueEvaluation extends VueGenerique
                                 <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
                                 <input type="hidden" name="type_evaluation" value="soutenance">
                                 <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($evaluation['id_soutenance']) ?>">
-                                <button type="submit" class="btn btn-sm btn-primary">Noter</button>
+                                <?php if ($evaluation['soutenance_note'] !== null): ?>
+                                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-warning">Modifier la note</button>
+                                <?php else: ?>
+                                    <button type="submit" class="btn btn-sm btn-primary">Noter</button>
+                                <?php endif; ?>
                             </form>
                         </td>
                     </tr>

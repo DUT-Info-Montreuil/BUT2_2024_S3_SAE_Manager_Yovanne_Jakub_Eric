@@ -41,8 +41,12 @@ class ContEvaluation
             case "modifierEvaluation" :
                 $this->modifierEvaluation();
                 break;
+            case "traitementModificationNote" :
+                $this->traitementModificationNote();
+                break;
         }
     }
+
     public function gestionEvaluationsSAE()
     {
         $this->creationEvaluation();
@@ -71,12 +75,13 @@ class ContEvaluation
         }
     }
 
-    public function modifierEvaluation(){
-        if(isset($_POST['id']) && isset($_POST['note_max']) && isset($_POST['coefficient'])){
+    public function modifierEvaluation()
+    {
+        if (isset($_POST['id']) && isset($_POST['note_max']) && isset($_POST['coefficient'])) {
             $id = $_POST['id'];
             $note_max = $_POST['note_max'];
             $coefficient = $_POST['coefficient'];
-            $this->modele->modifierEvaluation($id, $note_max,$coefficient);
+            $this->modele->modifierEvaluation($id, $note_max, $coefficient);
         }
         $this->gestionEvaluationsSAE();
 
@@ -99,36 +104,91 @@ class ContEvaluation
         $this->gestionEvaluationsSAE();
     }
 
-    public function creationEvaluation(){
+    public function creationEvaluation()
+    {
         $idSae = $_SESSION['id_projet'];
         $allRendue = $this->modele->getAllRenduSAE($idSae);
         $allSoutenance = $this->modele->getAllSoutenanceSAE($idSae);
         $this->vue->afficherTableauAllRendu($allRendue, $allSoutenance);
     }
-    public function gestionEvaluationsRendu(){
+
+    public function gestionEvaluationsRendu()
+    {
         $idSae = $_SESSION['id_projet'];
         $rendueEvaluations = $this->modele->getRenduEvaluation($idSae);
         $this->vue->afficherTableauRendu($rendueEvaluations);
     }
 
-    public function gestionEvaluationsSoutenance(){
+    public function gestionEvaluationsSoutenance()
+    {
         $idSae = $_SESSION['id_projet'];
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae);
         $this->vue->afficherTableauSoutenance($soutenanceEvaluations);
     }
-    public function choixNotation(){
-        if(isset($_POST['id_groupe']) && isset($_POST['type_evaluation'])){
+
+    public function choixNotation()
+    {
+        if (isset($_POST['id_groupe']) && isset($_POST['type_evaluation'])) {
             $type_evaluation = $_POST['type_evaluation'];
             $id_groupe = $_POST['id_groupe'];
             $allMembres = $this->modele->getAllMembreSAE($id_groupe);
-            if($type_evaluation === 'rendu'){
+
+            if ($type_evaluation === 'rendu') {
                 $id = $_POST['id_rendu'];
-            }else{
+            } else {
                 $id = $_POST['id_soutenance'];
             }
-            $this->vue->afficherFormulaireNotation($allMembres ,$id_groupe, $id, $type_evaluation);
+
+            if (!isset($_POST['id_evaluation'])) {
+                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation);
+            } else {
+                $id_evaluation = $_POST['id_evaluation'];
+                $notes = $this->modele->getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation);
+                $this->vue->afficherFormulaireModifierNote($notes, $id_groupe, $id_evaluation, $type_evaluation);
+            }
         }
     }
+
+    public function traitementModificationNote()
+    {
+        if (isset($_POST['id_groupe'], $_POST['id_evaluation'], $_POST['type_evaluation'], $_POST['notes'])) {
+            $id_groupe = $_POST['id_groupe'];
+            $id_evaluation = $_POST['id_evaluation'];
+            $type_evaluation = $_POST['type_evaluation'];
+            $notes = $_POST['notes'];
+            $noteMax = $this->getNoteMaxByType($type_evaluation, $id_evaluation);
+
+            foreach ($notes as $id_etudiant => $note) {
+                if ($this->isValidNote($note, $noteMax)) {
+                    $this->updateNote($id_etudiant, $note, $id_evaluation, $id_groupe, $type_evaluation);
+                }
+            }
+        }
+        $this->gestionEvaluationsSAE();
+    }
+
+    private function getNoteMaxByType($type_evaluation, $id_evaluation)
+    {
+        if ($type_evaluation === 'rendu') {
+            return $this->modele->infNoteMaxRendu($id_evaluation);
+        } else {
+            return $this->modele->infNoteMaxSoutenance($id_evaluation);
+        }
+    }
+
+    private function isValidNote($note, $noteMax)
+    {
+        return is_numeric($note) && $note >= 0 && $note <= $noteMax;
+    }
+    private function updateNote($id_etudiant, $note, $id_evaluation, $id_groupe, $type_evaluation)
+    {
+        if ($type_evaluation === 'rendu') {
+            $this->modele->modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note);
+        } else {
+            $this->modele->modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note);
+        }
+    }
+
 
     public function traitementNotationIndividuelle()
     {
@@ -149,9 +209,8 @@ class ContEvaluation
                 if (is_numeric($note) && $note >= 0 && $note <= $noteMax) {
                     if ($type_evaluation === 'rendu') {
                         $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id_rendu, $id_groupe, 0);
-                    }
-                    else {
-                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id_soutenance, $id_groupe,0);
+                    } else {
+                        $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id_soutenance, $id_groupe, 0);
                     }
                 }
             }
@@ -189,7 +248,6 @@ class ContEvaluation
         }
         $this->gestionEvaluationsSAE();
     }
-
 
 
 }
