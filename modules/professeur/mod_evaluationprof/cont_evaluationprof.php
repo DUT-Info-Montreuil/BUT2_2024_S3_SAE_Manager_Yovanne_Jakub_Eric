@@ -234,14 +234,15 @@ class ContEvaluationProf
             $id = $_POST['id'];
             $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
             $noteMax = $evaluationData['noteMax'];
+            $id_evaluateur = $_SESSION['id_utilisateur'];
             if (is_numeric($note_groupe) && $note_groupe >= 0 && $note_groupe <= $noteMax) {
                 $allMembres = $this->modele->getAllMembreSAE($id_groupe);
 
                 foreach ($allMembres as $membre) {
                     if ($type_evaluation === 'rendu') {
-                        $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1);
+                        $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1, $id_evaluateur);
                     } else {
-                        $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1);
+                        $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 1, $id_evaluateur);
                     }
                 }
             }
