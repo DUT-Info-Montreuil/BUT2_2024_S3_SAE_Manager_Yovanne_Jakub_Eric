@@ -172,6 +172,15 @@ Class ModeleGroupe extends Connexion{
         return $detailsGroupe;
     }
 
+    public function getTitreSAE($idProjet){
+        $bdd = $this->getBdd();
+        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $sae['titre'];
+    }
+
     public function modifierModifiableParGroupe($modifiable, $idGroupe) {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";
@@ -201,5 +210,16 @@ Class ModeleGroupe extends Connexion{
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idGroupe]);
     }
+
+    public function getNomGroupe($idGroupe){
+        $bdd = $this->getBdd();
+        $query = "SELECT nom FROM Groupe WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idGroupe]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['nom'];
+    }
+
+
 
 }

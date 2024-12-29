@@ -19,6 +19,15 @@ Class ModeleDepot extends Connexion {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getNomDepot($idRendue){
+        $bdd = $this->getBdd();
+        $sql = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idRendue]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['titre'];
+    }
+
     public function creerDepot($titre, $dateLimite, $idSae){
         $bdd = $this->getBdd();
         $sql = "INSERT INTO Rendu (id_rendu, titre, date_limite, id_projet) VALUES (DEFAULT, ?, ?, ?)";
@@ -26,6 +35,7 @@ Class ModeleDepot extends Connexion {
         $stmt->execute([$titre, $dateLimite, $idSae]);
         $idRendue = $bdd->lastInsertId();
         $this->creerDepotAllSae($idSae, $idRendue);
+        return $idRendue;
     }
 
     public function creerDepotAllSae($idSae, $idRendue) {
@@ -64,6 +74,28 @@ Class ModeleDepot extends Connexion {
         $sql = "DELETE FROM Rendu WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$id_rendu]);
+    }
+
+    public function getGroupesParSae($idSae) {
+        $bdd = $this->getBdd();
+
+        $query = "SELECT g.id_groupe, g.nom
+              FROM Groupe g
+              JOIN Projet_Groupe pg ON g.id_groupe = pg.id_groupe
+              WHERE pg.id_projet = ?";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTitreSAE($idProjet){
+        $bdd = $this->getBdd();
+        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $sae['titre'];
     }
 
 

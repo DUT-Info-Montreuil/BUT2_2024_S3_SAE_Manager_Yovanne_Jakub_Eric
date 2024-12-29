@@ -1,6 +1,7 @@
 <?php
 include_once "modules/professeur/mod_groupe/modele_groupe.php";
 include_once "modules/professeur/mod_groupe/vue_groupe.php";
+require_once "DossierHelper.php";
 Class ContGroupe {
     private $modele;
     private $vue;
@@ -72,6 +73,9 @@ Class ContGroupe {
                 $etudiants = $_POST['etudiants'];
                 $idGroupe = $this->modele->ajouterGroupe($nomGroupe, $idSae);
                 $this->modele->lieeProjetGrp($idGroupe, $idSae);
+                $nomSae = $this->modele->getTitreSae($idSae);
+                $nomDossier = $nomGroupe . '_' . $idGroupe;
+                DossierHelper::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
                 foreach ($etudiants as $etudiantId) {
                     $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
                 }
@@ -92,14 +96,20 @@ Class ContGroupe {
     public function enregistrerModificationsGroupe() {
         if (isset($_POST['id_groupe']) && isset($_POST['nomGroupe']) && isset($_POST['modifiable_par_groupe'])) {
             $idGroupe = $_POST['id_groupe'];
-            $nomGroupe = $_POST['nomGroupe'];
+            $nouveauNomGroupe = $_POST['nomGroupe'];
             if (isset($_POST['modifiable_par_groupe']) && $_POST['modifiable_par_groupe'] == "1"){
                 $modifiableParGroupe = 1;
             }else{
                 $modifiableParGroupe = 0;
             }
 
-            $this->modele->modifierNomGrp($idGroupe, $nomGroupe);
+            $idSae = $_SESSION['id_projet'];
+            $nomSae = $this->modele->getTitreSae($idSae);
+            $ancienNom = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
+            $nvNomDossier = $nouveauNomGroupe . '_' . $idGroupe;
+            DossierHelper::renommerDossier($idSae, $nomSae, $ancienNom, $nvNomDossier, 'depots');
+
+            $this->modele->modifierNomGrp($idGroupe, $nouveauNomGroupe);
             $this->modele->modifierModifiableParGroupe($modifiableParGroupe, $idGroupe);
 
             if (isset($_POST['membres_a_supprimer'])) {
@@ -132,18 +142,21 @@ Class ContGroupe {
         if (isset($_POST['membres_a_supprimer']) && isset($_POST['id_groupe']) && isset($_GET['nomGroupe'])) {
             $idGroupe = $_POST['id_groupe'];
             $membresASupprimer = $_POST['membres_a_supprimer'];
-            $nomGroupe = $_POST['nomGroupe'];
-
+            $nouveauNomGroupe = $_POST['nomGroupe'];
             foreach ($membresASupprimer as $idUtilisateur) {
                 $this->modele->supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur);
             }
-            $this->modele->modifierNomGrp($idGroupe, $nomGroupe);
+            $this->modele->modifierNomGrp($idGroupe, $nouveauNomGroupe);
         }
     }
 
     public function supprimerGrp(){
         if(isset($_POST['idGroupe'])){
             $idGroupe = $_POST['idGroupe'];
+            $idSae = $_SESSION['id_projet'];
+            $nomSae = $this->modele->getTitreSae($idSae);
+            $nomgrp = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
+            DossierHelper::supprimerDossier($idSae, $nomSae, $nomgrp, 'depots');
             $this->modele->supprimerGroupe($idGroupe);
         }
         $this->gestionGroupeSAE();

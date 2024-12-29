@@ -2,6 +2,7 @@
 
 include_once 'modules/professeur/mod_depot/modele_depot.php';
 include_once 'modules/professeur/mod_depot/vue_depot.php';
+require_once "DossierHelper.php";
 
 class ContDepot{
     private $modele;
@@ -58,7 +59,17 @@ class ContDepot{
             $titre = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
             $idSae = $_SESSION['id_projet'];
-            $this->modele->creerDepot($titre, $dateLimite, $idSae);
+
+            $idRendu = $this->modele->creerDepot($titre, $dateLimite, $idSae);
+            $nomRendu = $this->modele->getNomDepot($idRendu);
+            $groupes = $this->modele->getGroupesParSae($idSae);
+            $nomSae = $this->modele->getTitreSAE($idSae);
+
+            foreach ($groupes as $groupe) {
+                $nomGroupe = $groupe['nom'];
+                $idGroupe = $groupe['id_groupe'];
+                DossierHelper::creerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idRendu, $nomRendu);
+            }
         }
         $this->gestionDepotSAE();
     }
