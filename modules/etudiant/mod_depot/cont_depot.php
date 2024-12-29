@@ -24,6 +24,9 @@ Class ContDepot
             case "afficherDepot":
                 $this->afficherDepot();
                 break;
+            case "upload" :
+                $this->upload();
+                break;
         }
     }
 
@@ -36,5 +39,11 @@ Class ContDepot
         $id_projet = $_SESSION["id_projet"];
         $tabAllDepot = $this->modele->afficherAllDepot($id_groupe, $id_projet);
         $this->vue->afficherAllDepot($tabAllDepot);
+    }
+
+    public function upload(){
+        if(isset($_FILES['uploaded_file']) && isset($_FILES['id_rendu']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK){
+
+        }
     }
 }

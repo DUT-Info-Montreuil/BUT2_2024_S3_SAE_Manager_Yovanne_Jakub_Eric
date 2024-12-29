@@ -2,6 +2,7 @@
 
 include_once 'modules/professeur/mod_ressource/modele_ressource.php';
 include_once 'modules/professeur/mod_ressource/vue_ressource.php';
+require_once "DossierHelper.php";
 
 class ContRessource{
     private $modele;
@@ -49,33 +50,33 @@ class ContRessource{
         $this->vue->formulaireCreerRessource();
     }
 
-    public function submitRessource(){
-        if(isset($_POST['titre']) && !empty($_POST['titre'])){
+    public function submitRessource() {
+        if (isset($_POST['titre']) && !empty($_POST['titre'])) {
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
             $idSae = $_SESSION['id_projet'];
 
-            // Verif si aucun problème n'est survenu lors de l'upload
-            if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
-                $uploadDossier = 'uploads/ressources/'; // Répertoire de destination pour les fichiers uploadés
-                $filename = basename($_FILES['fichier']['name']); // Extraire le nom du fichier téléchargé
-                $fichier = $uploadDossier . uniqid() . '-' . $filename; // Créer un nom de fichier unique
-                $extensionAutorises = ['pdf', 'docx', 'png', 'jpg']; // Liste d'extensions autorisées
+            $nomSae = $this->modele->getTitreSAE($idSae);
+            $uploadDossier = DossierHelper::getBaseDossierSAE($idSae, $nomSae) . DIRECTORY_SEPARATOR . 'ressources' . DIRECTORY_SEPARATOR;
 
-                // strtolower = met en minuscule
+            if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
+                $filename = basename($_FILES['fichier']['name']);
+                $fichier = $uploadDossier . uniqid() . '-' . $filename;
+                $extensionAutorises = ['pdf', 'docx', 'png', 'jpg'];
+
+                // Convertir l'extension en minuscules
                 $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION)); // Extraire l'extension du fichier téléchargé
                 $maxFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier
 
-                // Extension dans la liste et taille autorisé
+                // Vérifier l'extension et la taille du fichier
                 if (in_array($fileExtension, $extensionAutorises) && $_FILES['fichier']['size'] <= $maxFileSize) {
-
-                    // Déplace le fichier dans le répertoire 'uploads/ressources/' et retourn true si il est déplacé
+                    // Déplacer le fichier dans le dossier de destination
                     if (move_uploaded_file($_FILES['fichier']['tmp_name'], $fichier)) {
+                        // Appeler la méthode pour créer la ressource dans la base de données
                         $this->modele->creerRessource($titre, $mise_en_avant, $idSae, $fichier);
                     }
                 }
             }
-
         }
         $this->gestionRessourceSAE();
     }

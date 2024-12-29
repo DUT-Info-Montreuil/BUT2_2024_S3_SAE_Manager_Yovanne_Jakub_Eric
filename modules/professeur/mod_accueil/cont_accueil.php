@@ -1,6 +1,7 @@
 <?php
 include_once "modules/professeur/mod_accueil/modele_accueil.php";
 include_once "modules/professeur/mod_accueil/vue_accueil.php";
+require_once "DossierHelper.php";
 
 class ContAccueil
 {
@@ -69,10 +70,15 @@ class ContAccueil
             $annee = trim($_POST['annee']);
             $semestre = trim($_POST['semestre']);
             $description = trim($_POST['description']);
-            $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
+
+            $idSae = $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
+
+            $nomSae = $this->modele->getTitreSAE($idSae);
+            DossierHelper::creerDossiersSAE($idSae, $nomSae);
         }
         $this->accueil();
     }
+
 
     public function estProf()
     {
@@ -121,6 +127,7 @@ class ContAccueil
     public function supprimerSAE()
     {
         $idSae = $_SESSION['id_projet'];
+        DossierHelper::supprimerDossiersSAE($idSae, $this->modele->getTitreSAE($idSae));
         $this->modele->supprimerSAE($idSae);
         $this->accueil();
     }

@@ -29,6 +29,7 @@ Class ModeleAccueil extends Connexion{
         $insertionGerant = $bdd->prepare("INSERT INTO Gerant (id_projet, id_utilisateur, role_utilisateur) VALUES (?, ?, ?)");
 
         $insertionGerant->execute([$idProjet, $_SESSION['id_utilisateur'], 'Responsable']);
+        return $idProjet;
     }
     public function getSaeDetails($idProjet) {
         $bdd = $this->getBdd();
