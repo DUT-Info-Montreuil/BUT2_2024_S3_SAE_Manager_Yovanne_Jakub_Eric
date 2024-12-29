@@ -7,4 +7,15 @@ Class ModeleRessource extends Connexion
     {
     }
 
+    public function getAllRessourceAccesible($idProjet){
+        $bdd = $this->getBdd();
+
+        $query = "SELECT * FROM Ressource WHERE id_projet = ? AND mise_en_avant = 1";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }

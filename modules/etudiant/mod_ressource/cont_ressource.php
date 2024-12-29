@@ -15,14 +15,14 @@ Class ContRessource
 
     public function exec()
     {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherAllRessources";
         if (!$this->estEtudiant()) {
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
-            case "accueil":
-                $this->accueil();
+            case "afficherAllRessources":
+                $this->afficherAllRessources();
                 break;
         }
     }
@@ -31,7 +31,9 @@ Class ContRessource
         return $_SESSION["type_utilisateur"] === "etudiant";
     }
 
-    public function accueil(){
-        echo "accueil";
+    public function afficherAllRessources(){
+        $idProjet = $_SESSION["id_projet"];
+        $allRessources = $this->modele->getAllRessourceAccesible($idProjet);
+        $this->vue->afficherAllSae($allRessources);
     }
 }
