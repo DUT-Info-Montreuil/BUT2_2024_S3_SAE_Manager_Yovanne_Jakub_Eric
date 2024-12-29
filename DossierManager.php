@@ -1,6 +1,6 @@
 <?php
 
-class DossierHelper
+class DossierManager
 {
 
     public static function getBaseDossierSAE($idSae, $nomSae)
@@ -110,11 +110,9 @@ class DossierHelper
 
     public static function supprimerDossier($idSae, $nomSae, $nomDossier, $sousDossier)
     {
-        // Construire le chemin du dossier du groupe
-        $baseDossier = self::getBaseDossierSAE($idSae, $nomSae); // chemin de base du SAE
+        $baseDossier = self::getBaseDossierSAE($idSae, $nomSae);
         $dossier = $baseDossier . DIRECTORY_SEPARATOR . $sousDossier . DIRECTORY_SEPARATOR . $nomDossier;
 
-        // Appeler la méthode pour supprimer ce dossier
         return self::supprimerDossierComplet($dossier);
     }
 
@@ -147,23 +145,103 @@ class DossierHelper
         $ancienNomDepot = preg_replace('/[^a-zA-Z0-9-_]/', '_', $ancienNomDepot);
         $nouveauNomDepot = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nouveauNomDepot);
 
-        // Dossier du groupe avec l'ID et le nom du dépôt
         $dossierGroupeDepotAncien = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $ancienNomDepot . '_' . $idDepot;
         $dossierGroupeDepotNouveau = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $nouveauNomDepot . '_' . $idDepot;
 
-        // Vérifier si le dossier existe avant de renommer
         if (is_dir($dossierGroupeDepotAncien)) {
-            // Renommer le dossier
             if (rename($dossierGroupeDepotAncien, $dossierGroupeDepotNouveau)) {
-                return true; // Le dossier a été renommé avec succès
+                return true;
             } else {
                 error_log("Erreur : Impossible de renommer le dossier $dossierGroupeDepotAncien en $dossierGroupeDepotNouveau");
-                return false; // Impossible de renommer le dossier
+                return false;
             }
         } else {
             error_log("Erreur : Le dossier $dossierGroupeDepotAncien n'existe pas");
-            return false; // Le dossier n'existe pas
+            return false;
         }
+    }
+
+    public static function uploadFichier($fichierSource, $dossierCible)
+    {
+        $extensionsAutorisees = ['pdf', 'docx', 'png', 'jpg', 'php', 'java', 'c'];
+        $tailleMax = 10485760;
+
+        if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception("Erreur lors du téléchargement du fichier.");
+        }
+
+        $nomFichier = basename($fichierSource['name']);
+        $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
+        $tailleFichier = $fichierSource['size'];
+
+        if (!in_array($extensionFichier, $extensionsAutorisees)) {
+            throw new Exception("Extension non autorisée : $extensionFichier");
+        }
+        if ($tailleFichier > $tailleMax) {
+            throw new Exception("Le fichier dépasse la taille maximale autorisée de " . ($tailleMax / 1024 / 1024) . " Mo.");
+        }
+        if (!is_dir($dossierCible)) {
+            if (!mkdir($dossierCible, 0777, true)) {
+                throw new Exception("Impossible de créer le dossier cible : $dossierCible");
+            }
+        }
+        $cheminFichierFinal = $dossierCible . DIRECTORY_SEPARATOR . uniqid() . '-' . $nomFichier;
+
+        // Déplacer le fichier vers son emplacement final
+        if (!move_uploaded_file($fichierSource['tmp_name'], $cheminFichierFinal)) {
+            throw new Exception("Erreur lors du déplacement du fichier vers $cheminFichierFinal");
+        }
+        return $cheminFichierFinal;
+    }
+
+    public static function supprimerFichier($cheminFichier)
+    {
+        if (!file_exists($cheminFichier)) {
+            error_log("Erreur : Le fichier $cheminFichier n'existe pas.");
+            throw new Exception("Le fichier spécifié n'existe pas.");
+        }
+
+        if (!unlink($cheminFichier)) {
+            error_log("Erreur : Impossible de supprimer le fichier $cheminFichier");
+            throw new Exception("Une erreur est survenue lors de la suppression du fichier.");
+        }
+        return true;
+    }
+
+    public static function uploadRessource($fichierSource, $idSae, $nomSae)
+    {
+        $extensionsAutorisees = ['pdf', 'docx', 'png', 'jpg'];
+        $tailleMax = 10 * 1024 * 1024; // 10 Mo
+
+        if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception("Erreur lors du téléchargement du fichier.");
+        }
+
+        $nomFichier = basename($fichierSource['name']);
+        $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
+        $tailleFichier = $fichierSource['size'];
+
+        if (!in_array($extensionFichier, $extensionsAutorisees)) {
+            throw new Exception("Extension non autorisée : $extensionFichier");
+        }
+
+        if ($tailleFichier > $tailleMax) {
+            throw new Exception("Le fichier dépasse la taille maximale autorisée de " . ($tailleMax / 1024 / 1024) . " Mo.");
+        }
+
+        $uploadDossier = self::getBaseDossierSAE($idSae, $nomSae) . DIRECTORY_SEPARATOR . 'ressources' . DIRECTORY_SEPARATOR;
+        if (!is_dir($uploadDossier)) {
+            if (!mkdir($uploadDossier, 0777, true)) {
+                throw new Exception("Impossible de créer le dossier cible : $uploadDossier");
+            }
+        }
+        $cheminFichierFinal = $uploadDossier . uniqid() . '-' . $nomFichier;
+
+        if (!move_uploaded_file($fichierSource['tmp_name'], $cheminFichierFinal)) {
+            throw new Exception("Erreur lors du déplacement du fichier vers $cheminFichierFinal");
+        }
+
+        return $cheminFichierFinal;
     }
 
 

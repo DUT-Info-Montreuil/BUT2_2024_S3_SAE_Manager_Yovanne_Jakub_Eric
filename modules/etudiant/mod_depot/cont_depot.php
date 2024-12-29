@@ -1,7 +1,7 @@
 <?php
 include_once "modules/etudiant/mod_depot/modele_depot.php";
 include_once "modules/etudiant/mod_depot/vue_depot.php";
-require_once "DossierHelper.php";
+require_once "DossierManager.php";
 
 class ContDepot
 {
@@ -29,6 +29,9 @@ class ContDepot
             case "upload" :
                 $this->upload();
                 break;
+            case "supprimerTravailRemis" :
+                $this->supprimerTravailRemis();
+                break;
         }
     }
 
@@ -36,6 +39,7 @@ class ContDepot
     {
         return $_SESSION["type_utilisateur"] === "etudiant";
     }
+
 
     public function afficherDepot()
     {
@@ -47,45 +51,47 @@ class ContDepot
 
     public function upload()
     {
-        if (isset($_FILES['uploaded_file']) && isset($_POST['id_rendu']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['uploaded_file']) && isset($_POST['id_rendu'])) {
             $idSae = $_SESSION["id_projet"];
             $idGroupe = $_SESSION['id_groupe'];
-
             $idRendu = $_POST['id_rendu'];
 
             $nomSae = $this->modele->getTitreSAE($idSae);
             $nomGroupe = $this->modele->getNomGroupe($idGroupe);
             $nomRendu = $this->modele->getNomRendu($idRendu);
 
-            $uploadDossier = DossierHelper::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
+            $uploadDossier = DossierManager::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
 
-            // Extraire le nom et l'extension du fichier téléchargé
-            $filename = basename($_FILES['uploaded_file']['name']);
-            $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION)); // Extraire l'extension du fichier téléchargé
-            $fichier = $uploadDossier . DIRECTORY_SEPARATOR . uniqid() . '-' . $filename;
+            try {
+                $cheminFichier = DossierManager::uploadFichier($_FILES['uploaded_file'], $uploadDossier);
+                $this->modele->rendreDepot($idRendu, $cheminFichier, $idGroupe);
 
-            // Extensions autorisées et taille maximale du fichier
-            $extensionAutorises = ['pdf', 'docx', 'png', 'jpg'];
-            $maxFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier (10 Mo)
+            } catch (Exception $e) {
+                die("Erreur lors de l'upload : " . $e->getMessage());
+            }
+        }
 
-            // Vérification de l'extension et de la taille du fichier
-            if (in_array($fileExtension, $extensionAutorises) && $_FILES['uploaded_file']['size'] <= $maxFileSize) {
-                // Créer le dossier si nécessaire
-                if (!is_dir($uploadDossier)) {
-                    if (!mkdir($uploadDossier, 0777, true)) {
-                        die("Impossible de créer le dossier de téléchargement.");
-                    }
-                }
+        $this->afficherDepot();
+    }
 
-                // Déplacer le fichier vers son emplacement final
-                if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $fichier)) {
-                    // Enregistrer le chemin du fichier dans la base de données
-                    $this->modele->rendreDepot($idRendu, $fichier, $idGroupe);
-                } else {
-                    die("Erreur lors de l'upload du fichier.");
-                }
+
+    public function supprimerTravailRemis()
+    {
+        if (isset($_POST['id_rendu'])) {
+            $idRendu = $_POST['id_rendu'];
+            $idGroupe = $_SESSION['id_groupe'];
+
+            $cheminFichier = $this->modele->getCheminFichierRemis($idRendu, $idGroupe);
+
+            try {
+                DossierManager::supprimerFichier($cheminFichier);
+                $this->modele->supprimerTravailRemis($idRendu, $idGroupe);
+            } catch (Exception $e) {
+                echo "Erreur lors de la suppression de fichier : " . $e->getMessage();
+                return;
             }
         }
         $this->afficherDepot();
     }
+
 }

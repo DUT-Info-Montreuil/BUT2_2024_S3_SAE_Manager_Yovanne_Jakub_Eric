@@ -1,7 +1,7 @@
 <?php
 include_once "modules/professeur/mod_groupe/modele_groupe.php";
 include_once "modules/professeur/mod_groupe/vue_groupe.php";
-require_once "DossierHelper.php";
+require_once "DossierManager.php";
 Class ContGroupe {
     private $modele;
     private $vue;
@@ -75,7 +75,7 @@ Class ContGroupe {
                 $this->modele->lieeProjetGrp($idGroupe, $idSae);
                 $nomSae = $this->modele->getTitreSae($idSae);
                 $nomDossier = $nomGroupe . '_' . $idGroupe;
-                DossierHelper::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
+                DossierManager::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
                 foreach ($etudiants as $etudiantId) {
                     $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
                 }
@@ -107,7 +107,7 @@ Class ContGroupe {
             $nomSae = $this->modele->getTitreSae($idSae);
             $ancienNom = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
             $nvNomDossier = $nouveauNomGroupe . '_' . $idGroupe;
-            DossierHelper::renommerDossier($idSae, $nomSae, $ancienNom, $nvNomDossier, 'depots');
+            DossierManager::renommerDossier($idSae, $nomSae, $ancienNom, $nvNomDossier, 'depots');
 
             $this->modele->modifierNomGrp($idGroupe, $nouveauNomGroupe);
             $this->modele->modifierModifiableParGroupe($modifiableParGroupe, $idGroupe);
@@ -156,7 +156,7 @@ Class ContGroupe {
             $idSae = $_SESSION['id_projet'];
             $nomSae = $this->modele->getTitreSae($idSae);
             $nomgrp = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
-            DossierHelper::supprimerDossier($idSae, $nomSae, $nomgrp, 'depots');
+            DossierManager::supprimerDossier($idSae, $nomSae, $nomgrp, 'depots');
             $this->modele->supprimerGroupe($idGroupe);
         }
         $this->gestionGroupeSAE();

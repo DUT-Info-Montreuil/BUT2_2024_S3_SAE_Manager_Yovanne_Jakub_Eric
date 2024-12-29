@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_depot/modele_depot.php';
 include_once 'modules/professeur/mod_depot/vue_depot.php';
-require_once "DossierHelper.php";
+require_once "DossierManager.php";
 
 class ContDepot{
     private $modele;
@@ -70,7 +70,7 @@ class ContDepot{
             foreach ($groupes as $groupe) {
                 $nomGroupe = $groupe['nom'];
                 $idGroupe = $groupe['id_groupe'];
-                DossierHelper::creerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idRendu, $nomRendu);
+                DossierManager::creerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idRendu, $nomRendu);
             }
         }
         $this->gestionDepotSAE();
@@ -91,7 +91,7 @@ class ContDepot{
             foreach ($groupes as $groupe) {
                 $idGroupe = $groupe['id_groupe'];
                 $nomGroupe = $groupe['nom'];
-                DossierHelper::renommerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $ancienNomDepot, $nouveauNomDepot);
+                DossierManager::renommerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $ancienNomDepot, $nouveauNomDepot);
             }
 
         }
@@ -112,7 +112,7 @@ class ContDepot{
                 $idGroupe = $groupe['id_groupe'];
                 $nomGroupe = $groupe['nom'];
 
-                DossierHelper::supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $nomDepot);
+                DossierManager::supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $nomDepot);
             }
 
             $this->modele->supprimerDepot($id_rendu);

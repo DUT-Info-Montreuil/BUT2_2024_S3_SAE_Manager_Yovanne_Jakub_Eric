@@ -38,4 +38,28 @@ Class ModeleRessource extends Connexion
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$idRessource]);
     }
+
+    public function getRessourceLien($idRessource){
+        $bdd = $this->getBdd();
+        $sql = "SELECT lien FROM Ressource WHERE id_ressource = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idRessource]);
+        $ressource = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $ressource['lien'];
+    }
+
+    public function mettreAJoursRessource($nouveauChemin, $mise_en_avant, $titre, $idRessource){
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Ressource SET lien = ?, mise_en_avant = ?, titre = ? WHERE id_ressource = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$nouveauChemin, $mise_en_avant, $titre, $idRessource]);
+    }
+
+    public function mettreAJoursRessourceSansFichier($titre, $mise_en_avant, $idRessource){
+        $bdd = $this->getBdd();
+        $query = "UPDATE ressource SET titre = ?, mise_en_avant = ? WHERE id_ressource = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$titre, $mise_en_avant, $idRessource]);
+    }
+
 }

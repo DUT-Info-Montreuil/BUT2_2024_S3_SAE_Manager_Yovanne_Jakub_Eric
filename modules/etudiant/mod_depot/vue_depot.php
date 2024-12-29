@@ -34,14 +34,26 @@ Class VueDepot extends VueGenerique
                                     <p><strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?></p>
                                     <p><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
 
-                                    <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                                        <div class="mb-3">
-                                            <label for="fileUpload-<?= $index ?>" class="form-label">Uploader un fichier :</label>
-                                            <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_file" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Envoyer</button>
-                                    </form>
+                                    <?php if ($depot['statut'] === 'Remis'): ?>
+                                        <p><strong>Contenu remis :</strong>
+                                            <a href="<?= htmlspecialchars($depot['contenu_rendu']) ?>" target="_blank">
+                                                Voir le fichier remis
+                                            </a>
+                                        </p>
+                                        <form action="index.php?module=depotetud&action=supprimerTravailRemis" method="post" class="mt-4">
+                                            <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
+                                            <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                            <div class="mb-3">
+                                                <label for="fileUpload-<?= $index ?>" class="form-label">Uploader un fichier :</label>
+                                                <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_file" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -51,6 +63,7 @@ Class VueDepot extends VueGenerique
         </div>
         <?php
     }
+
 
 
 

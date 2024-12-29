@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_ressource/modele_ressource.php';
 include_once 'modules/professeur/mod_ressource/vue_ressource.php';
-require_once "DossierHelper.php";
+require_once "DossierManager.php";
 
 class ContRessource{
     private $modele;
@@ -34,6 +34,9 @@ class ContRessource{
             case "supprimerRessource" :
                 $this->supprimerRessource();
                 break;
+            case "modifierRessource" :
+                $this->modifierRessource();
+                break;
         }
     }
     public function estProf(){
@@ -57,37 +60,55 @@ class ContRessource{
             $idSae = $_SESSION['id_projet'];
 
             $nomSae = $this->modele->getTitreSAE($idSae);
-            $uploadDossier = DossierHelper::getBaseDossierSAE($idSae, $nomSae) . DIRECTORY_SEPARATOR . 'ressources' . DIRECTORY_SEPARATOR;
 
             if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
-                $filename = basename($_FILES['fichier']['name']);
-                $fichier = $uploadDossier . uniqid() . '-' . $filename;
-                $extensionAutorises = ['pdf', 'docx', 'png', 'jpg'];
+                try {
+                    $cheminFichier = DossierManager::uploadRessource($_FILES['fichier'], $idSae, $nomSae);
+                    $this->modele->creerRessource($titre, $mise_en_avant, $idSae, $cheminFichier);
 
-                // Convertir l'extension en minuscules
-                $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION)); // Extraire l'extension du fichier téléchargé
-                $maxFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier
-
-                // Vérifier l'extension et la taille du fichier
-                if (in_array($fileExtension, $extensionAutorises) && $_FILES['fichier']['size'] <= $maxFileSize) {
-                    // Déplacer le fichier dans le dossier de destination
-                    if (move_uploaded_file($_FILES['fichier']['tmp_name'], $fichier)) {
-                        // Appeler la méthode pour créer la ressource dans la base de données
-                        $this->modele->creerRessource($titre, $mise_en_avant, $idSae, $fichier);
-                    }
+                } catch (Exception $e) {
+                    echo "Erreur : " . $e->getMessage();
                 }
             }
         }
         $this->gestionRessourceSAE();
     }
 
+
     public function supprimerRessource(){
         if(isset($_POST['id_ressource'])){
             $idRessource = $_POST['id_ressource'];
+            $cheminFichier = $this->modele->getRessourceLien($idRessource);
+            DossierManager::supprimerFichier($cheminFichier);
             $this->modele->supprimerRessource($idRessource);
         }
         $this->gestionRessourceSAE();
     }
+
+    public function modifierRessource(){
+        if(isset($_POST['id_ressource']) && isset($_POST['titre']) && !empty($_POST['titre'])){
+            $idRessource = $_POST['id_ressource'];
+            $titre = $_POST['titre'];
+            $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
+            $idSae = $_SESSION['id_projet'];
+
+            $ancienCheminFichier = $this->modele->getRessourceLien($idRessource);
+
+            if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
+                if ($ancienCheminFichier && file_exists($ancienCheminFichier)) {
+                    DossierManager::supprimerFichier($ancienCheminFichier);
+                }
+
+                $nomSae = $this->modele->getTitreSAE($idSae);
+                $nouveauChemin = DossierManager::uploadRessource($_FILES['fichier'], $idSae, $nomSae);
+                $this->modele->mettreAJoursRessource($nouveauChemin, $mise_en_avant, $titre, $idRessource);
+            } else {
+                $this->modele->mettreAJoursRessourceSansFichier($titre, $mise_en_avant, $idRessource);
+            }
+        }
+        $this->gestionRessourceSAE();
+    }
+
 
 
 }

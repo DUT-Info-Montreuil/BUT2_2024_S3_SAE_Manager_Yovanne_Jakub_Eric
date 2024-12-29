@@ -1,7 +1,7 @@
 <?php
 include_once "modules/professeur/mod_accueil/modele_accueil.php";
 include_once "modules/professeur/mod_accueil/vue_accueil.php";
-require_once "DossierHelper.php";
+require_once "DossierManager.php";
 
 class ContAccueil
 {
@@ -74,7 +74,7 @@ class ContAccueil
             $idSae = $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
 
             $nomSae = $this->modele->getTitreSAE($idSae);
-            DossierHelper::creerDossiersSAE($idSae, $nomSae);
+            DossierManager::creerDossiersSAE($idSae, $nomSae);
         }
         $this->accueil();
     }
@@ -127,7 +127,7 @@ class ContAccueil
     public function supprimerSAE()
     {
         $idSae = $_SESSION['id_projet'];
-        DossierHelper::supprimerDossiersSAE($idSae, $this->modele->getTitreSAE($idSae));
+        DossierManager::supprimerDossiersSAE($idSae, $this->modele->getTitreSAE($idSae));
         $this->modele->supprimerSAE($idSae);
         $this->accueil();
     }
