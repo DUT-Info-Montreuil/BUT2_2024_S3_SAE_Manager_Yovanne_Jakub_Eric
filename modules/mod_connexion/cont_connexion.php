@@ -59,6 +59,8 @@ class ContConnexion {
                 header('Location: index.php?module=accueilprof');
             }else if ($typeUtilisateur=="admin"){
                 header('Location: index.php?module=administrateur');
+            }else if ($typeUtilisateur=="intervenant"){
+                header('Location: index.php?module=accueilintervenant');
             }
         } else {
             $this->vue->formConnexion();

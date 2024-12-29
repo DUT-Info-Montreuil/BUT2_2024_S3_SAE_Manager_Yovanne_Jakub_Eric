@@ -18,6 +18,11 @@ class ModuleName {
                 $this->module_name = substr($this->module_name, 0, -4);
             }
             $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
+        } else if (in_array($this->module_name, ['accueilintervenant', 'depotintervenant', 'evaluationintervenant', 'soutenanceintervenant', 'ressourceintervenant'])){
+            if (substr($this->module_name, -11) === 'intervenant') {
+                $this->module_name = substr($this->module_name, 0, -11);
+            }
+            $module_path = "modules/intervenant/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else {
             $module_path = "modules/mod_{$this->module_name}/mod_{$this->module_name}.php";
         }
