@@ -15,14 +15,14 @@ Class ContSoutenance
 
     public function exec()
     {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "affichageDesSoutenances";
         if (!$this->estEtudiant()) {
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
-            case "accueil":
-                $this->accueil();
+            case "affichageDesSoutenances":
+                $this->affichageDesSoutenances();
                 break;
         }
     }
@@ -31,7 +31,9 @@ Class ContSoutenance
         return $_SESSION["type_utilisateur"] === "etudiant";
     }
 
-    public function accueil(){
-        echo "accueil";
+    public function affichageDesSoutenances(){
+        $idProjet = $_SESSION["id_projet"];
+        $allSoutenance = $this->modele->getAllSoutenances($idProjet);
+        $this->vue->afficherAllSoutenances($allSoutenance);
     }
 }
