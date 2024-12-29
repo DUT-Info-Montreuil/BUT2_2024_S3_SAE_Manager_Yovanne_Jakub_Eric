@@ -30,5 +30,38 @@ Class ModeleDepot extends Connexion
         return $depotDetails;
     }
 
+    public function getTitreSAE($idProjet){
+        $bdd = $this->getBdd();
+        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $sae['titre'];
+    }
+
+    public function rendreDepot($idRendu, $fichier, $idGroupe) {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Rendu_Groupe SET contenu_rendu = ?, statut = 'Remis' WHERE id_rendu = ? AND id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$fichier, $idRendu, $idGroupe]);
+    }
+
+    public function getNomGroupe($idGroupe){
+        $bdd = $this->getBdd();
+        $query = "SELECT nom FROM Groupe WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idGroupe]);
+        $groupe = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $groupe['nom'];
+    }
+
+    public function getNomRendu($idRendu){
+        $bdd = $this->getBdd();
+        $query = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idRendu]);
+        $rendu = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $rendu['titre'];
+    }
 
 }

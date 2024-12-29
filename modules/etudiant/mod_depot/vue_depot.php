@@ -14,7 +14,7 @@ Class VueDepot extends VueGenerique
             <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Tous les Dépôts</h2>
 
             <div class="accordion" id="depotAccordion">
-                <?php if (empty($tabAllDepot)): ?>
+                <?php if (!is_array($tabAllDepot) || empty($tabAllDepot)): ?>
                     <div class="text-center">
                         <p>Aucun dépôt disponible pour ce projet.</p>
                     </div>
@@ -51,6 +51,7 @@ Class VueDepot extends VueGenerique
         </div>
         <?php
     }
+
 
 
 }
