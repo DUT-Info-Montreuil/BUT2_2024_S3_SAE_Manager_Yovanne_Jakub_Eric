@@ -1,7 +1,7 @@
 <?php
 
 include_once 'generique/vue_generique.php';
-Class VueRessource extends VueGenerique
+Class VueRessourceEtud extends VueGenerique
 {
     public function __construct()
     {

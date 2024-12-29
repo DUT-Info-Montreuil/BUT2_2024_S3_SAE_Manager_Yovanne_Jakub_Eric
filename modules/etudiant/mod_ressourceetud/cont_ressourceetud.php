@@ -1,7 +1,7 @@
 <?php
 include_once "modules/etudiant/mod_ressourceetud/modele_ressourceetud.php";
 include_once "modules/etudiant/mod_ressourceetud/vue_ressourceetud.php";
-Class ContRessource
+Class ContRessourceEtud
 {
     private $modele;
     private $vue;
@@ -9,8 +9,8 @@ Class ContRessource
 
     public function __construct()
     {
-        $this->modele = new ModeleRessource();
-        $this->vue = new VueRessource();
+        $this->modele = new ModeleRessourceEtud();
+        $this->vue = new VueRessourceEtud();
     }
 
     public function exec()

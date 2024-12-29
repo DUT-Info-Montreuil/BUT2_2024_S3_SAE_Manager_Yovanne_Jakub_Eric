@@ -1,7 +1,7 @@
 <?php
 
 include_once 'Connexion.php';
-Class ModeleRessource extends Connexion
+Class ModeleRessourceEtud extends Connexion
 {
     public function __construct()
     {
