@@ -7,26 +7,15 @@ class ModuleName {
 
     public function __construct() {
         $this->module_name = isset($_GET['module']) ? $_GET['module'] : "connexion";
-
         if (in_array($this->module_name, ['groupeprof', 'gerantprof', 'depotprof', 'ressourceprof', 'soutenanceprof', "accueilprof", "evaluationprof"])) {
-            if (substr($this->module_name, -4) === 'prof') {
-                $this->module_name = substr($this->module_name, 0, -4);
-            }
             $module_path = "modules/professeur/mod_{$this->module_name}/mod_{$this->module_name}.php";
-        }else if(in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud'])){
-            if (substr($this->module_name, -4) === 'etud') {
-                $this->module_name = substr($this->module_name, 0, -4);
-            }
+        } else if (in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud'])) {
             $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
-        } else if (in_array($this->module_name, ['accueilintervenant', 'depotintervenant', 'evaluationintervenant', 'soutenanceintervenant', 'ressourceintervenant'])){
-            if (substr($this->module_name, -11) === 'intervenant') {
-                $this->module_name = substr($this->module_name, 0, -11);
-            }
+        } else if (in_array($this->module_name, ['accueilIntervenant', 'depotintervenant', 'evaluationintervenant', 'soutenanceintervenant', 'ressourceintervenant'])) {
             $module_path = "modules/intervenant/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else {
             $module_path = "modules/mod_{$this->module_name}/mod_{$this->module_name}.php";
         }
-
         if (file_exists($module_path)) {
             require_once $module_path;
         } else {
@@ -34,8 +23,13 @@ class ModuleName {
             die("Module '{$this->module_name}' introuvable.");
         }
     }
+
     public function exec_module() {
         $module_class = "Mod" . ucfirst($this->module_name);
+        $module_class = str_replace('prof', 'Prof', $module_class);
+        $module_class = str_replace('etud', 'Etud', $module_class);
+        $module_class = str_replace('intervenant', 'Intervenant', $module_class);
+
         if (class_exists($module_class)) {
             $this->module = new $module_class();
             $this->module->exec();
