@@ -34,8 +34,10 @@ class ContDepot{
                 break;
             case "modifierDepot" :
                 $this->modifierDepot();
+                break;
             case "supprimerDepot" :
                 $this->supprimerDepot();
+                break;
         }
     }
     public function estProf(){
@@ -76,19 +78,47 @@ class ContDepot{
 
     public function modifierDepot(){
         if(isset($_POST['id_rendu']) && isset($_POST['date_limite']) && trim($_POST['titre']) !== ''){
-            $titre = trim($_POST['titre']);
+            $nouveauNomDepot = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
             $id_rendu = $_POST['id_rendu'];
-            $this->modele->modifierRendu($id_rendu, $titre, $dateLimite);
+            $idSae = $_SESSION['id_projet'];
+
+            $ancienNomDepot = $this->modele->getNomDepot($id_rendu);
+            $this->modele->modifierRendu($id_rendu, $nouveauNomDepot, $dateLimite);
+            $groupes = $this->modele->getGroupesParSae($idSae);
+            $nomSae = $this->modele->getTitreSAE($idSae);
+
+            foreach ($groupes as $groupe) {
+                $idGroupe = $groupe['id_groupe'];
+                $nomGroupe = $groupe['nom'];
+                DossierHelper::renommerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $ancienNomDepot, $nouveauNomDepot);
+            }
+
         }
         $this->gestionDepotSAE();
     }
 
     public function supprimerDepot(){
-        if(isset($_POST['id_rendu'])){
+        if (isset($_POST['id_rendu'])) {
             $id_rendu = $_POST['id_rendu'];
+            $nomDepot = $this->modele->getNomDepot($id_rendu);
+
+            $idSae = $_SESSION['id_projet'];
+            $groupes = $this->modele->getGroupesParSae($idSae);
+
+            $nomSae = $this->modele->getTitreSAE($idSae);
+
+            foreach ($groupes as $groupe) {
+                $idGroupe = $groupe['id_groupe'];
+                $nomGroupe = $groupe['nom'];
+
+                DossierHelper::supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $nomDepot);
+            }
+
             $this->modele->supprimerDepot($id_rendu);
         }
         $this->gestionDepotSAE();
     }
+
+
 }

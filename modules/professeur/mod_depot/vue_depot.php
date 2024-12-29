@@ -106,3 +106,4 @@ class VueDepot extends VueGenerique
         <?php
     }
 }
+

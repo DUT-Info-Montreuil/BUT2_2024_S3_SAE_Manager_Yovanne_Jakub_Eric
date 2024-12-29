@@ -30,7 +30,6 @@ class DossierHelper
         }
     }
 
-    // Nouvelle méthode pour créer le dossier de groupe
     public static function creerDossier($idSae, $nomSae, $nomDossier, $sousDossier)
     {
         $baseDossier = self::getBaseDossierSAE($idSae, $nomSae);
@@ -44,23 +43,6 @@ class DossierHelper
             }
         }
     }
-
-    public static function creerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idDepot, $nomDepot)
-    {
-        $baseDossier = self::getBaseDossierSAE($idSae, $nomSae);
-        $nomGroupe = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nomGroupe);
-        $nomDepot = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nomDepot);
-
-        $dossierGroupeDepot = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $nomDepot . '_' . $idDepot;
-
-        if (!is_dir($dossierGroupeDepot)) {
-            if (!mkdir($dossierGroupeDepot, 0777, true)) {
-                error_log("Erreur : Impossible de créer le dossier du groupe $dossierGroupeDepot");
-                return "Une erreur est survenue lors de la création du dossier du groupe.";
-            }
-        }
-    }
-
 
     public static function supprimerDossierComplet($dossier)
     {
@@ -83,6 +65,39 @@ class DossierHelper
 
         // supprimer le dossier lui-même
         return rmdir($dossier);
+    }
+
+    public static function getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu)
+    {
+        $baseDossier = self::getBaseDossierSAE($idSae, $nomSae);
+        $nomGroupe = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nomGroupe);
+        $nomRendu = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nomRendu);
+
+        $dossierPath = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $nomRendu . '_' . $idRendu;
+        return $dossierPath;
+    }
+
+    public static function creerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idRendu, $nomRendu)
+    {
+        $dossierGroupeDepot = self::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
+        if (!is_dir($dossierGroupeDepot)) {
+            if (!mkdir($dossierGroupeDepot, 0777, true)) {
+                error_log("Erreur : Impossible de créer le dossier du groupe $dossierGroupeDepot");
+                return "Une erreur est survenue lors de la création du dossier du groupe.";
+            }
+        }
+    }
+
+    public static function supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idRendu, $nomRendu)
+    {
+        $dossierPath = self::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
+
+        if (is_dir($dossierPath)) {
+            return self::supprimerDossierComplet($dossierPath);
+        } else {
+            error_log("Le dossier : $dossierPath  n'existe pas");
+            return false;
+        }
     }
 
     public static function supprimerDossiersSAE($idSae, $nomSae)
@@ -121,6 +136,33 @@ class DossierHelper
         } else {
             error_log("Erreur : Le dossier $dossierAncienNom n'existe pas");
             return false;
+        }
+    }
+
+    public static function renommerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idDepot, $ancienNomDepot, $nouveauNomDepot)
+    {
+        $baseDossier = self::getBaseDossierSAE($idSae, $nomSae);
+
+        $nomGroupe = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nomGroupe);
+        $ancienNomDepot = preg_replace('/[^a-zA-Z0-9-_]/', '_', $ancienNomDepot);
+        $nouveauNomDepot = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nouveauNomDepot);
+
+        // Dossier du groupe avec l'ID et le nom du dépôt
+        $dossierGroupeDepotAncien = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $ancienNomDepot . '_' . $idDepot;
+        $dossierGroupeDepotNouveau = $baseDossier . DIRECTORY_SEPARATOR . 'depots' . DIRECTORY_SEPARATOR . $nomGroupe . '_' . $idGroupe . DIRECTORY_SEPARATOR . $nouveauNomDepot . '_' . $idDepot;
+
+        // Vérifier si le dossier existe avant de renommer
+        if (is_dir($dossierGroupeDepotAncien)) {
+            // Renommer le dossier
+            if (rename($dossierGroupeDepotAncien, $dossierGroupeDepotNouveau)) {
+                return true; // Le dossier a été renommé avec succès
+            } else {
+                error_log("Erreur : Impossible de renommer le dossier $dossierGroupeDepotAncien en $dossierGroupeDepotNouveau");
+                return false; // Impossible de renommer le dossier
+            }
+        } else {
+            error_log("Erreur : Le dossier $dossierGroupeDepotAncien n'existe pas");
+            return false; // Le dossier n'existe pas
         }
     }
 
