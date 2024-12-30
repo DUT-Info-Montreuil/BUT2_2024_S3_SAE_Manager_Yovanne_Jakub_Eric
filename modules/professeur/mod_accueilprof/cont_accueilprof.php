@@ -19,8 +19,8 @@ class ContAccueilProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+        if (!$this->estProfOuIntervenant()) {
+            echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
@@ -81,9 +81,8 @@ class ContAccueilProf
     }
 
 
-    public function estProf()
-    {
-        return $_SESSION['type_utilisateur'] === "professeur";
+    public function estProfOuIntervenant(){
+        return $_SESSION['type_utilisateur']==="professeur" || $_SESSION['type_utilisateur']==="intervenant";
     }
 
     public function choixSae()
@@ -93,8 +92,8 @@ class ContAccueilProf
             $_SESSION['id_projet'] = $idProjet;
             $titre = $this->modele->getTitreSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
-            $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur); // Récupérer le rôle
-            $this->vue->afficherSaeDetails($titre, $role); // Passer le rôle à la vue
+            $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur);
+            $this->vue->afficherSaeDetails($titre, $role);
         } else {
             $this->accueil();
         }

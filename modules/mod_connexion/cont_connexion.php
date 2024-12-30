@@ -55,12 +55,10 @@ class ContConnexion {
             $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
             if($typeUtilisateur=="etudiant"){
                 header('Location: index.php?module=accueiletud');
-            }else if ($typeUtilisateur=="professeur"){
+            }else if ($typeUtilisateur=="professeur" ||$typeUtilisateur=="intervenant"){
                 header('Location: index.php?module=accueilprof');
             }else if ($typeUtilisateur=="admin"){
                 header('Location: index.php?module=administrateur');
-            }else if ($typeUtilisateur=="intervenant"){
-                header('Location: index.php?module=accueilintervenant');
             }
         } else {
             $this->vue->formConnexion();

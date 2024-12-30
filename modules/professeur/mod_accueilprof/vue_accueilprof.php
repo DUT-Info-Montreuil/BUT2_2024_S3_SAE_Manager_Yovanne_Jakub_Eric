@@ -7,7 +7,6 @@ class VueAccueilProf extends VueGenerique
     {
         parent::__construct();
     }
-
     public function afficherSaeGerer($saeGerer) {
         ?>
         <div class="container mt-5">
@@ -28,22 +27,23 @@ class VueAccueilProf extends VueGenerique
                     </div>
                 <?php endforeach; ?>
 
-                <div class="col-md-4 col-lg-3 d-flex justify-content-center">
-                    <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
-                        <div class="card shadow border-0"
-                             style="width: 250px; height: 250px; border-radius: 15px;
-                         background-color: #e9ecef; display: flex; flex-direction: column;
-                         justify-content: center; align-items: center; cursor: pointer; text-align: center;">
-                            <h1 style="font-weight: bold; color: #6c757d; font-size: 3rem;">+</h1>
-                            <p style="font-size: 1rem; color: #6c757d; font-weight: 500;">Ajouter une SAE</p>
-                        </div>
-                    </a>
-                </div>
+                <?php if ($_SESSION['type_utilisateur'] !== "intervenant" ): ?>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
+                            <div class="card shadow border-0"
+                                 style="width: 250px; height: 250px; border-radius: 15px;
+             background-color: #e9ecef; display: flex; flex-direction: column;
+             justify-content: center; align-items: center; cursor: pointer; text-align: center;">
+                                <h1 style="font-weight: bold; color: #6c757d; font-size: 3rem;">+</h1>
+                                <p style="font-size: 1rem; color: #6c757d; font-weight: 500;">Ajouter une SAE</p>
+                            </div>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php
     }
-
     public function creerUneSAEForm()
     {
         ?>
@@ -71,7 +71,6 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
-
     public function afficherSaeDetails($titre, $role)
     {
         ?>
@@ -98,9 +97,10 @@ class VueAccueilProf extends VueGenerique
                         ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
                     ],
                     "Intervenant" => [
-                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
                         ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
                         ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
                     ]
                 ];
 
@@ -125,8 +125,6 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
-
-
     public function afficherSaeInfoGeneral($saeDetails)
     {
         ?>

@@ -17,8 +17,8 @@ class ContRessourceProf{
 
     public function exec(){
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionRessourceSAE";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+        if (!$this->estProfOuIntervenant()) {
+            echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
@@ -39,8 +39,8 @@ class ContRessourceProf{
                 break;
         }
     }
-    public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+    public function estProfOuIntervenant(){
+        return $_SESSION['type_utilisateur']==="professeur" || $_SESSION['type_utilisateur']==="intervenant";
     }
 
     private function gestionRessourceSAE(){
