@@ -12,7 +12,7 @@ class VueDepotProf extends VueDepotBase
         $this->afficherDepotBase($depot, "index.php?module=depotprof&action=modifierDepot", "index.php?module=depotprof&action=supprimerDepot", "index.php?module=depotprof&action=creerDepot");
     }
 
-    public function formulaireCreerDepot($depot){
+    public function formulaireCreerDepot(){
         $this->formulaireCreerDepotBase("index.php?module=depotprof&action=submitDepot", "index.php?module=depotprof&action=gestionDepotSAE");
     }
 }

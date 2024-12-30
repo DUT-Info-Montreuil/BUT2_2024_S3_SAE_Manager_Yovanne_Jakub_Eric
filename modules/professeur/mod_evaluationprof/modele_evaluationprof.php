@@ -228,15 +228,15 @@ class ModeleEvaluationProf extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max)
+    public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
         $query = "
-        INSERT INTO Evaluation (id_evaluation, coefficient, note_max)
-        VALUES (DEFAULT, ?, ?)
+        INSERT INTO Evaluation (id_evaluation, id_evaluateur, coefficient, note_max)
+        VALUES (DEFAULT, ?, ?, ?)
     ";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$coefficient, $note_max]);
+        $stmt->execute([$evaluateur, $coefficient, $note_max]);
 
         $id_evaluation = $bdd->lastInsertId();
         $queryLink = "UPDATE Rendu SET id_evaluation = ? WHERE id_rendu = ?";
@@ -245,15 +245,15 @@ class ModeleEvaluationProf extends Connexion
         $stmtLink->execute([$id_evaluation, $id_rendu]);
     }
 
-    public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max)
+    public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
         $query = "
-        INSERT INTO Evaluation (id_evaluation, coefficient, note_max)
-        VALUES (DEFAULT, ?, ?)
+        INSERT INTO Evaluation (id_evaluation, id_evaluateur, coefficient, note_max)
+        VALUES (DEFAULT, ?, ?, ?)
     ";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$coefficient, $note_max]);
+        $stmt->execute([$evaluateur, $coefficient, $note_max]);
 
         $id_evaluation = $bdd->lastInsertId();
         $queryLink = "UPDATE Soutenance SET id_evaluation = ? WHERE id_soutenance = ?";
@@ -262,7 +262,7 @@ class ModeleEvaluationProf extends Connexion
         $stmtLink->execute([$id_evaluation, $id_soutenance]);
     }
 
-    public function sauvegarderNoteRendu($idUtilisateur, $note, $id_rendu, $id_groupe, $grpOuIndividuelle, $id_evaluateur)
+    public function sauvegarderNoteRendu($idUtilisateur, $note, $id_rendu, $id_groupe, $isIndividualEvaluation)
     {
         $bdd = $this->getBdd();
 
@@ -278,17 +278,17 @@ class ModeleEvaluationProf extends Connexion
 
         $id_evaluation = $resultEval['id_evaluation'];
 
-        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, groupeOuIndividuelle, note)
+        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, isIndividualEvaluation, note)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                             ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idUtilisateur, $id_evaluateur, $grpOuIndividuelle, $note]);
+        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idUtilisateur, $isIndividualEvaluation, $note]);
 
         return true;
 
     }
 
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $grpOuIndividuelle, $id_evaluateur)
+    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation)
     {
         $bdd = $this->getBdd();
         $queryEval = "
@@ -303,11 +303,11 @@ class ModeleEvaluationProf extends Connexion
         $id_evaluation = $resultEval['id_evaluation'];
 
         $insertQuery = "
-                        INSERT INTO Soutenance_Evaluation (id_evaluation, id_soutenance, id_groupe, id_etudiant, id_evaluateur, groupeOuIndividuelle, note)
+                        INSERT INTO Soutenance_Evaluation (id_evaluation, id_soutenance, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $id_evaluateur, $grpOuIndividuelle, $note]);
+        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $isIndividualEvaluation, $note]);
     }
 
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
