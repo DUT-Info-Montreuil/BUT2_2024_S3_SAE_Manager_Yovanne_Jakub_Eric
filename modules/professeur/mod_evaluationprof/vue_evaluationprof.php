@@ -33,7 +33,6 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
     public function afficherFormulaireModifierNote($notes, $id_groupe, $id_evaluation, $type_evaluation)
     {
         ?>
@@ -86,28 +85,42 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
-    public function formulaireModificationEvaluation($id)
-    {
+    public function formulaireModificationEvaluation($id, $tabAllGerant, $coefficient = null, $noteMax = null) {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Modifier l'Évaluation</h1>
             <form method="POST" action="index.php?module=evaluationprof&action=modifierEvaluation">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
+
                 <div class="mb-3">
                     <label for="coefficient" class="form-label">Coefficient</label>
                     <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
-                           placeholder="Entrez le coefficient" required>
+                           placeholder="Entrez le coefficient" value="<?= htmlspecialchars($coefficient) ?>">
                 </div>
+
                 <div class="mb-3">
                     <label for="note_max" class="form-label">Note Maximale</label>
                     <input type="number" step="0.01" class="form-control" id="note_max" name="note_max"
-                           placeholder="Entrez la note maximale" required>
+                           placeholder="Entrez la note maximale" value="<?= htmlspecialchars($noteMax) ?>">
                 </div>
+
+                <div class="mb-3">
+                    <label for="deleguer_evaluation" class="form-label">Déléguer l'Évaluation</label>
+                    <select class="form-control" id="deleguer_evaluation" name="deleguer_evaluation">
+                        <option value="">Sélectionner une personne</option>
+                        <?php foreach ($tabAllGerant as $gerant): ?>
+                            <option value="<?= htmlspecialchars($gerant['id_utilisateur']) ?>">
+                                <?= htmlspecialchars($gerant['nom']) ?> <?= htmlspecialchars($gerant['prenom']) ?> (<?= htmlspecialchars($gerant['role_utilisateur']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Modifier l'Évaluation</button>
                 </div>
             </form>
+
             <form method="POST" action="index.php?module=evaluationprof&action=supprimerEvaluation">
                 <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
                 <button type="submit" class="btn btn-danger">Supprimer l'évaluation</button>
@@ -115,8 +128,6 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
-
     public function afficherTableauAllEvaluation($allRendue, $allSoutenance, $id_prof)
     {
         ?>
@@ -173,10 +184,7 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
-
-
-    public function afficherTableauRendu($rendueEvaluations)
+    public function afficherTableauRenduGerer($rendueEvaluations)
     {
         ?>
         <div class="container mt-4">
@@ -230,9 +238,7 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
-
-    public function afficherTableauSoutenance($soutenanceEvaluations)
+    public function afficherTableauSoutenanceGerer($soutenanceEvaluations)
     {
         ?>
         <div class="container mt-4">
@@ -284,7 +290,6 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
     public function afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation)
     {
         $mode = "individuel";
@@ -379,5 +384,76 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
+    public function afficherTableauRenduNonGerer($rendueEvaluations)
+    {
+        ?>
+        <div class="container mt-4">
+            <h1><?= htmlspecialchars($rendueEvaluations[0]['rendu_titre']); ?></h1>
+            <?php if (!empty($rendueEvaluations)): ?>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Groupe</th>
+                        <th>Rendu</th>
+                        <th>Date Limite</th>
+                        <th>Statut</th>
+                        <th>Note Rendu</th>
+                        <th>Note Max</th>
+                        <th>Coefficient</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($rendueEvaluations as $evaluation): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_titre']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_date_limite']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_statut']) ?></td>
+                            <td><?= nl2br(htmlspecialchars($evaluation['notes_individuelles'])) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+    public function afficherTableauSoutenanceNonGerer($soutenanceEvaluations)
+    {
+        ?>
+        <div class="container mt-4">
+            <h1><?=  htmlspecialchars($soutenanceEvaluations[0]['soutenance_titre']); ?></h1>
+            <?php if (!empty($soutenanceEvaluations)): ?>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Groupe</th>
+                        <th>Soutenance</th>
+                        <th>Date Soutenance</th>
+                        <th>Note Soutenance</th>
+                        <th>Note Max</th>
+                        <th>Coefficient</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($soutenanceEvaluations as $evaluation): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['soutenance_titre']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['soutenance_date']) ?></td>
+                            <td><?= nl2br(htmlspecialchars(str_replace(', ', "\n", $evaluation['notes_individuelles']))) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
 }
 ?>

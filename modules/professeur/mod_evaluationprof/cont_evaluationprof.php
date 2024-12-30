@@ -74,7 +74,9 @@ class ContEvaluationProf
     public function versModifierEvaluation(){
         if(isset($_POST['id_evaluation'])){
             $idEvaluation = $_POST['id_evaluation'];
-            $this->vue->formulaireModificationEvaluation($idEvaluation);
+            $idSAE = $_SESSION['id_projet'];
+            $tabAllGerant = $this->modele->getAllGerantSae($idSAE);
+            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant);
         }
 
     }
@@ -98,9 +100,9 @@ class ContEvaluationProf
             if (isset($_POST['type_demande'])) {
                 $type_demande = $_POST['type_demande'];
                 if ($type_demande === "gestion") {
-                    $this->gereUneEvaluation($id_rendu);
+                    $this->gereUnRendu($id_rendu);
                 } else if ($type_demande === "voir") {
-                    $this->voirUneEvaluation($id_rendu);
+                    $this->voirUnRendu($id_rendu);
                 } else if ($type_demande === "creer") {
                     $this->vue->formulaireCreationEvaluation($id_rendu, 'rendu');
                 }
@@ -108,9 +110,21 @@ class ContEvaluationProf
         }
     }
 
-    public function gereUneEvaluation($id_rendu)
+    public function gereUnRendu($id_rendu)
     {
         $this->gestionEvaluationsRendu($id_rendu);
+    }
+
+    public function voirSoutenance($id_soutenance){
+        $idSae = $_SESSION['id_projet'];
+        $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae, $id_soutenance);
+        $this->vue->afficherTableauSoutenanceNonGerer($soutenanceEvaluations);
+    }
+
+    public function voirUnRendu($id_rendu){
+        $idSae = $_SESSION['id_projet'];
+        $rendueEvaluations = $this->modele->getRenduEvaluation($idSae, $id_rendu);
+        $this->vue->afficherTableauRenduNonGerer($rendueEvaluations);
     }
 
     public function gereUneSoutenance($id_soutenance)
@@ -121,15 +135,41 @@ class ContEvaluationProf
 
     public function modifierEvaluation()
     {
-        if (isset($_POST['id']) && isset($_POST['note_max']) && isset($_POST['coefficient'])) {
+        if (isset($_POST['id'])) {
             $id = $_POST['id'];
-            $note_max = $_POST['note_max'];
-            $coefficient = $_POST['coefficient'];
+
+            $note_max = null;
+            $coefficient = null;
+
+            if (isset($_POST['note_max']) && $_POST['note_max'] !== '') {
+                $note_max = $_POST['note_max'];
+            }
+
+            if (isset($_POST['coefficient']) && $_POST['coefficient'] !== '') {
+                $coefficient = $_POST['coefficient'];
+            }
+
+            if ($note_max === null || $coefficient === null) {
+                $evaluation = $this->modele->getEvaluationById($id);
+                if ($note_max === null) {
+                    $note_max = $evaluation['note_max'];
+                }
+                if ($coefficient === null) {
+                    $coefficient = $evaluation['coefficient'];
+                }
+            }
+
             $this->modele->modifierEvaluation($id, $note_max, $coefficient);
+
+            if (isset($_POST['deleguer_evaluation']) && !empty($_POST['deleguer_evaluation'])) {
+                $id_nvEvalueur = $_POST['deleguer_evaluation'];
+                $this->modele->modifierEvaluateur($id_nvEvalueur, $id);
+            }
         }
         $this->gestionEvaluationsSAE();
-
     }
+
+
 
     public function creerEvaluation()
     {
@@ -153,16 +193,16 @@ class ContEvaluationProf
     {
         $idSae = $_SESSION['id_projet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
-        $rendueEvaluations = $this->modele->getRenduEvaluation($idSae, $id_rendu, $id_evaluateur);
-        $this->vue->afficherTableauRendu($rendueEvaluations);
+        $rendueEvaluations = $this->modele->getRenduEvaluationGerer($idSae, $id_rendu, $id_evaluateur);
+        $this->vue->afficherTableauRenduGerer($rendueEvaluations);
     }
 
     public function gestionEvaluationsSoutenance($id_soutenance)
     {
         $idSae = $_SESSION['id_projet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
-        $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae, $id_soutenance, $id_evaluateur);
-        $this->vue->afficherTableauSoutenance($soutenanceEvaluations);
+        $soutenanceEvaluations = $this->modele->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $id_evaluateur);
+        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations);
     }
 
     public function choixNotation()

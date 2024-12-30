@@ -28,6 +28,28 @@ class ModeleEvaluationProf extends Connexion
         }
     }
 
+    public function getEvaluationById($id){
+        $bdd = $this->getBdd();
+        $query = "SELECT * FROM Evaluation WHERE id_evaluation = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllGerantSae($idSAE) {
+        $bdd = $this->getBdd();
+        $sql = "SELECT U.id_utilisateur, U.nom, U.prenom, U.email, G.role_utilisateur 
+            FROM Gerant G
+            JOIN Utilisateur U ON G.id_utilisateur = U.id_utilisateur
+            WHERE G.id_projet = ?";
+
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idSAE]);
+        $gerants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $gerants;
+    }
+
+
     public function iAmEvaluateur($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
@@ -76,12 +98,19 @@ class ModeleEvaluationProf extends Connexion
         }
     }
 
-    public function modifierEvaluation($id, $note_max, $coefficient)
+    public function modifierEvaluation($idEvaluation, $note_max, $coefficient)
     {
         $bdd = $this->getBdd();
         $query = "UPDATE Evaluation SET note_max = ? , coefficient = ? WHERE id_evaluation = ?";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$note_max, $coefficient, $id]);
+        $stmt->execute([$note_max, $coefficient, $idEvaluation]);
+    }
+
+    public function modifierEvaluateur($idNvEvalueur, $idEvaluation){
+        $bdd = $this->getBdd();
+        $query = "UPDATE Evaluation SET id_evaluateur = ? WHERE id_evaluation = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idNvEvalueur, $idEvaluation]);
     }
 
     public function infNoteMaxSoutenance($id_evaluation)
@@ -105,7 +134,7 @@ class ModeleEvaluationProf extends Connexion
         }
     }
 
-    public function getRenduEvaluation($idSae, $id_rendu, $id_utilisateur)
+    public function getRenduEvaluationGerer($idSae, $id_rendu, $idEvaluateur)
     {
         $bdd = $this->getBdd();
 
@@ -141,12 +170,51 @@ class ModeleEvaluationProf extends Connexion
     ";
 
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$idSae, $id_rendu, $id_utilisateur]);
+        $stmt->execute([$idSae, $id_rendu, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getRenduEvaluation($idSae, $id_rendu)
+    {
+        $bdd = $this->getBdd();
 
-    public function getSoutenanceEvaluation($idSae, $id_soutenance, $id_utilisateur)
+        $query = "
+    SELECT 
+        g.nom AS groupe_nom,
+        r.titre AS rendu_titre,
+        r.date_limite AS rendu_date_limite,
+        rg.statut AS rendu_statut,
+        re.note AS rendu_note,
+        GROUP_CONCAT(
+            CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté'))
+            SEPARATOR '\n'
+        ) AS notes_individuelles,
+        e.note_max AS note_max,
+        e.coefficient AS note_coef,
+        rg.id_rendu,
+        rg.id_groupe,
+        r.id_evaluation
+    FROM Rendu r
+    INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
+    INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
+    INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+    INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+    LEFT JOIN Rendu_Evaluation re 
+        ON rg.id_rendu = re.id_rendu 
+        AND rg.id_groupe = re.id_groupe 
+        AND re.id_etudiant = u.id_utilisateur
+    LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
+    WHERE r.id_projet = ? AND r.id_rendu = ? AND r.id_evaluation IS NOT NULL
+    GROUP BY rg.id_rendu, rg.id_groupe, r.id_evaluation
+    ORDER BY g.nom, r.date_limite;
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae, $id_rendu]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getSoutenanceEvaluation($idSae, $id_soutenance)
     {
         $bdd = self::getBdd();
         $query = "
@@ -181,6 +249,47 @@ class ModeleEvaluationProf extends Connexion
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae, $id_soutenance]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+
+    public function getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur)
+    {
+        $bdd = self::getBdd();
+        $query = "
+    SELECT 
+        g.nom AS groupe_nom,
+        s.titre AS soutenance_titre,
+        s.date_soutenance AS soutenance_date,
+        GROUP_CONCAT(
+            CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(se.note, 'Non noté'))
+            SEPARATOR '\n'
+        ) AS notes_individuelles,
+        e.note_max AS note_max,
+        e.coefficient AS note_coef,
+        sg.id_soutenance,
+        s.id_evaluation,
+        se.note AS soutenance_note,
+        sg.id_groupe
+    FROM Soutenance s
+    INNER JOIN Soutenance_Groupe sg ON s.id_soutenance = sg.id_soutenance
+    INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
+    INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+    INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+    LEFT JOIN Soutenance_Evaluation se 
+        ON sg.id_soutenance = se.id_soutenance 
+        AND sg.id_groupe = se.id_groupe 
+        AND se.id_etudiant = u.id_utilisateur
+    LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
+    WHERE s.id_projet = ? AND s.id_soutenance = ? AND s.id_evaluation IS NOT NULL AND e.id_evaluateur = ?
+    GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation
+    ORDER BY g.nom, s.date_soutenance;
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae, $id_soutenance, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
