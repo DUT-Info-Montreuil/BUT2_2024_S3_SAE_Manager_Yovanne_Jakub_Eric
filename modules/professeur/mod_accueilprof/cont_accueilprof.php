@@ -117,15 +117,24 @@ class ContAccueilProf
         $idSae = $_SESSION['id_projet'];
         if ($idSae) {
             if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
-                $titre = trim($_POST['titre']);
+                $nouveauTitre = trim($_POST['titre']);
                 $annee = trim($_POST['annee_universitaire']);
                 $semestre = trim($_POST['semestre']);
                 $description = trim($_POST['description_projet']);
-                $this->modele->modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description);
+                $nomSae = $this->modele->getTitreSAE($idSae);
+
+                $dossierRenomme = DossierManager::renomerBaseDossier($idSae, $nomSae, $nouveauTitre);
+
+                if ($dossierRenomme) {
+                    $this->modele->modifierInfoGeneralSae($idSae, $nouveauTitre, $annee, $semestre, $description);
+                } else {
+                    error_log("Erreur : Impossible de renommer le dossier de la SAE.");
+                }
             }
         }
         $this->accueil();
     }
+
 
     public function supprimerSAE()
     {
