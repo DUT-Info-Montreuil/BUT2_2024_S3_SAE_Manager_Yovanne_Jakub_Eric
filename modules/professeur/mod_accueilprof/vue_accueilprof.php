@@ -72,7 +72,7 @@ class VueAccueilProf extends VueGenerique
         <?php
     }
 
-    public function afficherSaeDetails($titre)
+    public function afficherSaeDetails($titre, $role)
     {
         ?>
         <div class="container mt-5">
@@ -80,16 +80,33 @@ class VueAccueilProf extends VueGenerique
             <div class="row justify-content-center g-4">
                 <?php
                 $sections = [
-                    ["href" => "index.php?module=accueilprof&action=infoGeneralSae", "title" => "Modifier la SAE"],
-                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"],
+                    "Responsable" => [
+                        ["href" => "index.php?module=accueilprof&action=infoGeneralSae", "title" => "Modifier la SAE"],
+                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                        ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ],
+                    "Co-Responsable" => [
+                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                        ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ],
+                    "Intervenant" => [
+                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                    ]
                 ];
 
-                foreach ($sections as $section): ?>
+                $availableSections = isset($sections[$role]) ? $sections[$role] : [];
+
+                foreach ($availableSections as $section): ?>
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
                         <div class="card border-0"
                              style="width: 250px; height: 250px; border-radius: 10px;
@@ -108,6 +125,7 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
+
 
     public function afficherSaeInfoGeneral($saeDetails)
     {

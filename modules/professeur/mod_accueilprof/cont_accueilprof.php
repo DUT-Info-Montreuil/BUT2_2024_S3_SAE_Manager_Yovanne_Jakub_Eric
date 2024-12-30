@@ -2,6 +2,7 @@
 include_once "modules/professeur/mod_accueilprof/modele_accueilprof.php";
 include_once "modules/professeur/mod_accueilprof/vue_accueilprof.php";
 require_once "DossierManager.php";
+require_once "ModeleCommun.php";
 
 class ContAccueilProf
 {
@@ -91,11 +92,14 @@ class ContAccueilProf
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
             $titre = $this->modele->getTitreSAE($idProjet);
-            $this->vue->afficherSaeDetails($titre);
+            $idUtilisateur = $_SESSION['id_utilisateur'];
+            $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur); // Récupérer le rôle
+            $this->vue->afficherSaeDetails($titre, $role); // Passer le rôle à la vue
         } else {
             $this->accueil();
         }
     }
+
 
 
     public function infoGeneralSae()

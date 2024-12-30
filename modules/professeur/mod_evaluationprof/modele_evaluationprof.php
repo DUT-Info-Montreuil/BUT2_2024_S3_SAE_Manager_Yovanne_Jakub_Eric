@@ -6,7 +6,6 @@ class ModeleEvaluationProf extends Connexion
     public function __construct()
     {
     }
-
     public function infNoteMaxRendu($id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -27,7 +26,6 @@ class ModeleEvaluationProf extends Connexion
             return null;
         }
     }
-
     public function getEvaluationById($id){
         $bdd = $this->getBdd();
         $query = "SELECT * FROM Evaluation WHERE id_evaluation = ?";
@@ -35,7 +33,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
     public function getAllGerantSae($idSAE) {
         $bdd = $this->getBdd();
         $sql = "SELECT U.id_utilisateur, U.nom, U.prenom, U.email, G.role_utilisateur 
@@ -48,8 +45,6 @@ class ModeleEvaluationProf extends Connexion
         $gerants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $gerants;
     }
-
-
     public function iAmEvaluateur($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
@@ -70,8 +65,6 @@ class ModeleEvaluationProf extends Connexion
             return false;
         }
     }
-
-
     public function getIdEvaluationByRendu($id_rendu){
         $bdd = $this->getBdd();
         $query = "SELECT id_evaluation FROM Rendu WHERE id_rendu = ?";
@@ -84,7 +77,6 @@ class ModeleEvaluationProf extends Connexion
             return null;
         }
     }
-
     public function getIdEvaluationBySoutenance($id_soutenance){
         $bdd = $this->getBdd();
         $query = "SELECT id_evaluation FROM Soutenance WHERE id_soutenance = ?";
@@ -97,7 +89,6 @@ class ModeleEvaluationProf extends Connexion
             return null;
         }
     }
-
     public function modifierEvaluation($idEvaluation, $note_max, $coefficient)
     {
         $bdd = $this->getBdd();
@@ -105,14 +96,12 @@ class ModeleEvaluationProf extends Connexion
         $stmt = $bdd->prepare($query);
         $stmt->execute([$note_max, $coefficient, $idEvaluation]);
     }
-
     public function modifierEvaluateur($idNvEvalueur, $idEvaluation){
         $bdd = $this->getBdd();
         $query = "UPDATE Evaluation SET id_evaluateur = ? WHERE id_evaluation = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idNvEvalueur, $idEvaluation]);
     }
-
     public function infNoteMaxSoutenance($id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -133,7 +122,6 @@ class ModeleEvaluationProf extends Connexion
             return null;
         }
     }
-
     public function getRenduEvaluationGerer($idSae, $id_rendu, $idEvaluateur)
     {
         $bdd = $this->getBdd();
@@ -173,7 +161,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_rendu, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getRenduEvaluation($idSae, $id_rendu)
     {
         $bdd = $this->getBdd();
@@ -213,7 +200,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_rendu]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getSoutenanceEvaluation($idSae, $id_soutenance)
     {
         $bdd = self::getBdd();
@@ -251,10 +237,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_soutenance]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
-
-
     public function getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur)
     {
         $bdd = self::getBdd();
@@ -292,7 +274,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_soutenance, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getAllMembreSAE($id_groupe)
     {
         $bdd = self::getBdd();
@@ -304,7 +285,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getAllRenduSAE($idSae)
     {
         $bdd = self::getBdd();
@@ -317,8 +297,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
     public function getAllSoutenanceSAE($idSae)
     {
         $bdd = self::getBdd();
@@ -331,8 +309,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
     public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
@@ -349,7 +325,6 @@ class ModeleEvaluationProf extends Connexion
         $stmtLink = $bdd->prepare($queryLink);
         $stmtLink->execute([$id_evaluation, $id_rendu]);
     }
-
     public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
@@ -366,7 +341,6 @@ class ModeleEvaluationProf extends Connexion
         $stmtLink = $bdd->prepare($queryLink);
         $stmtLink->execute([$id_evaluation, $id_soutenance]);
     }
-
     public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -380,7 +354,6 @@ class ModeleEvaluationProf extends Connexion
         return true;
 
     }
-
     public function getIdEvaluationRendu($id_rendu){
         $bdd = $this->getBdd();
 
@@ -396,7 +369,6 @@ class ModeleEvaluationProf extends Connexion
 
         return $resultEval['id_evaluation'];
     }
-
     public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -407,7 +379,6 @@ class ModeleEvaluationProf extends Connexion
         $insertStmt = $bdd->prepare($insertQuery);
         $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $isIndividualEvaluation, $note]);
     }
-
     public function getIdEvaluationSoutenance($id_soutenance){
         $bdd = $this->getBdd();
         $queryEval = "
@@ -421,7 +392,6 @@ class ModeleEvaluationProf extends Connexion
 
         return $resultEval['id_evaluation'];
     }
-
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
     {
         $bdd = $this->getBdd();
@@ -462,7 +432,6 @@ class ModeleEvaluationProf extends Connexion
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)
     {
         $bdd = $this->getBdd();
@@ -475,7 +444,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$note, $id_evaluation, $id_groupe, $id_etudiant]);
         $stmt->execute();
     }
-
     public function modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note)
     {
         $bdd = $this->getBdd();
@@ -489,7 +457,6 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$note, $id_evaluation, $id_groupe, $id_etudiant]);
         $stmt->execute();
     }
-
     public function supprimerEvaluation($id_evaluation)
     {
         $bdd = $this->getBdd();

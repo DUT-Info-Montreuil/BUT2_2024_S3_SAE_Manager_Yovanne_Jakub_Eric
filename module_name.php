@@ -11,8 +11,6 @@ class ModuleName {
             $module_path = "modules/professeur/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else if (in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud'])) {
             $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
-        } else if (in_array($this->module_name, ['accueilIntervenant', 'depotintervenant', 'evaluationintervenant', 'soutenanceintervenant', 'ressourceintervenant'])) {
-            $module_path = "modules/intervenant/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else {
             $module_path = "modules/mod_{$this->module_name}/mod_{$this->module_name}.php";
         }

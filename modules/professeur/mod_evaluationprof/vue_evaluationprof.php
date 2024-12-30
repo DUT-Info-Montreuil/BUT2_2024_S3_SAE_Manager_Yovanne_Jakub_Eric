@@ -133,7 +133,7 @@ class VueEvaluationProf extends VueGenerique
         ?>
 
         <div class="container mt-4">
-            <h1 class="mb-4">Création évaluation</h1>
+            <h1 class="mb-4">Gestion évaluation</h1>
             <table class="table table-bordered table-hover">
                 <thead class="table-dark">
                 <tr>
