@@ -84,6 +84,31 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
+
+    public function afficherEvaluateurs($evaluateurs){
+        ?>
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h6 class="m-0">Évaluateurs :</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <?php foreach ($evaluateurs as $evaluateur): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong><?= htmlspecialchars($evaluateur['nom'] . ' ' . $evaluateur['prenom']) ?></strong><br>
+                                <small class="text-muted"><?= htmlspecialchars($evaluateur['email']) ?></small>
+                            </span>
+                            <?php if ($evaluateur['is_principal']): ?>
+                                <span class="badge bg-success">Évaluateur Principal</span>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <?php
+    }
     public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur) {
         $coefficient = null;
         $noteMax = null;
@@ -244,7 +269,7 @@ class VueEvaluationProf extends VueGenerique
         <?php
     }
 
-    public function afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal)
+    public function afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal, $evaluateurs)
     {
         ?>
         <div class="container mt-4">
@@ -255,50 +280,56 @@ class VueEvaluationProf extends VueGenerique
                     <button type="submit" class="btn btn-sm btn-primary mt-3">Modifier le rendu</button>
                 </form>
             <?php endif; ?>
-            <table class="table table-bordered table-hover">
-                <thead class="table-dark">
-                <tr>
-                    <th>Groupe</th>
-                    <th>Rendu</th>
-                    <th>Date Limite</th>
-                    <th>Statut</th>
-                    <th>Note Rendu</th>
-                    <th>Note Max</th>
-                    <th>Coefficient</th>
-                    <th>Noter</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($rendueEvaluations as $evaluation): ?>
+            <?php $this->afficherEvaluateurs($evaluateurs); ?>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped">
+                    <thead class="table-dark">
                     <tr>
-                        <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['rendu_titre']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['rendu_date_limite']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['rendu_statut']) ?></td>
-                        <td><?= nl2br(htmlspecialchars($evaluation['notes_individuelles'])) ?></td>
-                        <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
-                        <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
-                        <td>
-                            <form method="POST" action="index.php?module=evaluationprof&action=choixNotation">
-                                <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
-                                <input type="hidden" name="type_evaluation" value="rendu">
-                                <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
-                                <?php if ($evaluation['rendu_note'] !== null): ?>
-                                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
-                                    <button type="submit" class="btn btn-sm btn-warning">Modifier les notes</button>
-                                <?php else: ?>
-                                    <button type="submit" class="btn btn-sm btn-primary">Noter</button>
-                                <?php endif; ?>
-                            </form>
-                        </td>
+                        <th>Groupe</th>
+                        <th>Rendu</th>
+                        <th>Date Limite</th>
+                        <th>Statut</th>
+                        <th>Note Rendu</th>
+                        <th>Note Max</th>
+                        <th>Coefficient</th>
+                        <th>Noter</th>
                     </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($rendueEvaluations as $evaluation): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($evaluation['groupe_nom']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_titre']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_date_limite']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['rendu_statut']) ?></td>
+                            <td><?= nl2br(htmlspecialchars($evaluation['notes_individuelles'])) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_max']) ?></td>
+                            <td><?= htmlspecialchars($evaluation['note_coef']) ?></td>
+                            <td>
+                                <form method="POST" action="index.php?module=evaluationprof&action=choixNotation">
+                                    <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($evaluation['id_groupe']) ?>">
+                                    <input type="hidden" name="type_evaluation" value="rendu">
+                                    <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($evaluation['id_rendu']) ?>">
+                                    <?php if ($evaluation['rendu_note'] !== null): ?>
+                                        <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($evaluation['id_evaluation']) ?>">
+                                        <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Modifier les notes</button>
+                                    <?php else: ?>
+                                        <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-pencil-alt"></i> Noter</button>
+                                    <?php endif; ?>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <?php
     }
-    public function afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal)
+
+
+    public function afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal, $evaluateurs)
     {
 
         ?>
@@ -310,6 +341,9 @@ class VueEvaluationProf extends VueGenerique
                     <button type="submit" class="btn btn-sm btn-primary mt-3">Modifier la soutenance</button>
                 </form>
             <?php endif; ?>
+
+            <?php $this->afficherEvaluateurs($evaluateurs); ?>
+
             <table class="table table-bordered table-hover">
                 <thead class="table-dark">
                 <tr>
@@ -445,11 +479,14 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherTableauRenduNonGerer($rendueEvaluations)
+    public function afficherTableauRenduNonGerer($rendueEvaluations, $evaluateurs)
     {
         ?>
         <div class="container mt-4">
             <h1><?= htmlspecialchars($rendueEvaluations[0]['rendu_titre']); ?></h1>
+
+            <?php $this->afficherEvaluateurs($evaluateurs); ?>
+
             <?php if (!empty($rendueEvaluations)): ?>
                 <table class="table table-bordered table-hover">
                     <thead class="table-dark">
@@ -481,11 +518,12 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherTableauSoutenanceNonGerer($soutenanceEvaluations)
+    public function afficherTableauSoutenanceNonGerer($soutenanceEvaluations,$evaluateurs)
     {
         ?>
         <div class="container mt-4">
             <h1><?=  htmlspecialchars($soutenanceEvaluations[0]['soutenance_titre']); ?></h1>
+            <?php $this->afficherEvaluateurs($evaluateurs); ?>
             <?php if (!empty($soutenanceEvaluations)): ?>
                 <table class="table table-bordered table-hover">
                     <thead class="table-dark">

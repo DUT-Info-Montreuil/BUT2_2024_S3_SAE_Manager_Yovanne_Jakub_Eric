@@ -63,7 +63,7 @@ class ModeleEvaluationProf extends Connexion
         $req->execute([$idEvaluateur, $idEvaluation]);
     }
 
-    public function getAllEvaluateur($idEvaluation)
+    public function getAllEvaluateurSansLePrincipal($idEvaluation)
     {
         $bdd = $this->getBdd();
 
@@ -78,6 +78,28 @@ class ModeleEvaluationProf extends Connexion
 
         return $req->fetchAll();
     }
+
+    public function getAllEvaluateur($idEvaluation) {
+        $bdd = $this->getBdd();
+
+        $query = "
+        SELECT 
+            u.id_utilisateur, 
+            u.nom, 
+            u.prenom, 
+            u.email, 
+            ee.is_principal
+        FROM Evaluation_Evaluateur ee
+        JOIN Utilisateur u ON u.id_utilisateur = ee.id_utilisateur
+        WHERE ee.id_evaluation = ?
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idEvaluation]);
+        $evaluateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $evaluateurs;
+    }
+
 
     public function supprimerEvaluateur($idEvaluateur, $idEvaluation)
     {
