@@ -45,26 +45,43 @@ class ModeleEvaluationProf extends Connexion
         $gerants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $gerants;
     }
-    public function iAmEvaluateur($id_evaluation, $id_evaluateur)
+    public function iAmEvaluateurPrincipal($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
 
         $query = "
-    SELECT 1 
-    FROM Evaluation 
-    WHERE id_evaluation = ? 
-    AND id_evaluateur = ?
+        SELECT is_principal 
+        FROM Evaluation_Evaluateur
+        WHERE id_evaluation = ? 
+        AND id_utilisateur = ?
     ";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$id_evaluation, $id_evaluateur]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($stmt->fetch()) {
-            return true;
-        } else {
-            return false;
-        }
+        return $result && $result['is_principal'] == 1;
     }
+
+    public function isEvaluateur($id_evaluation, $id_evaluateur)
+    {
+        $bdd = $this->getBdd();
+
+        $query = "
+    SELECT COUNT(*) AS count
+    FROM Evaluation_Evaluateur
+    WHERE id_evaluation = ? 
+    AND id_utilisateur = ?
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_evaluation, $id_evaluateur]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result && $result['count'] > 0;
+    }
+
+
     public function getIdEvaluationByRendu($id_rendu){
         $bdd = $this->getBdd();
         $query = "SELECT id_evaluation FROM Rendu WHERE id_rendu = ?";
@@ -96,12 +113,42 @@ class ModeleEvaluationProf extends Connexion
         $stmt = $bdd->prepare($query);
         $stmt->execute([$note_max, $coefficient, $idEvaluation]);
     }
-    public function modifierEvaluateur($idNvEvalueur, $idEvaluation){
+    public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation) {
         $bdd = $this->getBdd();
-        $query = "UPDATE Evaluation SET id_evaluateur = ? WHERE id_evaluation = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idNvEvalueur, $idEvaluation]);
+
+        $bdd->beginTransaction();
+
+        try {
+            $query = "SELECT COUNT(*) FROM Evaluation_Evaluateur WHERE id_evaluation = ? AND id_utilisateur = ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$idEvaluation, $idNvEvalueur]);
+            $exists = $stmt->fetchColumn();
+            if ($exists == 0) {
+                $query = "INSERT INTO Evaluation_Evaluateur (id_evaluation, id_utilisateur, is_principal) 
+                      VALUES (?, ?, TRUE)";
+                $stmt = $bdd->prepare($query);
+                $stmt->execute([$idEvaluation, $idNvEvalueur]);
+            } else {
+                $query = "UPDATE Evaluation_Evaluateur 
+                      SET is_principal = TRUE 
+                      WHERE id_evaluation = ? AND id_utilisateur = ?";
+                $stmt = $bdd->prepare($query);
+                $stmt->execute([$idEvaluation, $idNvEvalueur]);
+            }
+            $query = "UPDATE Evaluation_Evaluateur 
+                  SET is_principal = FALSE 
+                  WHERE id_evaluation = ? AND is_principal = TRUE AND id_utilisateur != ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$idEvaluation, $idNvEvalueur]);
+
+            $bdd->commit();
+        } catch (Exception $e) {
+            $bdd->rollBack();
+            throw $e;
+        }
     }
+
+
     public function infNoteMaxSoutenance($id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -152,7 +199,11 @@ class ModeleEvaluationProf extends Connexion
         AND rg.id_groupe = re.id_groupe 
         AND re.id_etudiant = u.id_utilisateur
     LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
-    WHERE r.id_projet = ? AND r.id_rendu = ? AND r.id_evaluation IS NOT NULL AND e.id_evaluateur = ?
+    LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
+    WHERE r.id_projet = ? 
+        AND r.id_rendu = ? 
+        AND r.id_evaluation IS NOT NULL 
+        AND ee.id_utilisateur = ?  -- Vérification de l'évaluateur principal
     GROUP BY rg.id_rendu, rg.id_groupe, r.id_evaluation
     ORDER BY g.nom, r.date_limite;
     ";
@@ -161,6 +212,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_rendu, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getRenduEvaluation($idSae, $id_rendu)
     {
         $bdd = $this->getBdd();
@@ -265,7 +317,11 @@ class ModeleEvaluationProf extends Connexion
         AND sg.id_groupe = se.id_groupe 
         AND se.id_etudiant = u.id_utilisateur
     LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
-    WHERE s.id_projet = ? AND s.id_soutenance = ? AND s.id_evaluation IS NOT NULL AND e.id_evaluateur = ?
+    LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
+    WHERE s.id_projet = ? 
+        AND s.id_soutenance = ? 
+        AND s.id_evaluation IS NOT NULL 
+        AND ee.id_utilisateur = ?  -- Vérification de l'évaluateur principal
     GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation
     ORDER BY g.nom, s.date_soutenance;
     ";
@@ -274,6 +330,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_soutenance, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getAllMembreSAE($id_groupe)
     {
         $bdd = self::getBdd();
@@ -289,67 +346,108 @@ class ModeleEvaluationProf extends Connexion
     {
         $bdd = self::getBdd();
         $query = "
-        SELECT R.*, E.id_evaluateur
-        FROM Rendu R
-        LEFT JOIN Evaluation E ON R.id_evaluation = E.id_evaluation
-        WHERE R.id_projet = ?";
+    SELECT R.*, EE.id_utilisateur AS id_evaluateur
+    FROM Rendu R
+    LEFT JOIN Evaluation E ON R.id_evaluation = E.id_evaluation
+    LEFT JOIN Evaluation_Evaluateur EE ON E.id_evaluation = EE.id_evaluation AND EE.is_principal = 1
+    WHERE R.id_projet = ?";
+
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
     public function getAllSoutenanceSAE($idSae)
     {
         $bdd = self::getBdd();
         $query = "
-        SELECT S.*, E.id_evaluateur
-        FROM Soutenance S
-        LEFT JOIN Evaluation E ON S.id_evaluation = E.id_evaluation
-        WHERE S.id_projet = ?";
+    SELECT S.*, EE.id_utilisateur AS id_evaluateur
+    FROM Soutenance S
+    LEFT JOIN Evaluation E ON S.id_evaluation = E.id_evaluation
+    LEFT JOIN Evaluation_Evaluateur EE ON E.id_evaluation = EE.id_evaluation AND EE.is_principal = 1
+    WHERE S.id_projet = ?";
+
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
         $query = "
-        INSERT INTO Evaluation (id_evaluation, id_evaluateur, coefficient, note_max)
-        VALUES (DEFAULT, ?, ?, ?)
+        INSERT INTO Evaluation (id_evaluation, coefficient, note_max)
+        VALUES (DEFAULT, ?, ?)
     ";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$evaluateur, $coefficient, $note_max]);
+        $stmt->execute([$coefficient, $note_max]);
 
         $id_evaluation = $bdd->lastInsertId();
         $queryLink = "UPDATE Rendu SET id_evaluation = ? WHERE id_rendu = ?";
 
         $stmtLink = $bdd->prepare($queryLink);
         $stmtLink->execute([$id_evaluation, $id_rendu]);
+
+        $this->insererEvaluateur($id_evaluation, $evaluateur, true);
     }
     public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
     {
         $bdd = self::getBdd();
         $query = "
-        INSERT INTO Evaluation (id_evaluation, id_evaluateur, coefficient, note_max)
-        VALUES (DEFAULT, ?, ?, ?)
+        INSERT INTO Evaluation (id_evaluation, coefficient, note_max)
+        VALUES (DEFAULT, ?, ?)
     ";
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$evaluateur, $coefficient, $note_max]);
+        $stmt->execute([$coefficient, $note_max]);
 
         $id_evaluation = $bdd->lastInsertId();
         $queryLink = "UPDATE Soutenance SET id_evaluation = ? WHERE id_soutenance = ?";
 
         $stmtLink = $bdd->prepare($queryLink);
         $stmtLink->execute([$id_evaluation, $id_soutenance]);
+
+        $this->insererEvaluateur($id_evaluation, $evaluateur, true);
+
     }
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation)
+
+    public function insererEvaluateur($id_evaluation, $id_utilisateur, $is_principal = false)
+    {
+        $bdd = self::getBdd();
+        if ($is_principal) {
+            $queryCheckPrincipal = "
+            SELECT 1 
+            FROM Evaluation_Evaluateur 
+            WHERE id_evaluation = ? AND is_principal = 1
+        ";
+            $stmtCheck = $bdd->prepare($queryCheckPrincipal);
+            $stmtCheck->execute([$id_evaluation]);
+
+            if ($stmtCheck->fetch()) {
+                throw new Exception("Un évaluateur principal existe déjà pour cette évaluation.");
+            }
+        }
+
+        $queryInsert = "
+        INSERT INTO Evaluation_Evaluateur (id_evaluation, id_utilisateur, is_principal)
+        VALUES (?, ?, ?)
+    ";
+        $stmtInsert = $bdd->prepare($queryInsert);
+        $stmtInsert->execute([$id_evaluation, $id_utilisateur, $is_principal ? 1 : 0]);
+        return true;
+    }
+
+    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
     {
         $bdd = $this->getBdd();
 
-        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, isIndividualEvaluation, note)
-                        VALUES (?, ?, ?, ?, ?, ?)
+        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                             ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $isIndividualEvaluation, $note]);
+        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $isIndividualEvaluation, $note]);
 
         return true;
 
@@ -369,7 +467,7 @@ class ModeleEvaluationProf extends Connexion
 
         return $resultEval['id_evaluation'];
     }
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation)
+    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
     {
         $bdd = $this->getBdd();
         $insertQuery = "
@@ -377,7 +475,7 @@ class ModeleEvaluationProf extends Connexion
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $isIndividualEvaluation, $note]);
+        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $idEvaluateur, $isIndividualEvaluation, $note]);
     }
     public function getIdEvaluationSoutenance($id_soutenance){
         $bdd = $this->getBdd();

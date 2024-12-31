@@ -161,8 +161,8 @@ class ContEvaluationProf
             $this->modele->modifierEvaluation($id, $note_max, $coefficient);
 
             if (isset($_POST['deleguer_evaluation']) && !empty($_POST['deleguer_evaluation'])) {
-                $id_nvEvalueur = $_POST['deleguer_evaluation'];
-                $this->modele->modifierEvaluateur($id_nvEvalueur, $id);
+                $idNvEvalueur = $_POST['deleguer_evaluation'];
+                $this->modele->modifierEvaluateurPrincipal($idNvEvalueur, $id);
             }
         }
         $this->gestionEvaluationsSAE();
@@ -256,7 +256,7 @@ class ContEvaluationProf
 
     public function iAmEvaluateur($id_evaluation, $id_evaluateur)
     {
-        return $this->modele->iAmEvaluateur($id_evaluation, $id_evaluateur);
+        return $this->modele->isEvaluateur($id_evaluation, $id_evaluateur);
     }
 
     private function isValidNote($note, $noteMax)
@@ -291,12 +291,12 @@ class ContEvaluationProf
                     if ($type_evaluation === 'rendu') {
                         $id_evaluation = $this->modele->getIdEvaluationRendu($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation);
+                            $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation, $id_evaluateur);
                         }
                     } else {
                         $id_evaluation = $this->modele->getIdEvaluationSoutenance($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation);
+                            $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation, $id_evaluateur);
                         }
                     }
                 }
@@ -322,12 +322,12 @@ class ContEvaluationProf
                     if ($type_evaluation === 'rendu') {
                         $id_evaluation = $this->modele->getIdEvaluationRendu($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation);
+                            $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur);
                         }
                     } else {
                         $id_evaluation = $this->modele->getIdEvaluationSoutenance($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation);
+                            $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur);
                         }
                     }
                 }
