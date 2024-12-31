@@ -1,5 +1,3 @@
-<script src="../../../scriptNotation.js" async></script>
-<script src="../../../scriptConfirmationEvaluateur.js" async></script>
 <?php
 include_once 'generique/vue_generique.php';
 
@@ -126,6 +124,21 @@ class VueEvaluationProf extends VueGenerique
                     </select>
                 </div>
 
+                <div id="delegationRadioButtons" class="mt-3" style="display: none;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="delegation_action" id="stayEvaluateur" value="stay">
+                        <label class="form-check-label" for="stayEvaluateur">
+                            Rester Évaluateur et Déléguer
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="delegation_action" id="removeEvaluateur" value="remove">
+                        <label class="form-check-label" for="removeEvaluateur">
+                            Déléguer et Ne Plus Être Évaluateur
+                        </label>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label for="ajouter_evaluateurs" class="form-label">Ajouter des évaluateurs :</label>
                     <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]" multiple="multiple">
@@ -155,7 +168,7 @@ class VueEvaluationProf extends VueGenerique
                 <?php endif; ?>
 
                 <div class="text-center">
-                    <button type="button" id="modifierButton" class="btn btn-primary">Modifier l'Évaluation</button>
+                    <button type="submit" id="modifierButton" class="btn btn-primary">Modifier l'Évaluation</button>
                 </div>
             </form>
 
@@ -167,26 +180,10 @@ class VueEvaluationProf extends VueGenerique
             </div>
         </div>
 
-        <div class="modal fade" id="delegationModal" tabindex="-1" aria-labelledby="delegationModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="delegationModalLabel">Confirmation de Délégation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Vous avez choisi de déléguer l'évaluation. Que souhaitez-vous faire ?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="stayEvaluatorButton">Rester Évaluateur</button>
-                        <button type="button" class="btn btn-danger" id="leaveEvaluatorButton">Ne Plus Être Évaluateur</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <?php
     }
+
+
     public function afficherTableauAllEvaluation($allRendue, $allSoutenance)
     {
         ?>

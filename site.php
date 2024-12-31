@@ -30,6 +30,6 @@
 
 <footer></footer>
 <script src="scriptNotation.js" defer></script>     <!-- defer = scripts exécutés dans l'ordre après le chargement du DOM -->
-<script src="scriptConfirmationEvaluateur.js" defer></script>
+<script src="scriptDelegation.js" defer></script>
 </body>
 </html>

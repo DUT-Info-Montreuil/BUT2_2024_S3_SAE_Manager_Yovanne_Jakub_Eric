@@ -202,16 +202,26 @@ class ModeleEvaluationProf extends Connexion
         $stmt = $bdd->prepare($query);
         $stmt->execute([$note_max, $coefficient, $idEvaluation]);
     }
-    public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation) {
+    public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation, $delegation_action) {
         $bdd = $this->getBdd();
-
         $bdd->beginTransaction();
 
         try {
+            // si il ne veut plus être evaluateur ont le supprime
+            if ($delegation_action === 'remove') {
+                $query = "DELETE FROM Evaluation_Evaluateur 
+                      WHERE id_evaluation = ? AND is_principal = TRUE AND id_utilisateur != ?";
+                $stmt = $bdd->prepare($query);
+                $stmt->execute([$idEvaluation, $idNvEvalueur]);
+            }
+
+            // verif nv évaluateur existe déjà comme évaluateur
             $query = "SELECT COUNT(*) FROM Evaluation_Evaluateur WHERE id_evaluation = ? AND id_utilisateur = ?";
             $stmt = $bdd->prepare($query);
             $stmt->execute([$idEvaluation, $idNvEvalueur]);
             $exists = $stmt->fetchColumn();
+
+            // si existe pas ont ajoute
             if ($exists == 0) {
                 $query = "INSERT INTO Evaluation_Evaluateur (id_evaluation, id_utilisateur, is_principal) 
                       VALUES (?, ?, TRUE)";
@@ -224,6 +234,8 @@ class ModeleEvaluationProf extends Connexion
                 $stmt = $bdd->prepare($query);
                 $stmt->execute([$idEvaluation, $idNvEvalueur]);
             }
+
+            // désactivation de l'ancien évaluateur
             $query = "UPDATE Evaluation_Evaluateur 
                   SET is_principal = FALSE 
                   WHERE id_evaluation = ? AND is_principal = TRUE AND id_utilisateur != ?";
@@ -236,6 +248,7 @@ class ModeleEvaluationProf extends Connexion
             throw $e;
         }
     }
+
 
 
     public function infNoteMaxSoutenance($id_evaluation)
