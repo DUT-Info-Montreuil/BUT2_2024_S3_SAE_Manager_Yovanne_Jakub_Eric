@@ -1,3 +1,7 @@
+<?php
+include "headerController.php";
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,8 +13,15 @@
 </head>
 <body>
 <header class="text-center m-0 bg-primary text-white py-3 mb-4">
-    <h1>SAE MANAGER</h1>
+    <?php if (isset($headerUrl)): ?>
+        <a href="<?= $headerUrl ?>" class="text-white text-decoration-none">
+            <h1>SAE MANAGER</h1>
+        </a>
+    <?php else: ?>
+        <h1>SAE MANAGER</h1>
+    <?php endif; ?>
 </header>
+
 <div class="profil">
     <?php echo $menu->getAffichage(); ?>
 </div>

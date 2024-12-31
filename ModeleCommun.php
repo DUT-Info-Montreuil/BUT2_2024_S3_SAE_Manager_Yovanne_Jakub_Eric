@@ -22,4 +22,10 @@ class ModeleCommun extends Connexion
         }
     }
 
+    public static function pasEtudiant($idSAE, $idUtilisateur) {
+        $role = self::getRoleSAE($idSAE, $idUtilisateur);
+        return $role !== "etudiant" && $role !== null;
+    }
+
+
 }
