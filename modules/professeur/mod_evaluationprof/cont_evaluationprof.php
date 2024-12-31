@@ -66,8 +66,22 @@ class ContEvaluationProf
         $allRendue = $this->modele->getAllRenduSAE($idSae);
         $allSoutenance = $this->modele->getAllSoutenanceSAE($idSae);
         $id_prof = $_SESSION['id_utilisateur'];
-        $this->vue->afficherTableauAllEvaluation($allRendue, $allSoutenance, $id_prof);
+
+        foreach ($allRendue as &$rendue) {
+            $rendue['is_evaluateur'] = $rendue['id_evaluation']
+                ? $this->modele->estDejaEvaluateur($id_prof, $rendue['id_evaluation'])
+                : false;
+        }
+
+        foreach ($allSoutenance as &$soutenance) {
+            $soutenance['is_evaluateur'] = $soutenance['id_evaluation']
+                ? $this->modele->estDejaEvaluateur($id_prof, $soutenance['id_evaluation'])
+                : false;
+        }
+
+        $this->vue->afficherTableauAllEvaluation($allRendue, $allSoutenance);
     }
+
 
 
     public function versModifierEvaluation(){
@@ -75,7 +89,9 @@ class ContEvaluationProf
             $idEvaluation = $_POST['id_evaluation'];
             $idSAE = $_SESSION['id_projet'];
             $tabAllGerant = $this->modele->getAllGerantSae($idSAE);
-            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant);
+            $tabAllGerantNonEvaluateur = $this->modele->getAllGerantNonEvaluateur($idSAE, $idEvaluation);
+            $tabAllEvaluateur= $this->modele->getAllEvaluateur($idEvaluation);
+            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur);
         }
 
     }
@@ -164,6 +180,22 @@ class ContEvaluationProf
                 $idNvEvalueur = $_POST['deleguer_evaluation'];
                 $this->modele->modifierEvaluateurPrincipal($idNvEvalueur, $id);
             }
+
+            if (isset($_POST['ajouter_evaluateurs']) && !empty($_POST['ajouter_evaluateurs'])) {
+                $ajouterEvaluateurs = $_POST['ajouter_evaluateurs'];
+                foreach ($ajouterEvaluateurs as $idEvaluateur) {
+                    if (!$this->modele->estDejaEvaluateur($idEvaluateur, $id)) {
+                        $this->modele->ajouterEvaluateur($idEvaluateur, $id);
+                    }
+                }
+            }
+
+            if (isset($_POST['supprimer_evaluateurs']) && !empty($_POST['supprimer_evaluateurs'])) {
+                $supprimerEvaluateurs = $_POST['supprimer_evaluateurs'];
+                foreach ($supprimerEvaluateurs as $idEvaluateur) {
+                    $this->modele->supprimerEvaluateur($idEvaluateur, $id);
+                }
+            }
         }
         $this->gestionEvaluationsSAE();
     }
@@ -193,7 +225,9 @@ class ContEvaluationProf
         $idSae = $_SESSION['id_projet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
         $rendueEvaluations = $this->modele->getRenduEvaluationGerer($idSae, $id_rendu, $id_evaluateur);
-        $this->vue->afficherTableauRenduGerer($rendueEvaluations);
+        $idEvaluation = $this->modele->getEvaluationByIdRendu($id_rendu);
+        $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
+        $this->vue->afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal);
     }
 
     public function gestionEvaluationsSoutenance($id_soutenance)
@@ -201,7 +235,9 @@ class ContEvaluationProf
         $idSae = $_SESSION['id_projet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $id_evaluateur);
-        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations);
+        $idEvaluation = $this->modele->getEvaluationByIdSoutenance($id_soutenance);
+        $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
+        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal);
     }
 
     public function choixNotation()

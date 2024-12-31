@@ -26,6 +26,71 @@ class ModeleEvaluationProf extends Connexion
             return null;
         }
     }
+
+    public function getAllGerantNonEvaluateur($idSAE, $idEvaluation) {
+        $bdd = $this->getBdd();
+
+        $query = "
+    SELECT u.id_utilisateur, u.login_utilisateur, u.prenom, u.nom, g.role_utilisateur 
+    FROM Gerant g
+    INNER JOIN Utilisateur u ON g.id_utilisateur = u.id_utilisateur
+    WHERE g.id_projet = ?
+    AND u.id_utilisateur NOT IN (
+        SELECT ee.id_utilisateur
+        FROM Evaluation_Evaluateur ee
+        WHERE ee.id_evaluation = ?
+    )
+    ";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSAE, $idEvaluation]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function estDejaEvaluateur($idEvaluateur, $idEvaluation)
+    {
+        $bdd = $this->getBdd();
+        $req = $bdd->prepare("SELECT COUNT(*) AS nb FROM Evaluation_Evaluateur WHERE id_utilisateur = ? AND id_evaluation = ?");
+        $req->execute([$idEvaluateur, $idEvaluation]);
+        $result = $req->fetch();
+        return $result['nb'] > 0;
+    }
+
+    public function ajouterEvaluateur($idEvaluateur, $idEvaluation)
+    {
+        $bdd = $this->getBdd();
+        $req = $bdd->prepare("INSERT INTO Evaluation_Evaluateur (id_utilisateur, id_evaluation) VALUES (?, ?)");
+        $req->execute([$idEvaluateur, $idEvaluation]);
+    }
+
+    public function getAllEvaluateur($idEvaluation)
+    {
+        $bdd = $this->getBdd();
+
+        $req = $bdd->prepare("
+        SELECT u.id_utilisateur, u.nom, u.prenom
+        FROM Evaluation_Evaluateur ee
+        JOIN Utilisateur u ON ee.id_utilisateur = u.id_utilisateur
+        JOIN Evaluation e ON ee.id_evaluation = e.id_evaluation
+        WHERE e.id_evaluation = ? AND ee.is_principal = 0
+    ");
+        $req->execute([$idEvaluation]);
+
+        return $req->fetchAll();
+    }
+
+    public function supprimerEvaluateur($idEvaluateur, $idEvaluation)
+    {
+        $bdd = $this->getBdd();
+
+        $req = $bdd->prepare("
+        DELETE FROM Evaluation_Evaluateur
+        WHERE id_utilisateur = ? AND id_evaluation = ?
+    ");
+        $req->execute([$idEvaluateur, $idEvaluation]);
+    }
+
+
     public function getEvaluationById($id){
         $bdd = $this->getBdd();
         $query = "SELECT * FROM Evaluation WHERE id_evaluation = ?";
@@ -33,6 +98,31 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getEvaluationByIdRendu($id_rendu){
+        $bdd = $this->getBdd();
+        $query = "SELECT id_evaluation FROM Rendu WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_rendu]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['id_evaluation'])) {
+            return $result['id_evaluation'];
+        }
+        return null;
+    }
+
+    public function getEvaluationByIdSoutenance($id_soutenance){
+        $bdd = $this->getBdd();
+        $query = "SELECT id_evaluation FROM Soutenance WHERE id_soutenance = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_soutenance]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result && isset($result['id_evaluation'])) {
+            return $result['id_evaluation'];
+        }
+        return null;
+    }
+
     public function getAllGerantSae($idSAE) {
         $bdd = $this->getBdd();
         $sql = "SELECT U.id_utilisateur, U.nom, U.prenom, U.email, G.role_utilisateur 
@@ -48,7 +138,6 @@ class ModeleEvaluationProf extends Connexion
     public function iAmEvaluateurPrincipal($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
-
         $query = "
         SELECT is_principal 
         FROM Evaluation_Evaluateur
@@ -203,7 +292,7 @@ class ModeleEvaluationProf extends Connexion
     WHERE r.id_projet = ? 
         AND r.id_rendu = ? 
         AND r.id_evaluation IS NOT NULL 
-        AND ee.id_utilisateur = ?  -- Vérification de l'évaluateur principal
+        AND ee.id_utilisateur = ?  -- Vérification que l'évaluateur est bien assigné à l'évaluation
     GROUP BY rg.id_rendu, rg.id_groupe, r.id_evaluation
     ORDER BY g.nom, r.date_limite;
     ";
@@ -212,6 +301,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSae, $id_rendu, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function getRenduEvaluation($idSae, $id_rendu)
     {
@@ -293,43 +383,44 @@ class ModeleEvaluationProf extends Connexion
     {
         $bdd = self::getBdd();
         $query = "
-    SELECT 
-        g.nom AS groupe_nom,
-        s.titre AS soutenance_titre,
-        s.date_soutenance AS soutenance_date,
-        GROUP_CONCAT(
-            CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(se.note, 'Non noté'))
-            SEPARATOR '\n'
-        ) AS notes_individuelles,
-        e.note_max AS note_max,
-        e.coefficient AS note_coef,
-        sg.id_soutenance,
-        s.id_evaluation,
-        se.note AS soutenance_note,
-        sg.id_groupe
-    FROM Soutenance s
-    INNER JOIN Soutenance_Groupe sg ON s.id_soutenance = sg.id_soutenance
-    INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
-    INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
-    INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
-    LEFT JOIN Soutenance_Evaluation se 
-        ON sg.id_soutenance = se.id_soutenance 
-        AND sg.id_groupe = se.id_groupe 
-        AND se.id_etudiant = u.id_utilisateur
-    LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
-    LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
-    WHERE s.id_projet = ? 
-        AND s.id_soutenance = ? 
-        AND s.id_evaluation IS NOT NULL 
-        AND ee.id_utilisateur = ?  -- Vérification de l'évaluateur principal
-    GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation
-    ORDER BY g.nom, s.date_soutenance;
+        SELECT 
+            g.nom AS groupe_nom,
+            s.titre AS soutenance_titre,
+            s.date_soutenance AS soutenance_date,
+            GROUP_CONCAT(
+                CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(se.note, 'Non noté'))
+                SEPARATOR '\n'
+            ) AS notes_individuelles,
+            e.note_max AS note_max,
+            e.coefficient AS note_coef,
+            sg.id_soutenance,
+            s.id_evaluation,
+            se.note AS soutenance_note,
+            sg.id_groupe
+        FROM Soutenance s
+        INNER JOIN Soutenance_Groupe sg ON s.id_soutenance = sg.id_soutenance
+        INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
+        INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+        INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+        LEFT JOIN Soutenance_Evaluation se 
+            ON sg.id_soutenance = se.id_soutenance 
+            AND sg.id_groupe = se.id_groupe 
+            AND se.id_etudiant = u.id_utilisateur
+        LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
+        LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
+        WHERE s.id_projet = ? 
+            AND s.id_soutenance = ? 
+            AND s.id_evaluation IS NOT NULL 
+            AND ee.id_utilisateur = ?
+        GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation
+        ORDER BY g.nom, s.date_soutenance;
     ";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae, $id_soutenance, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function getAllMembreSAE($id_groupe)
     {

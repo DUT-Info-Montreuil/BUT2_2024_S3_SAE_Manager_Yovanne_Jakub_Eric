@@ -85,7 +85,9 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function formulaireModificationEvaluation($id, $tabAllGerant, $coefficient = null, $noteMax = null) {
+    public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur) {
+        $coefficient = null;
+        $noteMax = null;
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Modifier l'Évaluation</h1>
@@ -116,6 +118,33 @@ class VueEvaluationProf extends VueGenerique
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label for="ajouter_evaluateurs" class="form-label">Ajouter des évaluateurs :</label>
+                    <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]"
+                            multiple="multiple">
+                        <?php foreach ($tabAllGerantNonEvaluateur as $gerant): ?>
+                            <option value="<?= htmlspecialchars($gerant['id_utilisateur']) ?>">
+                                <?= htmlspecialchars($gerant['nom']) ?> <?= htmlspecialchars($gerant['prenom']) ?> (<?= htmlspecialchars($gerant['role_utilisateur']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="supprimer_evaluateurs" class="form-label">Supprimer des évaluateurs :</label>
+                    <?php foreach ($tabAllEvaluateur as $evaluateur): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   id="supprimer_evaluateur_<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>"
+                                   name="supprimer_evaluateurs[]"
+                                   value="<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>">
+                            <label class="form-check-label" for="supprimer_evaluateur_<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>">
+                                <?= htmlspecialchars($evaluateur['nom']) ?> <?= htmlspecialchars($evaluateur['prenom']) ?>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">Modifier l'Évaluation</button>
                 </div>
@@ -128,10 +157,11 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherTableauAllEvaluation($allRendue, $allSoutenance, $id_prof)
+
+
+    public function afficherTableauAllEvaluation($allRendue, $allSoutenance)
     {
         ?>
-
         <div class="container mt-4">
             <h1 class="mb-4">Gestion évaluation</h1>
             <table class="table table-bordered table-hover">
@@ -150,7 +180,9 @@ class VueEvaluationProf extends VueGenerique
                             <form method="POST" action="index.php?module=evaluationprof&action=formEvaluation">
                                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($rendue['id_rendu']) ?>">
                                 <?php
-                                $typeDemande = $rendue['id_evaluation'] ? ($rendue['id_evaluateur'] === $id_prof ? 'gestion' : 'voir') : 'creer';
+                                $typeDemande = $rendue['id_evaluation']
+                                    ? ($rendue['is_evaluateur'] ? 'gestion' : 'voir')
+                                    : 'creer';
                                 ?>
                                 <button type="submit" class="btn btn-sm <?= $typeDemande === 'creer' ? 'btn-primary' : 'btn-warning' ?>">
                                     <?= $typeDemande === 'creer' ? 'Créer une évaluation' : ($typeDemande === 'gestion' ? 'Gérer l\'évaluation' : 'Voir l\'évaluation') ?>
@@ -168,7 +200,9 @@ class VueEvaluationProf extends VueGenerique
                             <form method="POST" action="index.php?module=evaluationprof&action=formEvaluation">
                                 <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
                                 <?php
-                                $typeDemandeSoutenance = $soutenance['id_evaluation'] ? ($soutenance['id_evaluateur'] === $id_prof ? 'gestion' : 'voir') : 'creer';
+                                $typeDemandeSoutenance = $soutenance['id_evaluation']
+                                    ? ($soutenance['is_evaluateur'] ? 'gestion' : 'voir')
+                                    : 'creer';
                                 ?>
                                 <button type="submit" class="btn btn-sm <?= $typeDemandeSoutenance === 'creer' ? 'btn-primary' : 'btn-warning' ?>">
                                     <?= $typeDemandeSoutenance === 'creer' ? 'Créer une évaluation' : ($typeDemandeSoutenance === 'gestion' ? 'Gérer l\'évaluation' : 'Voir l\'évaluation') ?>
@@ -184,12 +218,13 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherTableauRenduGerer($rendueEvaluations)
+
+    public function afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal)
     {
         ?>
         <div class="container mt-4">
             <h1><?= htmlspecialchars($rendueEvaluations[0]['rendu_titre']); ?></h1>
-            <?php if (!empty($rendueEvaluations)): ?>
+            <?php if (!empty($rendueEvaluations) && $iAmEvaluateurPrincipal): ?>
                 <form method="POST" action="index.php?module=evaluationprof&action=versModifierEvaluation">
                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($rendueEvaluations[0]['id_evaluation']) ?>">
                     <button type="submit" class="btn btn-sm btn-primary mt-3">Modifier le rendu</button>
@@ -238,12 +273,13 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherTableauSoutenanceGerer($soutenanceEvaluations)
+    public function afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal)
     {
+
         ?>
         <div class="container mt-4">
             <h1><?=  htmlspecialchars($soutenanceEvaluations[0]['soutenance_titre']); ?></h1>
-            <?php if (!empty($soutenanceEvaluations)): ?>
+            <?php if (!empty($soutenanceEvaluations) && $iAmEvaluateurPrincipal): ?>
                 <form method="POST" action="index.php?module=evaluationprof&action=versModifierEvaluation">
                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($soutenanceEvaluations[0]['id_evaluation']) ?>">
                     <button type="submit" class="btn btn-sm btn-primary mt-3">Modifier la soutenance</button>

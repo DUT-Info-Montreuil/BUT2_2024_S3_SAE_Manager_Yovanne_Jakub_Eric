@@ -47,20 +47,21 @@ Class ModeleGerantProf extends Connexion {
     public function getProfesseurNonGerant($idSae) {
         $bdd = $this->getBdd();
         $query = "
-        SELECT u.login_utilisateur, u.id_utilisateur, CONCAT(u.prenom, ' ', u.nom) AS nom_complet
-        FROM Utilisateur u
-        WHERE u.type_utilisateur = 'professeur' OR u.type_utilisateur = 'intervenant'
-        AND u.id_utilisateur NOT IN (
-            SELECT g.id_utilisateur
-            FROM Gerant g
-            WHERE g.id_projet = :idSae
-        )
+    SELECT u.login_utilisateur, u.id_utilisateur, CONCAT(u.prenom, ' ', u.nom) AS nom_complet
+    FROM Utilisateur u
+    WHERE (u.type_utilisateur = 'professeur' OR u.type_utilisateur = 'intervenant')
+    AND u.id_utilisateur NOT IN (
+        SELECT g.id_utilisateur
+        FROM Gerant g
+        WHERE g.id_projet = :idSae
+    )
     ";
         $stmt = $bdd->prepare($query);
         $stmt->bindParam(':idSae', $idSae, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
     public function ajouterGerantSAE($gerantId, $roleGerant, $idSae) {
