@@ -8,12 +8,18 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         formIndividuel.style.display = 'block';
         formGroupe.style.display = 'none';
+        console.log('Forme individuelle affichée');
     });
 
     btnGroupe.addEventListener('click', function (e) {
         e.preventDefault();
         formGroupe.style.display = 'block';
         formIndividuel.style.display = 'none';
+        console.log('Forme groupe affichée');
     });
 
 });
+
+
+
+
