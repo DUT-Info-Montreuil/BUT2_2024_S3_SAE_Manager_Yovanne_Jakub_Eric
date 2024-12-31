@@ -11,7 +11,9 @@ class ModuleName {
             $module_path = "modules/professeur/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else if (in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud'])) {
             $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
-        } else {
+        } else if(in_array($this->module_name, ['accueiladmin'])){
+            $module_path = "modules/admin/mod_{$this->module_name}/mod_{$this->module_name}.php";
+        }else {
             $module_path = "modules/mod_{$this->module_name}/mod_{$this->module_name}.php";
         }
         if (file_exists($module_path)) {
