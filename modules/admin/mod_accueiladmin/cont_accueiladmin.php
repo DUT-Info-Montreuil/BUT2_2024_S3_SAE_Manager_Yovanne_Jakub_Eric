@@ -33,7 +33,7 @@ class ContAccueilAdmin
     }
 
     public function accueil(){
-        echo "accueil";
+        $this->vue->afficherMenu();
     }
 
 }
