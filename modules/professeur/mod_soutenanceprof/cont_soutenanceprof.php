@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_soutenanceprof/modele_soutenanceprof.php';
 include_once 'modules/professeur/mod_soutenanceprof/vue_soutenanceprof.php';
-
+require_once "ModeleCommun.php";
 class ContSoutenanceProf
 {
     private $modele;
@@ -41,7 +41,8 @@ class ContSoutenanceProf
         }
     }
     public function estProfOuIntervenant(){
-        return $_SESSION['type_utilisateur']==="professeur" || $_SESSION['type_utilisateur']==="intervenant";
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     private function gestionSoutenancesSAE()

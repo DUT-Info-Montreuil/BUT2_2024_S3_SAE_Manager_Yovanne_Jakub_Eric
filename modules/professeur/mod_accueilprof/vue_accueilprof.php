@@ -7,7 +7,7 @@ class VueAccueilProf extends VueGenerique
     {
         parent::__construct();
     }
-    public function afficherSaeGerer($saeGerer) {
+    public function afficherSaeGerer($saeGerer, $typeUser) {
         ?>
         <div class="container mt-5">
             <div class="row justify-content-center g-4">
@@ -27,7 +27,7 @@ class VueAccueilProf extends VueGenerique
                     </div>
                 <?php endforeach; ?>
 
-                <?php if ($_SESSION['type_utilisateur'] !== "intervenant" ): ?>
+                <?php if ($typeUser !== "intervenant" ): ?>
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
                         <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
                             <div class="card shadow border-0"

@@ -1,6 +1,7 @@
 <?php
 include_once "modules/etudiant/mod_soutenanceetud/modele_soutenanceetud.php";
 include_once "modules/etudiant/mod_soutenanceetud/vue_soutenanceetud.php";
+require_once "ModeleCommun.php";
 Class ContSoutenanceEtud
 {
     private $modele;
@@ -28,7 +29,7 @@ Class ContSoutenanceEtud
     }
 
     public function estEtudiant(){
-        return $_SESSION["type_utilisateur"] === "etudiant";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
     public function affichageDesSoutenances(){

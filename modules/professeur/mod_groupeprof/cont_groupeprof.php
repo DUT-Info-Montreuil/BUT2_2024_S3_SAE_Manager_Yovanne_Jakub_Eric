@@ -2,6 +2,7 @@
 include_once "modules/professeur/mod_groupeprof/modele_groupeprof.php";
 include_once "modules/professeur/mod_groupeprof/vue_groupeprof.php";
 require_once "DossierManager.php";
+require_once "ModeleCommun.php";
 Class ContGroupeProf {
     private $modele;
     private $vue;
@@ -47,7 +48,7 @@ Class ContGroupeProf {
         }
     }
     public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";
     }
     public function gestionGroupeSAE() {
         $idSae = $_SESSION['id_projet'];

@@ -41,7 +41,8 @@ class ContDepotProf{
         }
     }
     public function estProfOuIntervenant(){
-        return $_SESSION['type_utilisateur']==="professeur" || $_SESSION['type_utilisateur']==="intervenant";
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     public function gestionDepotSAE(){

@@ -1,6 +1,7 @@
 <?php
 include_once "modules/admin/mod_gestuser/modele_gestuser.php";
 include_once "modules/admin/mod_gestuser/vue_gestuser.php";
+require_once "ModeleCommun.php";
 
 class ContGestUser
 {
@@ -45,7 +46,7 @@ class ContGestUser
 
     public function estAdmin()
     {
-        return $_SESSION["type_utilisateur"] === "admin";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "admin";
     }
 
     public function menuGestUser()
@@ -93,7 +94,6 @@ class ContGestUser
     public function ajouterUser()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Get data from the POST request
             $nom = htmlspecialchars($_POST['nom']);
             $prenom = htmlspecialchars($_POST['prenom']);
             $email = htmlspecialchars($_POST['email']);

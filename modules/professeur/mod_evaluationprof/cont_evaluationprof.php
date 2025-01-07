@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_evaluationprof/modele_evaluationprof.php';
 include_once 'modules/professeur/mod_evaluationprof/vue_evaluationprof.php';
-
+require_once "ModeleCommun.php";
 class ContEvaluationProf
 {
     private $modele;
@@ -57,7 +57,8 @@ class ContEvaluationProf
     }
 
     public function estProfOuIntervenant(){
-        return $_SESSION['type_utilisateur']==="professeur" || $_SESSION['type_utilisateur']==="intervenant";
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     public function gestionEvaluationsSAE()

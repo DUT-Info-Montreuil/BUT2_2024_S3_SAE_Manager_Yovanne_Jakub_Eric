@@ -27,5 +27,16 @@ class ModeleCommun extends Connexion
         return $role !== "etudiant" && $role !== null;
     }
 
+    public static function getTypeUtilisateur($idUtilisateur) {
+        $bdd = self::getBdd();
+        $sql = "SELECT type_utilisateur FROM Utilisateur WHERE id_utilisateur = ?";
+        $req = $bdd->prepare($sql);
+        $req->execute([$idUtilisateur]);
+        if ($result = $req->fetch(PDO::FETCH_ASSOC)) {
+            return $result['type_utilisateur'];
+        }
+        return null;
+    }
+
 
 }

@@ -2,6 +2,7 @@
 include_once "modules/etudiant/mod_depotetud/modele_depotetud.php";
 include_once "modules/etudiant/mod_depotetud/vue_depotetud.php";
 require_once "DossierManager.php";
+require_once "ModeleCommun.php";
 
 class ContDepotEtud
 {
@@ -37,7 +38,7 @@ class ContDepotEtud
 
     public function estEtudiant()
     {
-        return $_SESSION["type_utilisateur"] === "etudiant";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
 

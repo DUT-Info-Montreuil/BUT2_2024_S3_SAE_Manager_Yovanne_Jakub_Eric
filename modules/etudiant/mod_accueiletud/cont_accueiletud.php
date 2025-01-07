@@ -1,6 +1,7 @@
 <?php
 include_once "modules/etudiant/mod_accueiletud/modele_accueiletud.php";
 include_once "modules/etudiant/mod_accueiletud/vue_accueiletud.php";
+require_once "ModeleCommun.php";
 Class ContAccueilEtud {
     private $modele;
     private $vue;
@@ -28,9 +29,8 @@ Class ContAccueilEtud {
     }
 
     public function estEtudiant(){
-        return $_SESSION["type_utilisateur"] === "etudiant";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
-
     public function accueil() {
         $saeInscrit = $this->modele->saeInscrit($_SESSION['id_utilisateur']);
         $this->vue->afficherSaeGerer($saeInscrit);
