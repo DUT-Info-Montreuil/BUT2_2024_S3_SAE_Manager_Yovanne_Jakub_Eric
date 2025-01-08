@@ -3,7 +3,7 @@
 include_once 'modules/professeur/mod_depotprof/modele_depotprof.php';
 include_once 'modules/professeur/mod_depotprof/vue_depotprof.php';
 require_once "DossierManager.php";
-
+require_once "ModeleCommun.php";
 class ContDepotProf{
     private $modele;
     private $vue;
@@ -66,7 +66,7 @@ class ContDepotProf{
             $idRendu = $this->modele->creerDepot($titre, $dateLimite, $idSae);
             $nomRendu = $this->modele->getNomDepot($idRendu);
             $groupes = $this->modele->getGroupesParSae($idSae);
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $nomGroupe = $groupe['nom'];
@@ -87,7 +87,7 @@ class ContDepotProf{
             $ancienNomDepot = $this->modele->getNomDepot($id_rendu);
             $this->modele->modifierRendu($id_rendu, $nouveauNomDepot, $dateLimite);
             $groupes = $this->modele->getGroupesParSae($idSae);
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $idGroupe = $groupe['id_groupe'];

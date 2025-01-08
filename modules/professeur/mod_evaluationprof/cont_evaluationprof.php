@@ -103,7 +103,7 @@ class ContEvaluationProf
             if (isset($_POST['type_demande'])) {
                 $type_demande = $_POST['type_demande'];
                 if ($type_demande === "gestion") {
-                    $this->gereUneSoutenance($id_soutenance);
+                    $this->gestionEvaluationsSoutenance($id_soutenance);
                 } else if ($type_demande === "voir") {
                     $this->voirSoutenance($id_soutenance);
                 } else if ($type_demande === "creer") {
@@ -116,7 +116,7 @@ class ContEvaluationProf
             if (isset($_POST['type_demande'])) {
                 $type_demande = $_POST['type_demande'];
                 if ($type_demande === "gestion") {
-                    $this->gereUnRendu($id_rendu);
+                    $this->gestionEvaluationsRendu($id_rendu);
                 } else if ($type_demande === "voir") {
                     $this->voirUnRendu($id_rendu);
                 } else if ($type_demande === "creer") {
@@ -126,10 +126,6 @@ class ContEvaluationProf
         }
     }
 
-    public function gereUnRendu($id_rendu)
-    {
-        $this->gestionEvaluationsRendu($id_rendu);
-    }
 
     public function voirSoutenance($id_soutenance){
         $idSae = $_SESSION['id_projet'];
@@ -145,11 +141,6 @@ class ContEvaluationProf
         $idEvaluation = $this->modele->getIdEvaluationRendu($id_rendu);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $this->vue->afficherTableauRenduNonGerer($rendueEvaluations, $evaluateurs);
-    }
-
-    public function gereUneSoutenance($id_soutenance)
-    {
-        $this->gestionEvaluationsSoutenance($id_soutenance);
     }
 
 
@@ -256,14 +247,17 @@ class ContEvaluationProf
             $id_groupe = $_POST['id_groupe'];
             $allMembres = $this->modele->getAllMembreSAE($id_groupe);
 
+            $contenue = null;
+
             if ($type_evaluation === 'rendu') {
                 $id = $_POST['id_rendu'];
+                $contenue = $this->modele->getFichierRendu($id, $id_groupe);
             } else {
                 $id = $_POST['id_soutenance'];
             }
 
             if (!isset($_POST['id_evaluation'])) {
-                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation);
+                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue);
             } else {
                 $id_evaluation = $_POST['id_evaluation'];
                 $notes = $this->modele->getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation);

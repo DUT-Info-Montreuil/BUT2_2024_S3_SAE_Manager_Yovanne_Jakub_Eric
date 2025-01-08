@@ -6,6 +6,16 @@ class ModeleEvaluationProf extends Connexion
     public function __construct()
     {
     }
+
+    public function getFichierRendu($idRendu, $idGroupe)
+    {
+        $bdd = $this->getBdd();
+        $query = "SELECT * FROM Rendu_Fichier WHERE id_groupe = ? AND id_rendu = ?";
+        $statement = $bdd->prepare($query);
+        $statement->execute([$idGroupe, $idRendu]);
+        return $statement->fetchAll();
+
+    }
     public function infNoteMaxRendu($id_evaluation)
     {
         $bdd = $this->getBdd();

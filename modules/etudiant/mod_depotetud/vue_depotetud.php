@@ -35,21 +35,31 @@ Class VueDepotEtud extends VueGenerique
                                     <p><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
 
                                     <?php if ($depot['statut'] === 'Remis'): ?>
-                                        <p><strong>Contenu remis :</strong>
-                                            <a href="<?= htmlspecialchars($depot['contenu_rendu']) ?>" target="_blank">
-                                                Voir le fichier remis
-                                            </a>
-                                        </p>
+                                        <p><strong>Fichiers remis :</strong></p>
+                                        <?php if (isset($depot['fichiers']) && !empty($depot['fichiers'])): ?>
+                                            <ul>
+                                                <?php foreach ($depot['fichiers'] as $fichier): ?>
+                                                    <li>
+                                                        <a href="<?= htmlspecialchars($fichier['chemin_fichier']) ?>" target="_blank">
+                                                            <?= htmlspecialchars($fichier['nom_fichier']) ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        <?php else: ?>
+                                            <p>Aucun fichier associé.</p>
+                                        <?php endif; ?>
+
                                         <form action="index.php?module=depotetud&action=supprimerTravailRemis" method="post" class="mt-4">
-                                            <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
+                                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                                             <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
                                         </form>
                                     <?php else: ?>
                                         <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data">
                                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                                             <div class="mb-3">
-                                                <label for="fileUpload-<?= $index ?>" class="form-label">Uploader un fichier :</label>
-                                                <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_file" required>
+                                                <label for="fileUpload-<?= $index ?>" class="form-label">Uploader des fichiers :</label>
+                                                <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_files[]" multiple required>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Envoyer</button>
                                         </form>

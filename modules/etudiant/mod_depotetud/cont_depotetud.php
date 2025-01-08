@@ -46,53 +46,70 @@ class ContDepotEtud
     {
         $id_groupe = $_SESSION["id_groupe"];
         $id_projet = $_SESSION["id_projet"];
-        $tabAllDepot = $this->modele->afficherAllDepot($id_groupe, $id_projet);
+        $tabAllDepot = $this->modele->getAllDepot($id_groupe, $id_projet);
         $this->vue->afficherAllDepot($tabAllDepot);
     }
 
     public function upload()
     {
-        if (isset($_FILES['uploaded_file']) && isset($_POST['id_rendu'])) {
+        if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
             $idSae = $_SESSION["id_projet"];
             $idGroupe = $_SESSION['id_groupe'];
             $idRendu = $_POST['id_rendu'];
 
-            $nomSae =  ModeleCommun::getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
             $nomGroupe = $this->modele->getNomGroupe($idGroupe);
             $nomRendu = $this->modele->getNomRendu($idRendu);
 
             $uploadDossier = DossierManager::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
 
-            try {
-                $cheminFichier = DossierManager::uploadFichier($_FILES['uploaded_file'], $uploadDossier);
-                $this->modele->rendreDepot($idRendu, $cheminFichier, $idGroupe);
+            foreach ($_FILES['uploaded_files']['name'] as $index => $fileName) {
+                try {
+                    $fichierSource = [
+                        'name' => $_FILES['uploaded_files']['name'][$index],
+                        'type' => $_FILES['uploaded_files']['type'][$index],
+                        'tmp_name' => $_FILES['uploaded_files']['tmp_name'][$index],
+                        'error' => $_FILES['uploaded_files']['error'][$index],
+                        'size' => $_FILES['uploaded_files']['size'][$index]
+                    ];
 
-            } catch (Exception $e) {
-                die("Erreur lors de l'upload : " . $e->getMessage());
+                    $cheminFichier = DossierManager::uploadFichier($fichierSource, $uploadDossier);
+                    $this->modele->enregistrerFichierRendu($idRendu, $idGroupe, $fichierSource['name'], $cheminFichier);
+                } catch (Exception $e) {
+                    die("Erreur lors de l'upload du fichier : " . $e->getMessage());
+                }
             }
+            $this->modele->setRenduStatut($idRendu, $idGroupe,'Remis');
         }
 
         $this->afficherDepot();
     }
-
-
     public function supprimerTravailRemis()
     {
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
             $idGroupe = $_SESSION['id_groupe'];
 
-            $cheminFichier = $this->modele->getCheminFichierRemis($idRendu, $idGroupe);
+            $fichiers = $this->modele->getFichiersRemis($idRendu, $idGroupe);
 
             try {
-                DossierManager::supprimerFichier($cheminFichier);
-                $this->modele->supprimerTravailRemis($idRendu, $idGroupe);
+                foreach ($fichiers as $fichier) {
+                    if (file_exists($fichier['chemin_fichier'])) {
+                        DossierManager::supprimerFichier($fichier['chemin_fichier']);
+                    }
+                }
+                $this->modele->supprimerTousLesFichiersRendu($idRendu, $idGroupe);
             } catch (Exception $e) {
-                echo "Erreur lors de la suppression de fichier : " . $e->getMessage();
+                echo "Erreur lors de la suppression des fichiers : " . $e->getMessage();
                 return;
             }
+            $this->modele->setRenduStatut($idRendu, $idGroupe, "En attente");
         }
+
         $this->afficherDepot();
     }
+
+
+
 
 }

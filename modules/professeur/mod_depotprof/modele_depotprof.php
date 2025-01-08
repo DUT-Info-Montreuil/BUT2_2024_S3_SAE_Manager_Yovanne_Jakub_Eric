@@ -47,7 +47,7 @@ Class ModeleDepotProf extends Connexion {
         $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($groupes as $groupe) {
-            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, statut) VALUES (?, ?, 'En attente')";
             $stmtInsert = $bdd->prepare($sqlInsert);
             $stmtInsert->execute([$idRendue, $groupe['id_groupe']]);
         }
