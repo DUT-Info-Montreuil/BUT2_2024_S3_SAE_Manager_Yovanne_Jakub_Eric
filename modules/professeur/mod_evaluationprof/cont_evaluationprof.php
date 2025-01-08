@@ -130,7 +130,7 @@ class ContEvaluationProf
     public function voirSoutenance($id_soutenance){
         $idSae = $_SESSION['id_projet'];
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae, $id_soutenance);
-        $idEvaluation = $this->modele->getIdEvaluationSoutenance($id_soutenance);
+        $idEvaluation = $this->modele->getIdEvaluationBySoutenance($id_soutenance);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $this->vue->afficherTableauSoutenanceNonGerer($soutenanceEvaluations, $evaluateurs);
     }
@@ -138,7 +138,7 @@ class ContEvaluationProf
     public function voirUnRendu($id_rendu){
         $idSae = $_SESSION['id_projet'];
         $rendueEvaluations = $this->modele->getRenduEvaluation($idSae, $id_rendu);
-        $idEvaluation = $this->modele->getIdEvaluationRendu($id_rendu);
+        $idEvaluation = $this->modele->getIdEvaluationByRendu($id_rendu);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $this->vue->afficherTableauRenduNonGerer($rendueEvaluations, $evaluateurs);
     }
@@ -328,12 +328,12 @@ class ContEvaluationProf
             foreach ($notes as $idUtilisateur => $note) {
                 if ($this->isValidNote($note, $noteMax)) {
                     if ($type_evaluation === 'rendu') {
-                        $id_evaluation = $this->modele->getIdEvaluationRendu($id);
+                        $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                             $this->modele->sauvegarderNoteRendu((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation, $id_evaluateur);
                         }
                     } else {
-                        $id_evaluation = $this->modele->getIdEvaluationSoutenance($id);
+                        $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                             $this->modele->sauvegarderNoteSoutenance((int)$idUtilisateur, (float)$note, $id, $id_groupe, 1, $id_evaluation, $id_evaluateur);
                         }
@@ -359,12 +359,12 @@ class ContEvaluationProf
                 $allMembres = $this->modele->getAllMembreSAE($id_groupe);
                 foreach ($allMembres as $membre) {
                     if ($type_evaluation === 'rendu') {
-                        $id_evaluation = $this->modele->getIdEvaluationRendu($id);
+                        $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                             $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur);
                         }
                     } else {
-                        $id_evaluation = $this->modele->getIdEvaluationSoutenance($id);
+                        $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
                         if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                             $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur);
                         }
