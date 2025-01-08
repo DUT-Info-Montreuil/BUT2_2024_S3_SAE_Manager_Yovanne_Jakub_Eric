@@ -33,17 +33,8 @@ class ContAccueilProf
             case "choixSae" :
                 $this->choixSae();
                 break;
-            case "infoGeneralSae" :
-                $this->infoGeneralSae();
-                break;
-            case "updateSae";
-                $this->updateSae();
-                break;
             case "creerSAE":
                 $this->creerSAE();
-                break;
-            case "supprimerSAE" :
-                $this->supprimerSAE();
                 break;
         }
     }
@@ -75,7 +66,7 @@ class ContAccueilProf
 
             $idSae = $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
             DossierManager::creerDossiersSAE($idSae, $nomSae);
         }
         $this->accueil();
@@ -99,51 +90,6 @@ class ContAccueilProf
         } else {
             $this->accueil();
         }
-    }
-
-
-
-    public function infoGeneralSae()
-    {
-        $idProjet = $_SESSION['id_projet'];
-        if ($idProjet) {
-            $saeTabDetails = $this->modele->getSaeDetails($idProjet);
-            $this->vue->afficherSaeInfoGeneral($saeTabDetails);
-        } else {
-            $this->accueil();
-        }
-    }
-
-    public function updateSae()
-    {
-        $idSae = $_SESSION['id_projet'];
-        if ($idSae) {
-            if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
-                $nouveauTitre = trim($_POST['titre']);
-                $annee = trim($_POST['annee_universitaire']);
-                $semestre = trim($_POST['semestre']);
-                $description = trim($_POST['description_projet']);
-                $nomSae = $this->modele->getTitreSAE($idSae);
-
-                $dossierRenomme = DossierManager::renomerBaseDossier($idSae, $nomSae, $nouveauTitre);
-
-                if ($dossierRenomme) {
-                    $this->modele->modifierInfoGeneralSae($idSae, $nouveauTitre, $annee, $semestre, $description);
-                } else {
-                    error_log("Erreur : Impossible de renommer le dossier de la SAE.");
-                }
-            }
-        }
-        $this->accueil();
-    }
-
-
-    public function supprimerSAE()
-    {
-        $idSae = $_SESSION['id_projet'];
-        DossierManager::supprimerDossiersSAE($idSae, $this->modele->getTitreSAE($idSae));
-        $this->modele->supprimerSAE($idSae);
-        $this->accueil();
     }
 
 }

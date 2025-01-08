@@ -3,16 +3,6 @@ include_once 'Connexion.php';
 Class ModeleAccueilProf extends Connexion{
     public function __construct() {
     }
-    public function utilisateurExiste($login){
-        $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login_utilisateur = ?");
-        $stmt->execute([$login]);
-        $user = $stmt->fetch();
-        if($user){
-            return true;
-        }
-        return false;
-    }
     public function saeGerer($id_utilisateur) {
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("SELECT * FROM Projet INNER JOIN Gerant ON Projet.id_projet = Gerant.id_projet WHERE id_utilisateur = ?");
@@ -30,31 +20,5 @@ Class ModeleAccueilProf extends Connexion{
 
         $insertionGerant->execute([$idProjet, $_SESSION['id_utilisateur'], 'Responsable']);
         return $idProjet;
-    }
-    public function getSaeDetails($idProjet) {
-        $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT * FROM Projet WHERE id_projet = ?");
-        $stmt->execute([$idProjet]);
-        $saeDetails = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $saeDetails;
-    }
-    public function modifierInfoGeneralSae($idSae, $titre, $annee, $semestre, $description) {
-        $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("UPDATE Projet 
-                           SET titre = ?, annee_universitaire = ?, semestre = ?, description_projet = ? 
-                           WHERE id_projet = ?");
-        $stmt->execute([$titre, $annee, $semestre, $description, $idSae]);
-    }
-    public function supprimerSAE($idSae) {
-        $bdd = $this->getBdd();
-        try {
-            $bdd->beginTransaction();
-            $requete = $bdd->prepare("DELETE FROM Projet WHERE id_projet = ?");
-            $requete->execute([$idSae]);
-            $bdd->commit();
-        } catch (Exception $e) {
-            $bdd->rollBack();
-            echo "erreur pdt suppression de la SAE : " . $e->getMessage();
-        }
     }
 }

@@ -3,7 +3,7 @@ include_once "modules/etudiant/mod_depotetud/modele_depotetud.php";
 include_once "modules/etudiant/mod_depotetud/vue_depotetud.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
-
+require_once "modules/etudiant/ModeleCommunEtudiant.php";
 class ContDepotEtud
 {
     private $modele;
@@ -44,7 +44,7 @@ class ContDepotEtud
 
     public function afficherDepot()
     {
-        $id_groupe = $_SESSION["id_groupe"];
+        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
         $id_projet = $_SESSION["id_projet"];
         $tabAllDepot = $this->modele->getAllDepot($id_groupe, $id_projet);
         $this->vue->afficherAllDepot($tabAllDepot);
@@ -54,7 +54,8 @@ class ContDepotEtud
     {
         if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
             $idSae = $_SESSION["id_projet"];
-            $idGroupe = $_SESSION['id_groupe'];
+            $idUser = $_SESSION["id_utilisateur"];
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
             $idRendu = $_POST['id_rendu'];
 
             $nomSae = ModeleCommun::getTitreSAE($idSae);
@@ -88,7 +89,9 @@ class ContDepotEtud
     {
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
-            $idGroupe = $_SESSION['id_groupe'];
+            $idSae = $_SESSION["id_projet"];
+            $idUser = $_SESSION["id_utilisateur"];
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
 
             $fichiers = $this->modele->getFichiersRemis($idRendu, $idGroupe);
 

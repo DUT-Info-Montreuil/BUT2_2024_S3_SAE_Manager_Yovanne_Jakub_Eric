@@ -2,6 +2,7 @@
 include_once "modules/etudiant/mod_groupeetud/modele_groupeetud.php";
 include_once "modules/etudiant/mod_groupeetud/vue_groupeetud.php";
 require_once "ModeleCommun.php";
+require_once "modules/etudiant/ModeleCommunEtudiant.php";
 Class ContGroupeEtud
 {
     private $modele;
@@ -33,7 +34,7 @@ Class ContGroupeEtud
     }
 
     public function membreGroupeSAE(){
-        $idGroupe = $_SESSION['id_groupe'];
+        $idGroupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
         $grpSAE = $this->modele->getGroupeSAE($idGroupe);
         $nomGrp = $this->modele->getNomGroupe($idGroupe);
         $this->vue->afficherGroupeSAE($grpSAE, $nomGrp);
