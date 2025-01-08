@@ -22,16 +22,6 @@ Class ModeleAccueilEtud extends Connexion{
 
         return $projets;
     }
-
-    public function getTitreSAE($idProjet){
-        $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
-    }
-
     public function getGroupeForUser($idProjet, $idUtilisateur) {
         $bdd = $this->getBdd();
 

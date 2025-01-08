@@ -107,7 +107,7 @@ class ContDepotProf{
             $idSae = $_SESSION['id_projet'];
             $groupes = $this->modele->getGroupesParSae($idSae);
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $idGroupe = $groupe['id_groupe'];

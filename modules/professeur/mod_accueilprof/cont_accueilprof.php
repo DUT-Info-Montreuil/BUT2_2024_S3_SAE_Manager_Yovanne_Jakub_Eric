@@ -92,7 +92,7 @@ class ContAccueilProf
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
-            $titre = $this->modele->getTitreSAE($idProjet);
+            $titre = ModeleCommun::getTitreSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
             $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur);
             $this->vue->afficherSaeDetails($titre, $role);

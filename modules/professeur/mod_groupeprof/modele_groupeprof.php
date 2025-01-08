@@ -171,16 +171,6 @@ Class ModeleGroupeProf extends Connexion{
 
         return $detailsGroupe;
     }
-
-    public function getTitreSAE($idProjet){
-        $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
-    }
-
     public function modifierModifiableParGroupe($modifiable, $idGroupe) {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";

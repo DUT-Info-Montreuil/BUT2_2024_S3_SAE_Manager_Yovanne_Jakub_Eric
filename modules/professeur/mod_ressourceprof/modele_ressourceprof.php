@@ -23,15 +23,6 @@ Class ModeleRessourceProf extends Connexion
         $stmt->execute([$titre, $fichier, $mise_en_avant, $id_projet]);
     }
 
-    public function getTitreSAE($idProjet){
-        $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
-    }
-
     public function supprimerRessource($idRessource){
         $bdd = $this->getBdd();
         $sql = "DELETE FROM Ressource WHERE id_ressource = ?";

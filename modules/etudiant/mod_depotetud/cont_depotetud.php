@@ -57,7 +57,7 @@ class ContDepotEtud
             $idGroupe = $_SESSION['id_groupe'];
             $idRendu = $_POST['id_rendu'];
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae =  ModeleCommun::getTitreSAE($idSae);
             $nomGroupe = $this->modele->getNomGroupe($idGroupe);
             $nomRendu = $this->modele->getNomRendu($idRendu);
 

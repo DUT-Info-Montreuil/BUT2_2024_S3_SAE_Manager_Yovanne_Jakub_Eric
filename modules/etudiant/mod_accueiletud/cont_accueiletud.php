@@ -42,7 +42,7 @@ Class ContAccueilEtud {
             $idProjet = $_GET['id'];
             $_SESSION['id_groupe'] = $this->modele->getGroupeForUser($idProjet, $_SESSION['id_utilisateur']);
             $_SESSION['id_projet'] = $idProjet;
-            $titre = $this->modele->getTitreSAE($idProjet);
+            $titre = ModeleCommun::getTitreSAE($idProjet);
             $this->vue->afficherSaeDetails($titre);
         } else {
             $this->accueil();

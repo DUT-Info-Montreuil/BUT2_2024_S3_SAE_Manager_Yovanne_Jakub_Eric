@@ -74,7 +74,7 @@ Class ContGroupeProf {
                 $etudiants = $_POST['etudiants'];
                 $idGroupe = $this->modele->ajouterGroupe($nomGroupe, $idSae);
                 $this->modele->lieeProjetGrp($idGroupe, $idSae);
-                $nomSae = $this->modele->getTitreSae($idSae);
+                $nomSae = ModeleCommun::getTitreSAE($idSae);
                 $nomDossier = $nomGroupe . '_' . $idGroupe;
                 DossierManager::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
                 foreach ($etudiants as $etudiantId) {
@@ -105,7 +105,7 @@ Class ContGroupeProf {
             }
 
             $idSae = $_SESSION['id_projet'];
-            $nomSae = $this->modele->getTitreSae($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
             $ancienNom = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
             $nvNomDossier = $nouveauNomGroupe . '_' . $idGroupe;
             DossierManager::renommerDossier($idSae, $nomSae, $ancienNom, $nvNomDossier, 'depots');
@@ -155,7 +155,7 @@ Class ContGroupeProf {
         if(isset($_POST['idGroupe'])){
             $idGroupe = $_POST['idGroupe'];
             $idSae = $_SESSION['id_projet'];
-            $nomSae = $this->modele->getTitreSae($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
             $nomgrp = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
             DossierManager::supprimerDossier($idSae, $nomSae, $nomgrp, 'depots');
             $this->modele->supprimerGroupe($idGroupe);

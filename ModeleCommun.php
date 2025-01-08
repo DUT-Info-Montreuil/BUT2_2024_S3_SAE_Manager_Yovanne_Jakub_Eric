@@ -38,5 +38,14 @@ class ModeleCommun extends Connexion
         return null;
     }
 
+    public static function getTitreSAE($idProjet){
+        $bdd = self::getBdd();
+        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $sae['titre'];
+    }
+
 
 }

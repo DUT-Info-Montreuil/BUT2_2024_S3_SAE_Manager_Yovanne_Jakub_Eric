@@ -29,16 +29,6 @@ Class ModeleDepotEtud extends Connexion
 
         return $depotDetails;
     }
-
-    public function getTitreSAE($idProjet){
-        $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
-    }
-
     public function rendreDepot($idRendu, $fichier, $idGroupe) {
         $bdd = $this->getBdd();
         $query = "UPDATE Rendu_Groupe SET contenu_rendu = ?, statut = 'Remis' WHERE id_rendu = ? AND id_groupe = ?";
