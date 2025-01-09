@@ -8,7 +8,7 @@ class VueDepotProf extends VueGenerique
         parent::__construct();
     }
 
-    public function afficheAllDepotSAE($allDepot)
+    public function afficheAllDepotSAE($allDepot, $allGroupe)
     {
         ?>
         <div class="container mt-4">
@@ -36,8 +36,8 @@ class VueDepotProf extends VueGenerique
                         </div>
                     </div>
                     <?php
-                    $this->afficheEditModal($index, $depot);
-                    $this->afficheExtendTimeModal($index, $depot);
+                    $this->afficheModifDepot($index, $depot);
+                    $this->afficheAjoutTpsSupplementaire($index, $depot, $allGroupe);
                     ?>
                 <?php endforeach; ?>
             </div>
@@ -49,8 +49,7 @@ class VueDepotProf extends VueGenerique
         </div>
         <?php
     }
-
-    private function afficheEditModal($index, $depot)
+    private function afficheModifDepot($index, $depot)
     {
         ?>
         <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1" aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
@@ -65,6 +64,9 @@ class VueDepotProf extends VueGenerique
                     <div class="modal-body">
                         <form action="index.php?module=depotprof&action=modifierDepot" method="post">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                            <div class="alert alert-warning text-center" role="alert">
+                                <strong>Attention :</strong> La suppression d'un dépôt est irréversible !
+                            </div>
 
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -83,30 +85,24 @@ class VueDepotProf extends VueGenerique
                                 </div>
                             </div>
 
-                            <div class="alert alert-info mt-4 d-flex align-items-center" role="alert">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Vous pouvez modifier les informations du dépôt ou ajouter du temps supplémentaire.
-                            </div>
-
-                            <div class="modal-footer mt-3 d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="bi bi-x-circle"></i> Fermer
+                            <div class="mt-3 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success me-2">
+                                    <i class="bi bi-check-circle"></i> Enregistrer
                                 </button>
-                                <div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-check-circle"></i> Enregistrer
-                                    </button>
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                            data-bs-target="#extendTimeModal-<?= $index ?>">
-                                        <i class="bi bi-clock-history"></i> Donner du temps supplémentaire
-                                    </button>
-                                    <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
-                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="bi bi-trash"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </div>
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#extendTimeModal-<?= $index ?>">
+                                    <i class="bi bi-clock-history"></i> Donner du temps supplémentaire
+                                </button>
+                            </div>
+                        </form>
+
+                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
+                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+
+                            <div class="mt-3 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Supprimer le dépôt
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -115,13 +111,11 @@ class VueDepotProf extends VueGenerique
         </div>
         <?php
     }
-
-
-    private function afficheExtendTimeModal($index, $depot)
+    private function afficheAjoutTpsSupplementaire($index, $depot, $allGroupe)
     {
         ?>
         <div class="modal fade" id="extendTimeModal-<?= $index ?>" tabindex="-1" aria-labelledby="extendTimeModalLabel-<?= $index ?>" aria-hidden="true">
-            <div class="modal-dialog modal-sm">
+            <div class="modal-dialog ">
                 <div class="modal-content">
                     <div class="modal-header bg-warning text-white">
                         <h5 class="modal-title" id="extendTimeModalLabel-<?= $index ?>">
@@ -132,13 +126,27 @@ class VueDepotProf extends VueGenerique
                     <div class="modal-body">
                         <form action="index.php?module=depotprof&action=ajouterTemps" method="post">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+
+                            <div class="mb-3">
+                                <label for="groupes-<?= $index ?>" class="form-label">
+                                    <i class="bi bi-people"></i> Sélectionner les groupes
+                                </label>
+                                <select class="form-select" id="groupes-<?= $index ?>" name="groupes[]" multiple required>
+                                    <?php foreach ($allGroupe as $groupe) : ?>
+                                        <option value="<?= htmlspecialchars($groupe['id_groupe']) ?>">
+                                            <?= htmlspecialchars($groupe['nom']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="new_date_limite-<?= $index ?>" class="form-label">
                                     <i class="bi bi-calendar-plus"></i> Nouvelle date limite
                                 </label>
-                                <input type="date" class="form-control" id="new_date_limite-<?= $index ?>"
-                                       name="new_date_limite" required>
+                                <input type="date" class="form-control" id="new_date_limite-<?= $index ?>" name="new_date_limite" required>
                             </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     <i class="bi bi-x-circle"></i> Annuler
@@ -154,8 +162,6 @@ class VueDepotProf extends VueGenerique
         </div>
         <?php
     }
-
-
     public function formulaireCreerDepot()
     {
         ?>
