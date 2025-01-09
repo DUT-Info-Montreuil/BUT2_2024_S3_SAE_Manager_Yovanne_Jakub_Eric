@@ -172,15 +172,15 @@ class ModeleEvaluationRendu extends Connexion
         return $id_evaluation;
     }
 
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
+    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
         $bdd = $this->getBdd();
 
-        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note, commentaire)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                             ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $isIndividualEvaluation, $note]);
+        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $isIndividualEvaluation, $note, $commentaire]);
 
         return true;
 

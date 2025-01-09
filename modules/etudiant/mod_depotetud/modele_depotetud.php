@@ -20,20 +20,23 @@ class ModeleDepotEtud extends Connexion
         $bdd = $this->getBdd();
 
         $query = "
-        SELECT 
-            r.id_rendu, 
-            r.titre, 
-            r.date_limite, 
-            rg.statut,
-            GROUP_CONCAT(rf.id_fichier ORDER BY rf.date_remise) AS fichiers_ids,
-            GROUP_CONCAT(rf.nom_fichier ORDER BY rf.date_remise) AS fichiers_noms,
-            GROUP_CONCAT(rf.chemin_fichier ORDER BY rf.date_remise) AS fichiers_chemins
-        FROM Rendu r
-        INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
-        INNER JOIN Projet_Groupe pg ON rg.id_groupe = pg.id_groupe
-        LEFT JOIN Rendu_Fichier rf ON r.id_rendu = rf.id_rendu
-        WHERE pg.id_projet = ? AND rg.id_groupe = ?
-        GROUP BY r.id_rendu, r.titre, r.date_limite, rg.statut
+    SELECT 
+        r.id_rendu, 
+        r.titre, 
+        r.date_limite, 
+        rg.statut,
+        e.coefficient, 
+        e.note_max,
+        GROUP_CONCAT(rf.id_fichier ORDER BY rf.date_remise) AS fichiers_ids,
+        GROUP_CONCAT(rf.nom_fichier ORDER BY rf.date_remise) AS fichiers_noms,
+        GROUP_CONCAT(rf.chemin_fichier ORDER BY rf.date_remise) AS fichiers_chemins
+    FROM Rendu r
+    INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
+    INNER JOIN Projet_Groupe pg ON rg.id_groupe = pg.id_groupe
+    LEFT JOIN Rendu_Fichier rf ON r.id_rendu = rf.id_rendu
+    LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation  -- Ajout de la jointure avec Evaluation
+    WHERE pg.id_projet = ? AND rg.id_groupe = ?
+    GROUP BY r.id_rendu, r.titre, r.date_limite, rg.statut, e.coefficient, e.note_max
     ";
 
         $stmt = $bdd->prepare($query);
@@ -41,6 +44,7 @@ class ModeleDepotEtud extends Connexion
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function transformDepotFiles($depotDetails)
     {
@@ -87,15 +91,16 @@ class ModeleDepotEtud extends Connexion
         }
     }
 
-
-    public function getCheminFichierRemis($idRendu, $idGroupe)
+    public function getNoteEtCommentaire($idRendu, $idGroupe)
     {
         $bdd = $this->getBdd();
-        $query = "SELECT contenu_rendu FROM Rendu_Groupe WHERE id_rendu = ? AND id_groupe = ?";
-        $stmt = $bdd->prepare($query);
+        $sql = "SELECT note, commentaire 
+            FROM Rendu_Evaluation 
+            WHERE id_rendu = ? AND id_groupe = ?
+            LIMIT 1";
+        $stmt = $bdd->prepare($sql);
         $stmt->execute([$idRendu, $idGroupe]);
-        $cheminFichier = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $cheminFichier['contenu_rendu'];
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getNomGroupe($idGroupe)

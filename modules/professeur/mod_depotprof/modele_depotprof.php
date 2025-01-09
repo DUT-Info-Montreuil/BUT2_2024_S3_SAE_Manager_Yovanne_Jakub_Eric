@@ -58,6 +58,14 @@ Class ModeleDepotProf extends Connexion {
         $sql = "UPDATE Rendu SET titre = ?, date_limite = ? WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$titre, $dateLimite, $id_rendu]);
+        $this->modifierDateRenduAllGroupe($id_rendu, $dateLimite);
+    }
+
+    public function modifierDateRenduAllGroupe($idRendu, $dateLimite) {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Rendu_Groupe SET date_limite = ? WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$dateLimite, $idRendu]);
     }
 
     public function supprimerDepot($id_rendu) {

@@ -457,6 +457,10 @@ class VueEvaluationProf extends VueGenerique
                         </tbody>
                     </table>
                 </div>
+                <div class="mt-4">
+                    <label for="commentaire_individuel" class="form-label fw-bold">Ajouter un commentaire (optionnel)</label>
+                    <textarea class="form-control" id="commentaire_individuel" name="commentaire" rows="4" placeholder="Votre commentaire"></textarea>
+                </div>
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-success px-4">Soumettre les Notes</button>
                 </div>
@@ -494,6 +498,10 @@ class VueEvaluationProf extends VueGenerique
                            max="20"
                            placeholder="Attribuer une note au groupe"
                            required>
+                </div>
+                <div class="mt-4">
+                    <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire</label>
+                    <textarea class="form-control" id="commentaire_groupe" name="commentaire" rows="4" placeholder="Votre commentaire"></textarea>
                 </div>
                 <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
                 <input type="hidden" name="id" value="<?= $id ?>">

@@ -2,6 +2,7 @@
 include_once "modules/etudiant/mod_soutenanceetud/modele_soutenanceetud.php";
 include_once "modules/etudiant/mod_soutenanceetud/vue_soutenanceetud.php";
 require_once "ModeleCommun.php";
+require_once "modules/etudiant/ModeleCommunEtudiant.php";
 Class ContSoutenanceEtud
 {
     private $modele;
@@ -32,9 +33,18 @@ Class ContSoutenanceEtud
         return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
-    public function affichageDesSoutenances(){
+    public function affichageDesSoutenances()
+    {
+        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
         $idProjet = $_SESSION["id_projet"];
         $allSoutenance = $this->modele->getAllSoutenances($idProjet);
+
+        foreach ($allSoutenance as &$soutenance) {
+            $evaluation = $this->modele->getNoteEtCommentaire($soutenance['id_soutenance'], $id_groupe);
+            $soutenance['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
+            $soutenance['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : null;
+        }
         $this->vue->afficherAllSoutenances($allSoutenance);
     }
+
 }

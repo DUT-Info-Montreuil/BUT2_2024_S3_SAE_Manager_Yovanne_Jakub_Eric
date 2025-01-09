@@ -22,7 +22,7 @@ class VueSoutenanceEtud extends VueGenerique
                     </div>
                 <?php else: ?>
                     <?php foreach ($tabAllSoutenances as $index => $soutenance): ?>
-                        <div class="accordion-item">
+                        <div class="accordion-item mb-3">
                             <h2 class="accordion-header" id="heading-<?= $index ?>">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapse-<?= $index ?>" aria-expanded="false"
@@ -32,18 +32,42 @@ class VueSoutenanceEtud extends VueGenerique
                             </h2>
                             <div id="collapse-<?= $index ?>" class="accordion-collapse collapse"
                                  aria-labelledby="heading-<?= $index ?>" data-bs-parent="#soutenanceAccordion">
-                                <div class="accordion-body">
-                                    <p><strong>Date de Soutenance : </strong>
-                                        <?= $this->formatDate($soutenance['date_soutenance']) ?>
-                                    </p>
-                                    <p><strong>Évaluation : </strong>
-                                        <?php if ($soutenance['id_evaluation']): ?>
-                                    <p>Coefficient évaluation : <?= htmlspecialchars($soutenance['coefficient']) ?></p>
-                                    <p>Note max évaluation : <?= htmlspecialchars($soutenance['note_max']) ?></p>
-                                    <?php else: ?>
-                                        <p>Aucune évaluation définie.</p>
+                                <div class="accordion-body p-3">
+
+                                    <div class="d-flex justify-content-center mb-2">
+                                        <div class="mx-2">
+                                            <p><strong>Date de Soutenance
+                                                    :</strong> <?= $this->formatDate($soutenance['date_soutenance']) ?>
+                                            </p>
+                                        </div>
+                                        <?php if (!$soutenance['id_evaluation']): ?>
+                                            <div class="mx-2">
+                                                <p><strong>Évaluation :</strong>
+                                                    <span>Aucune évaluation définie</span>
+                                                </p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if ($soutenance['id_evaluation']): ?>
+                                        <div class="mt-3 p-3 bg-light border rounded">
+                                            <p><strong>Coefficient évaluation
+                                                    :</strong> <?= htmlspecialchars($soutenance['coefficient']) ?></p>
+                                            <p><strong>Note max évaluation
+                                                    :</strong> <?= htmlspecialchars($soutenance['note_max']) ?></p>
+                                        </div>
                                     <?php endif; ?>
-                                    </p>
+
+                                    <?php if (!empty($soutenance['note']) || !empty($soutenance['commentaire'])): ?>
+                                        <div class="mt-3 p-3 bg-light border rounded">
+                                            <p><strong>Note
+                                                    :</strong> <?= htmlspecialchars($soutenance['note']) ?: 'Non noté' ?>
+                                            </p>
+                                            <p><strong>Commentaire
+                                                    :</strong> <?= htmlspecialchars($soutenance['commentaire']) ?: 'Aucun commentaire' ?>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -60,4 +84,5 @@ class VueSoutenanceEtud extends VueGenerique
         return $dateObj ? $dateObj->format('d/m/Y') : $date;
     }
 }
+
 ?>

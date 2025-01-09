@@ -168,15 +168,15 @@ class ModeleEvaluationSoutenance extends Connexion
 
         return $id_evaluation;
     }
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
+    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
         $bdd = $this->getBdd();
         $insertQuery = "
-                        INSERT INTO Soutenance_Evaluation (id_evaluation, id_soutenance, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO Soutenance_Evaluation (id_evaluation, id_soutenance, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note, commentaire)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $idEvaluateur, $isIndividualEvaluation, $note]);
+        $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $idEvaluateur, $isIndividualEvaluation, $note, $commentaire]);
     }
 
     public function modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note)

@@ -260,7 +260,7 @@ class ModeleEvaluationProf extends Connexion
     }
     public function getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur)
     {
-        $this->modeleSoutenance->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur);
+        return $this->modeleSoutenance->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur);
     }
 
 
@@ -324,13 +324,13 @@ class ModeleEvaluationProf extends Connexion
         return true;
     }
 
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
+    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
-        return $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur);
+        $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
     }
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur)
+    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
-       $this->modeleSoutenance->sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur);
+       $this->modeleSoutenance->sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
     }
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
     {
