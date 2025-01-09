@@ -84,7 +84,7 @@ Class ModeleGroupeProf extends Connexion{
         $rendus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (!empty($rendus)) {
-            $query = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $query = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, statut) VALUES (?, ?, 'En attente')";
             $stmt = $bdd->prepare($query);
             foreach ($rendus as $rendu) {
                 $stmt->execute([$rendu['id_rendu'], $idGroupe]);

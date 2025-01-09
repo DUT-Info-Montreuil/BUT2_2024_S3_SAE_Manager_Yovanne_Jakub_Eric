@@ -35,49 +35,121 @@ class VueDepotProf extends VueGenerique
                             </div>
                         </div>
                     </div>
-
-                    <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1" aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel-<?= $index ?>">Modifier le dépôt</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="index.php?module=depotprof&action=modifierDepot" method="post">
-                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                                        <div class="mb-3">
-                                            <label for="titre-<?= $index ?>" class="form-label">Titre</label>
-                                            <input type="text" class="form-control" id="titre-<?= $index ?>" name="titre"
-                                                   value="<?= htmlspecialchars($depot['titre']) ?>" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="date_limite-<?= $index ?>" class="form-label">Date limite</label>
-                                            <input type="date" class="form-control" id="date_limite-<?= $index ?>"
-                                                   name="date_limite" value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                        </div>
-                                    </form>
-
-                                    <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
-                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <?php
+                    $this->afficheEditModal($index, $depot);
+                    $this->afficheExtendTimeModal($index, $depot);
+                    ?>
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">
                 <a href="index.php?module=depotprof&action=creerDepot" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Ajouter un Dépôt
                 </a>
+            </div>
+        </div>
+        <?php
+    }
+
+    private function afficheEditModal($index, $depot)
+    {
+        ?>
+        <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1" aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="editModalLabel-<?= $index ?>">
+                            <i class="bi bi-pencil-square"></i> Modifier le dépôt
+                        </h5>
+                        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="index.php?module=depotprof&action=modifierDepot" method="post">
+                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="titre-<?= $index ?>" class="form-label">
+                                        <i class="bi bi-tag"></i> Titre
+                                    </label>
+                                    <input type="text" class="form-control" id="titre-<?= $index ?>" name="titre"
+                                           value="<?= htmlspecialchars($depot['titre']) ?>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="date_limite-<?= $index ?>" class="form-label">
+                                        <i class="bi bi-calendar"></i> Date limite
+                                    </label>
+                                    <input type="date" class="form-control" id="date_limite-<?= $index ?>"
+                                           name="date_limite" value="<?= htmlspecialchars($depot['date_limite']) ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-4 d-flex align-items-center" role="alert">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Vous pouvez modifier les informations du dépôt ou ajouter du temps supplémentaire.
+                            </div>
+
+                            <div class="modal-footer mt-3 d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle"></i> Fermer
+                                </button>
+                                <div>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle"></i> Enregistrer
+                                    </button>
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#extendTimeModal-<?= $index ?>">
+                                        <i class="bi bi-clock-history"></i> Donner du temps supplémentaire
+                                    </button>
+                                    <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
+                                        <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash"></i> Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+
+    private function afficheExtendTimeModal($index, $depot)
+    {
+        ?>
+        <div class="modal fade" id="extendTimeModal-<?= $index ?>" tabindex="-1" aria-labelledby="extendTimeModalLabel-<?= $index ?>" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-white">
+                        <h5 class="modal-title" id="extendTimeModalLabel-<?= $index ?>">
+                            <i class="bi bi-clock"></i> Temps supplémentaire
+                        </h5>
+                        <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="index.php?module=depotprof&action=ajouterTemps" method="post">
+                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                            <div class="mb-3">
+                                <label for="new_date_limite-<?= $index ?>" class="form-label">
+                                    <i class="bi bi-calendar-plus"></i> Nouvelle date limite
+                                </label>
+                                <input type="date" class="form-control" id="new_date_limite-<?= $index ?>"
+                                       name="new_date_limite" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
