@@ -72,6 +72,20 @@ class ModeleDepotEtud extends Connexion
         return $depotDetails;
     }
 
+    public function getAuteurEtDateRemise($idRendu, $idGroupe)
+    {
+        $bdd = $this->getBdd();
+        $query = "SELECT rg.id_auteur, rg.date_remise, u.nom, u.prenom
+              FROM Rendu_Groupe rg
+              INNER JOIN Utilisateur u ON rg.id_auteur = u.id_utilisateur
+              WHERE rg.id_rendu = ? AND rg.id_groupe = ?";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idRendu, $idGroupe]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 
     public function enregistrerFichierRendu($idRendu, $idGroupe, $nomFichier, $cheminFichier)
     {
@@ -89,6 +103,29 @@ class ModeleDepotEtud extends Connexion
             $stmt = $bdd->prepare($query);
             $stmt->execute([$statut, $idRendu, $idGroupe]);
         }
+    }
+
+    public function setInfoRendu($idRendu, $idGroupe, $idUser){
+        $bdd = $this->getBdd();
+        $dateRemise = $this->getDateRemise($idRendu, $idGroupe);
+
+        $sql = "UPDATE Rendu_Groupe SET id_auteur = ?, date_remise = ? WHERE id_groupe = ? AND id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idUser, $dateRemise, $idGroupe, $idRendu]);
+    }
+
+
+    public function getDateRemise($idRendu, $idGroupe){
+        $bdd = $this->getBdd();
+        $query = "SELECT date_remise FROM Rendu_Fichier WHERE id_rendu = ? AND id_groupe = ? LIMIT 1";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idRendu, $idGroupe]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            return $result['date_remise'];
+        }
+        return null;
+
     }
 
     public function getNoteEtCommentaire($idRendu, $idGroupe)

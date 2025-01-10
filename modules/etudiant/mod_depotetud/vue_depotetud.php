@@ -48,6 +48,13 @@ Class VueDepotEtud extends VueGenerique
 
 
                                     <?php if ($depot['statut'] === 'Remis'): ?>
+                                        <?php if (!empty($depot['auteur'])): ?>
+                                            <div class="p-3 bg-light border rounded mb-3">
+                                                <p><strong>Auteur :</strong> <?= htmlspecialchars($depot['auteur']) ?></p>
+                                                <p class="mb-0"><strong>Date de dépôt :</strong> <?= htmlspecialchars($depot['date_remise']) ?></p>
+                                            </div>
+                                        <?php endif; ?>
+
                                         <p class="mt-3"><strong>Fichiers remis :</strong></p>
                                         <?php if (!empty($depot['fichiers'])): ?>
                                             <ul>

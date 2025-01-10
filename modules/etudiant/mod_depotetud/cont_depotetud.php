@@ -47,12 +47,16 @@ class ContDepotEtud
         $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
         $id_projet = $_SESSION["id_projet"];
         $tabAllDepot = $this->modele->getAllDepot($id_groupe, $id_projet);
+
         foreach ($tabAllDepot as &$depot) {
             $evaluation = $this->modele->getNoteEtCommentaire($depot['id_rendu'], $id_groupe);
             $depot['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
             $depot['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : null;
-        }
 
+            $auteurEtDate = $this->modele->getAuteurEtDateRemise($depot['id_rendu'], $id_groupe);
+            $depot['auteur'] = isset($auteurEtDate['nom']) && isset($auteurEtDate['prenom']) ? $auteurEtDate['nom'] . ' ' . $auteurEtDate['prenom'] : null;
+            $depot['date_remise'] = isset($auteurEtDate['date_remise']) ? $auteurEtDate['date_remise'] : null;
+        }
 
         $this->vue->afficherAllDepot($tabAllDepot);
     }
@@ -88,6 +92,7 @@ class ContDepotEtud
                     die("Erreur lors de l'upload du fichier : " . $e->getMessage());
                 }
             }
+            $this->modele->setInfoRendu($idRendu, $idGroupe, $idUser);
             $this->modele->setRenduStatut($idRendu, $idGroupe,'Remis');
         }
 
@@ -116,6 +121,8 @@ class ContDepotEtud
             }
             $this->modele->setRenduStatut($idRendu, $idGroupe, "En attente");
         }
+
+        $this->modele->setInfoRendu($idRendu, $idGroupe, null);
 
         $this->afficherDepot();
     }
