@@ -80,7 +80,7 @@ class VueAccueilProf extends VueGenerique
                 <?php
                 $sections = [
                     "Responsable" => [
-                        ["href" => "index.php?module=infosae&action=infoGeneralSae", "title" => "Modifier la SAE"],
+                        ["href" => "index.php?module=infosae", "title" => "Gestion de la SAE"],
                         ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
                         ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
                         ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
