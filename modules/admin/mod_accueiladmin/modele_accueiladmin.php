@@ -1,9 +1,10 @@
 <?php
 
 include_once 'Connexion.php';
-Class ModeleAccueilIntervenant extends Connexion
+Class ModeleAccueilAdmin extends Connexion
 {
     public function __construct()
     {
     }
+
 }

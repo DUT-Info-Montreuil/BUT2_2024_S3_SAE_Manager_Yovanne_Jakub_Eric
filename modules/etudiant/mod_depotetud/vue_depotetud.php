@@ -20,7 +20,7 @@ Class VueDepotEtud extends VueGenerique
                     </div>
                 <?php else: ?>
                     <?php foreach ($tabAllDepot as $index => $depot): ?>
-                        <div class="accordion-item">
+                        <div class="accordion-item mb-3">
                             <h2 class="accordion-header" id="heading-<?= $index ?>">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapse-<?= $index ?>" aria-expanded="false"
@@ -28,34 +28,58 @@ Class VueDepotEtud extends VueGenerique
                                     <?= htmlspecialchars($depot['titre']) ?>
                                 </button>
                             </h2>
+
                             <div id="collapse-<?= $index ?>" class="accordion-collapse collapse"
                                  aria-labelledby="heading-<?= $index ?>" data-bs-parent="#depotAccordion">
-                                <div class="accordion-body">
-                                    <p><strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?></p>
-                                    <p><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
+                                <div class="accordion-body p-3">
+
+                                    <div class="p-3 bg-light border rounded mb-3">
+                                        <p><strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?></p>
+                                        <p class="mb-0"><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
+                                    </div>
+
+                                    <?php if (!empty($depot['note'])): ?>
+                                        <div class="p-3 bg-light border rounded mb-3">
+                                            <p><strong>Coefficient :</strong> <?= htmlspecialchars($depot['coefficient']) ?></p>
+                                            <p><strong>Note :</strong> <?= htmlspecialchars($depot['note']) ?> / <?= htmlspecialchars($depot['note_max']) ?></p>
+                                            <p class="mb-0"><strong>Commentaire :</strong> <?= htmlspecialchars($depot['commentaire']) ?: 'Aucun commentaire' ?></p>
+                                        </div>
+                                    <?php endif; ?>
+
 
                                     <?php if ($depot['statut'] === 'Remis'): ?>
-                                        <p><strong>Contenu remis :</strong>
-                                            <a href="<?= htmlspecialchars($depot['contenu_rendu']) ?>" target="_blank">
-                                                Voir le fichier remis
-                                            </a>
-                                        </p>
+                                        <p class="mt-3"><strong>Fichiers remis :</strong></p>
+                                        <?php if (!empty($depot['fichiers'])): ?>
+                                            <ul>
+                                                <?php foreach ($depot['fichiers'] as $fichier): ?>
+                                                    <li>
+                                                        <a href="<?= htmlspecialchars($fichier['chemin_fichier']) ?>" target="_blank">
+                                                            <?= htmlspecialchars($fichier['nom_fichier']) ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        <?php else: ?>
+                                            <p>Aucun fichier associé.</p>
+                                        <?php endif; ?>
+
                                         <form action="index.php?module=depotetud&action=supprimerTravailRemis" method="post" class="mt-4">
-                                            <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
-                                            <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
+                                            <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
+                                            <button type="submit" class="btn btn-danger w-100">Supprimer le travail remis</button>
                                         </form>
                                     <?php else: ?>
-                                        <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data">
+                                        <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data" class="mt-3">
                                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                                             <div class="mb-3">
-                                                <label for="fileUpload-<?= $index ?>" class="form-label">Uploader un fichier :</label>
-                                                <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_file" required>
+                                                <label for="fileUpload-<?= $index ?>" class="form-label">Uploader des fichiers :</label>
+                                                <input type="file" class="form-control" id="fileUpload-<?= $index ?>" name="uploaded_files[]" multiple required>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                                            <button type="submit" class="btn btn-primary w-100">Envoyer</button>
                                         </form>
                                     <?php endif; ?>
                                 </div>
                             </div>
+
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -63,8 +87,4 @@ Class VueDepotEtud extends VueGenerique
         </div>
         <?php
     }
-
-
-
-
 }

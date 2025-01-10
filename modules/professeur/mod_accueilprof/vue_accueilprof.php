@@ -7,8 +7,7 @@ class VueAccueilProf extends VueGenerique
     {
         parent::__construct();
     }
-
-    public function afficherSaeGerer($saeGerer) {
+    public function afficherSaeGerer($saeGerer, $typeUser) {
         ?>
         <div class="container mt-5">
             <div class="row justify-content-center g-4">
@@ -28,22 +27,23 @@ class VueAccueilProf extends VueGenerique
                     </div>
                 <?php endforeach; ?>
 
-                <div class="col-md-4 col-lg-3 d-flex justify-content-center">
-                    <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
-                        <div class="card shadow border-0"
-                             style="width: 250px; height: 250px; border-radius: 15px;
-                         background-color: #e9ecef; display: flex; flex-direction: column;
-                         justify-content: center; align-items: center; cursor: pointer; text-align: center;">
-                            <h1 style="font-weight: bold; color: #6c757d; font-size: 3rem;">+</h1>
-                            <p style="font-size: 1rem; color: #6c757d; font-weight: 500;">Ajouter une SAE</p>
-                        </div>
-                    </a>
-                </div>
+                <?php if ($typeUser !== "intervenant" ): ?>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <a href="index.php?module=accueilprof&action=creerSAEForm" class="text-center text-decoration-none">
+                            <div class="card shadow border-0"
+                                 style="width: 250px; height: 250px; border-radius: 15px;
+             background-color: #e9ecef; display: flex; flex-direction: column;
+             justify-content: center; align-items: center; cursor: pointer; text-align: center;">
+                                <h1 style="font-weight: bold; color: #6c757d; font-size: 3rem;">+</h1>
+                                <p style="font-size: 1rem; color: #6c757d; font-weight: 500;">Ajouter une SAE</p>
+                            </div>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php
     }
-
     public function creerUneSAEForm()
     {
         ?>
@@ -71,8 +71,7 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
-
-    public function afficherSaeDetails($titre)
+    public function afficherSaeDetails($titre, $role)
     {
         ?>
         <div class="container mt-5">
@@ -80,16 +79,34 @@ class VueAccueilProf extends VueGenerique
             <div class="row justify-content-center g-4">
                 <?php
                 $sections = [
-                    ["href" => "index.php?module=accueilprof&action=infoGeneralSae", "title" => "Modifier la SAE"],
-                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"],
+                    "Responsable" => [
+                        ["href" => "index.php?module=infosae&action=infoGeneralSae", "title" => "Modifier la SAE"],
+                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                        ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ],
+                    "Co-Responsable" => [
+                        ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                        ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ],
+                    "Intervenant" => [
+                        ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                        ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                        ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                        ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ]
                 ];
 
-                foreach ($sections as $section): ?>
+                $availableSections = isset($sections[$role]) ? $sections[$role] : [];
+
+                foreach ($availableSections as $section): ?>
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
                         <div class="card border-0"
                              style="width: 250px; height: 250px; border-radius: 10px;
@@ -105,42 +122,6 @@ class VueAccueilProf extends VueGenerique
                     </div>
                 <?php endforeach; ?>
             </div>
-        </div>
-        <?php
-    }
-
-    public function afficherSaeInfoGeneral($saeDetails)
-    {
-        ?>
-        <div class="container mt-4">
-            <h2>Détails de la SAE</h2>
-            <form method="POST" action="index.php?module=accueilprof&action=updateSae">
-                <div class="mb-3">
-                    <label for="titre" class="form-label"><strong>Titre :</strong></label>
-                    <input type="text" class="form-control" id="titre" name="titre"
-                           value="<?php echo htmlspecialchars($saeDetails['titre']); ?>" required>
-                </div>
-                <div class="mb-3">
-                    <label for="annee_universitaire" class="form-label"><strong>Année universitaire :</strong></label>
-                    <input type="text" class="form-control" id="annee_universitaire" name="annee_universitaire"
-                           value="<?php echo htmlspecialchars($saeDetails['annee_universitaire']); ?>" required>
-                </div>
-                <div class="mb-3">
-                    <label for="semestre" class="form-label"><strong>Semestre :</strong></label>
-                    <input type="text" class="form-control" id="semestre" name="semestre"
-                           value="<?php echo htmlspecialchars($saeDetails['semestre']); ?>" required>
-                </div>
-                <div class="mb-3">
-                    <label for="description_projet" class="form-label"><strong>Description :</strong></label>
-                    <textarea class="form-control" id="description_projet" name="description_projet" rows="4"
-                              required><?php echo htmlspecialchars($saeDetails['description_projet']); ?></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Mettre à jour</button>
-            </form>
-            <form action="index.php?module=accueilprof&action=supprimerSAE" method="post">
-                <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
-            </form>
         </div>
         <?php
     }

@@ -11,12 +11,12 @@ Class VueRessourceEtud extends VueGenerique
     public function afficherAllSae($tabAllSae) {
         ?>
         <div class="container mt-5">
-            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">SAE mises en avant</h2>
+            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Ressources mises en avant</h2>
 
             <div class="accordion" id="saeAccordion">
                 <?php if (!is_array($tabAllSae) || empty($tabAllSae)): ?>
                     <div class="text-center">
-                        <p>Aucune SAE mise en avant disponible pour ce projet.</p>
+                        <p>Aucune ressources mise en avant disponible pour ce projet.</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($tabAllSae as $index => $sae): ?>

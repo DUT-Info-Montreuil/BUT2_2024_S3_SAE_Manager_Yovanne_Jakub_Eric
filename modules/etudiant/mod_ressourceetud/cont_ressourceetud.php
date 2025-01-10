@@ -1,6 +1,7 @@
 <?php
 include_once "modules/etudiant/mod_ressourceetud/modele_ressourceetud.php";
 include_once "modules/etudiant/mod_ressourceetud/vue_ressourceetud.php";
+require_once "ModeleCommun.php";
 Class ContRessourceEtud
 {
     private $modele;
@@ -28,7 +29,7 @@ Class ContRessourceEtud
     }
 
     public function estEtudiant(){
-        return $_SESSION["type_utilisateur"] === "etudiant";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
     public function afficherAllRessources(){

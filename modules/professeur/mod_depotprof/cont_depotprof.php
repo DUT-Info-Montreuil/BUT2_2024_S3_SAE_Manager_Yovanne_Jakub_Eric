@@ -3,7 +3,7 @@
 include_once 'modules/professeur/mod_depotprof/modele_depotprof.php';
 include_once 'modules/professeur/mod_depotprof/vue_depotprof.php';
 require_once "DossierManager.php";
-
+require_once "ModeleCommun.php";
 class ContDepotProf{
     private $modele;
     private $vue;
@@ -18,8 +18,8 @@ class ContDepotProf{
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionDepotSAE";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+        if (!$this->estProfOuIntervenant()) {
+            echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
@@ -38,17 +38,22 @@ class ContDepotProf{
             case "supprimerDepot" :
                 $this->supprimerDepot();
                 break;
+            case "ajouterTemps" :
+                $this->ajouterTempsSupplementaire();
+                break;
         }
     }
-    public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+    public function estProfOuIntervenant(){
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     public function gestionDepotSAE(){
         $idSae = $_SESSION['id_projet'];
         if($idSae){
             $allDepot = $this->modele->getAllDepotSAE($idSae);
-            $this->vue->afficheAllDepotSAE($allDepot);
+            $allGroupe = $this->modele->getGroupesParSae($idSae);
+            $this->vue->afficheAllDepotSAE($allDepot, $allGroupe);
         }
     }
 
@@ -65,7 +70,7 @@ class ContDepotProf{
             $idRendu = $this->modele->creerDepot($titre, $dateLimite, $idSae);
             $nomRendu = $this->modele->getNomDepot($idRendu);
             $groupes = $this->modele->getGroupesParSae($idSae);
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $nomGroupe = $groupe['nom'];
@@ -86,7 +91,7 @@ class ContDepotProf{
             $ancienNomDepot = $this->modele->getNomDepot($id_rendu);
             $this->modele->modifierRendu($id_rendu, $nouveauNomDepot, $dateLimite);
             $groupes = $this->modele->getGroupesParSae($idSae);
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $idGroupe = $groupe['id_groupe'];
@@ -97,7 +102,6 @@ class ContDepotProf{
         }
         $this->gestionDepotSAE();
     }
-
     public function supprimerDepot(){
         if (isset($_POST['id_rendu'])) {
             $id_rendu = $_POST['id_rendu'];
@@ -106,7 +110,7 @@ class ContDepotProf{
             $idSae = $_SESSION['id_projet'];
             $groupes = $this->modele->getGroupesParSae($idSae);
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             foreach ($groupes as $groupe) {
                 $idGroupe = $groupe['id_groupe'];
@@ -119,6 +123,21 @@ class ContDepotProf{
         }
         $this->gestionDepotSAE();
     }
+
+    public function ajouterTempsSupplementaire()
+    {
+        if (isset($_POST['id_rendu'], $_POST['new_date_limite'], $_POST['groupes'])) {
+            $idRendu = $_POST['id_rendu'];
+            $newDateLimite = $_POST['new_date_limite'];
+            $groupes = $_POST['groupes'];
+
+            foreach ($groupes as $idGroupe) {
+                $this->modele->ajouterTempsSupplementairePourGroupe($idRendu, $idGroupe, $newDateLimite);
+            }
+        }
+        $this->gestionDepotSAE();
+    }
+
 
 
 }

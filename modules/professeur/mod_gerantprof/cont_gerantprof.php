@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_gerantprof/modele_gerantprof.php';
 include_once 'modules/professeur/mod_gerantprof/vue_gerantprof.php';
-
+require_once "ModeleCommun.php";
 class ContGerantProf
 {
     private $modele;
@@ -44,7 +44,7 @@ class ContGerantProf
         }
     }
     public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";
     }
     public function gestionGerantSAE(){
         $idSae = $_SESSION['id_projet'];

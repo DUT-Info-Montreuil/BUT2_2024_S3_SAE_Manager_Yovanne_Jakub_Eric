@@ -49,18 +49,14 @@ class ContConnexion {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
-            $_SESSION['type_utilisateur'] = $utilisateur['type_utilisateur'];
             $_SESSION['login_utilisateur'] = $utilisateur['login_utilisateur'];
-            $_SESSION['password_utilisateur'] = $utilisateur['password_utilisateur'];
             $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
             if($typeUtilisateur=="etudiant"){
                 header('Location: index.php?module=accueiletud');
-            }else if ($typeUtilisateur=="professeur"){
+            }else if ($typeUtilisateur=="professeur" ||$typeUtilisateur=="intervenant"){
                 header('Location: index.php?module=accueilprof');
             }else if ($typeUtilisateur=="admin"){
-                header('Location: index.php?module=administrateur');
-            }else if ($typeUtilisateur=="intervenant"){
-                header('Location: index.php?module=accueilintervenant');
+                header('Location: index.php?module=accueiladmin');
             }
         } else {
             $this->vue->formConnexion();

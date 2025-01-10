@@ -3,7 +3,7 @@
 include_once 'modules/professeur/mod_ressourceprof/modele_ressourceprof.php';
 include_once 'modules/professeur/mod_ressourceprof/vue_ressourceprof.php';
 require_once "DossierManager.php";
-
+require_once "ModeleCommun.php";
 class ContRessourceProf{
     private $modele;
     private $vue;
@@ -17,8 +17,8 @@ class ContRessourceProf{
 
     public function exec(){
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionRessourceSAE";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+        if (!$this->estProfOuIntervenant()) {
+            echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
@@ -39,8 +39,9 @@ class ContRessourceProf{
                 break;
         }
     }
-    public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+    public function estProfOuIntervenant(){
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     private function gestionRessourceSAE(){
@@ -59,7 +60,7 @@ class ContRessourceProf{
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
             $idSae = $_SESSION['id_projet'];
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
 
             if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
                 try {
@@ -99,7 +100,7 @@ class ContRessourceProf{
                     DossierManager::supprimerFichier($ancienCheminFichier);
                 }
 
-                $nomSae = $this->modele->getTitreSAE($idSae);
+                $nomSae = ModeleCommun::getTitreSAE($idSae);
                 $nouveauChemin = DossierManager::uploadRessource($_FILES['fichier'], $idSae, $nomSae);
                 $this->modele->mettreAJoursRessource($nouveauChemin, $mise_en_avant, $titre, $idRessource);
             } else {

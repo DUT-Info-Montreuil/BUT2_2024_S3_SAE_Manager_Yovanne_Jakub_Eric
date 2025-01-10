@@ -2,7 +2,7 @@
 
 include_once 'modules/professeur/mod_soutenanceprof/modele_soutenanceprof.php';
 include_once 'modules/professeur/mod_soutenanceprof/vue_soutenanceprof.php';
-
+require_once "ModeleCommun.php";
 class ContSoutenanceProf
 {
     private $modele;
@@ -18,8 +18,8 @@ class ContSoutenanceProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionSoutenancesSAE";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
+        if (!$this->estProfOuIntervenant()) {
+            echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
             return;
         }
         switch ($this->action) {
@@ -40,8 +40,9 @@ class ContSoutenanceProf
                 break;
         }
     }
-    public function estProf(){
-        return $_SESSION['type_utilisateur']==="professeur";
+    public function estProfOuIntervenant(){
+        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     private function gestionSoutenancesSAE()

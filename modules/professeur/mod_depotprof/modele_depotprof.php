@@ -34,11 +34,11 @@ Class ModeleDepotProf extends Connexion {
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$titre, $dateLimite, $idSae]);
         $idRendue = $bdd->lastInsertId();
-        $this->creerDepotAllSae($idSae, $idRendue);
+        $this->creerDepotAllSae($idSae, $idRendue, $dateLimite);
         return $idRendue;
     }
 
-    public function creerDepotAllSae($idSae, $idRendue) {
+    public function creerDepotAllSae($idSae, $idRendue, $dateLimite) {
         $bdd = $this->getBdd();
 
         $sql = "SELECT id_groupe FROM Projet_Groupe WHERE id_projet = ?";
@@ -47,9 +47,9 @@ Class ModeleDepotProf extends Connexion {
         $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($groupes as $groupe) {
-            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, statut, date_limite) VALUES (?, ?, 'En attente', ?)";
             $stmtInsert = $bdd->prepare($sqlInsert);
-            $stmtInsert->execute([$idRendue, $groupe['id_groupe']]);
+            $stmtInsert->execute([$idRendue, $groupe['id_groupe'], $dateLimite]);
         }
     }
 
@@ -58,6 +58,14 @@ Class ModeleDepotProf extends Connexion {
         $sql = "UPDATE Rendu SET titre = ?, date_limite = ? WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$titre, $dateLimite, $id_rendu]);
+        $this->modifierDateRenduAllGroupe($id_rendu, $dateLimite);
+    }
+
+    public function modifierDateRenduAllGroupe($idRendu, $dateLimite) {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Rendu_Groupe SET date_limite = ? WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$dateLimite, $idRendu]);
     }
 
     public function supprimerDepot($id_rendu) {
@@ -89,15 +97,11 @@ Class ModeleDepotProf extends Connexion {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getTitreSAE($idProjet){
+    public function ajouterTempsSupplementairePourGroupe($idRendu, $idGroupe, $newDateLimite)
+    {
         $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
+        $sql = "UPDATE Rendu_Groupe SET date_limite = ? WHERE id_rendu = ? AND id_groupe = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$newDateLimite, $idRendu, $idGroupe]);
     }
-
-
-
 }

@@ -123,7 +123,6 @@ class DossierManager
         $dossierAncienNom = $baseDossier . DIRECTORY_SEPARATOR . $sousDossier . DIRECTORY_SEPARATOR . $ancienNom;
         $dossierNouveauNom = $baseDossier . DIRECTORY_SEPARATOR . $sousDossier . DIRECTORY_SEPARATOR . $nouveauNom;
 
-        // dossier existe
         if (is_dir($dossierAncienNom)) {
             if (rename($dossierAncienNom, $dossierNouveauNom)) {
                 return true;
@@ -136,6 +135,28 @@ class DossierManager
             return false;
         }
     }
+
+    public static function renomerBaseDossier($idSae, $nomSae, $nouveauNomSae)
+    {
+        $nouveauNomSae = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nouveauNomSae) . '_' . $idSae;
+
+        $ancienDossier = static::getBaseDossierSAE($idSae, $nomSae);
+        $nouveauDossier = 'sae' . DIRECTORY_SEPARATOR . $nouveauNomSae;
+
+        if (is_dir($ancienDossier)) {
+            if (rename($ancienDossier, $nouveauDossier)) {
+                return true;
+            } else {
+                error_log("Erreur : Impossible de renommer le dossier $ancienDossier en $nouveauDossier");
+                return false;
+            }
+        } else {
+            error_log("Erreur : Le dossier $ancienDossier n'existe pas.");
+            return false;
+        }
+    }
+
+
 
     public static function renommerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $idDepot, $ancienNomDepot, $nouveauNomDepot)
     {

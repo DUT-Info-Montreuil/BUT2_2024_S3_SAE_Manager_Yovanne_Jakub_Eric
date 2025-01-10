@@ -18,7 +18,7 @@ class VueRessourceProf extends VueGenerique
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapse-<?= $index ?>" aria-expanded="false"
                                     aria-controls="collapse-<?= $index ?>">
-                               <?= htmlspecialchars($ressource['titre']) ?>
+                                <?= htmlspecialchars($ressource['titre']) ?>
                             </button>
                         </h2>
                         <div id="collapse-<?= $index ?>" class="accordion-collapse collapse"

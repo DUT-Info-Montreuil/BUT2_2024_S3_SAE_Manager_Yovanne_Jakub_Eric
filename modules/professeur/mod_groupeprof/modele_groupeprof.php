@@ -84,7 +84,7 @@ Class ModeleGroupeProf extends Connexion{
         $rendus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (!empty($rendus)) {
-            $query = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $query = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, statut) VALUES (?, ?, 'En attente')";
             $stmt = $bdd->prepare($query);
             foreach ($rendus as $rendu) {
                 $stmt->execute([$rendu['id_rendu'], $idGroupe]);
@@ -171,16 +171,6 @@ Class ModeleGroupeProf extends Connexion{
 
         return $detailsGroupe;
     }
-
-    public function getTitreSAE($idProjet){
-        $bdd = $this->getBdd();
-        $query = "SELECT titre FROM Projet WHERE id_projet = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet]);
-        $sae = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $sae['titre'];
-    }
-
     public function modifierModifiableParGroupe($modifiable, $idGroupe) {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";

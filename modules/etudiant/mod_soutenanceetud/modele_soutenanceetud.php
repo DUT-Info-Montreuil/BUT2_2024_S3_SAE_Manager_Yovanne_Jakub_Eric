@@ -27,4 +27,15 @@ Class ModeleSoutenanceEtud extends Connexion
             return [];
         }
     }
+    public function getNoteEtCommentaire($idSoutenance, $idGroupe)
+    {
+        $bdd = $this->getBdd();
+        $sql = "SELECT note, commentaire 
+            FROM Soutenance_Evaluation
+            WHERE id_soutenance = ? AND id_groupe = ?
+            LIMIT 1";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idSoutenance, $idGroupe]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
