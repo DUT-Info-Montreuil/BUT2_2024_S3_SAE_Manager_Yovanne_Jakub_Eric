@@ -36,36 +36,20 @@ class VueSoutenanceEtud extends VueGenerique
 
                                     <div class="d-flex justify-content-center mb-2">
                                         <div class="mx-2">
-                                            <p><strong>Date de Soutenance
-                                                    :</strong> <?= $this->formatDate($soutenance['date_soutenance']) ?>
-                                            </p>
+                                            <p><strong>Date de Soutenance :</strong> <?= $this->formatDate($soutenance['date_soutenance']) ?></p>
                                         </div>
                                         <?php if (!$soutenance['id_evaluation']): ?>
                                             <div class="mx-2">
-                                                <p><strong>Évaluation :</strong>
-                                                    <span>Aucune évaluation définie</span>
-                                                </p>
+                                                <p><strong>Évaluation :</strong> <span>Aucune évaluation définie</span></p>
                                             </div>
                                         <?php endif; ?>
                                     </div>
 
-                                    <?php if ($soutenance['id_evaluation']): ?>
+                                    <?php if (!empty($soutenance['note'])): ?>
                                         <div class="mt-3 p-3 bg-light border rounded">
-                                            <p><strong>Coefficient évaluation
-                                                    :</strong> <?= htmlspecialchars($soutenance['coefficient']) ?></p>
-                                            <p><strong>Note max évaluation
-                                                    :</strong> <?= htmlspecialchars($soutenance['note_max']) ?></p>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <?php if (!empty($soutenance['note']) || !empty($soutenance['commentaire'])): ?>
-                                        <div class="mt-3 p-3 bg-light border rounded">
-                                            <p><strong>Note
-                                                    :</strong> <?= htmlspecialchars($soutenance['note']) ?: 'Non noté' ?>
-                                            </p>
-                                            <p><strong>Commentaire
-                                                    :</strong> <?= htmlspecialchars($soutenance['commentaire']) ?: 'Aucun commentaire' ?>
-                                            </p>
+                                            <p><strong>Coefficient :</strong> <?= htmlspecialchars($soutenance['coefficient']) ?></p>
+                                            <p><strong>Note :</strong> <?= htmlspecialchars($soutenance['note']) ?> / <?= htmlspecialchars($soutenance['note_max']) ?></p>
+                                            <p><strong>Commentaire :</strong> <?= htmlspecialchars($soutenance['commentaire']) ?: 'Aucun commentaire' ?></p>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -84,5 +68,3 @@ class VueSoutenanceEtud extends VueGenerique
         return $dateObj ? $dateObj->format('d/m/Y') : $date;
     }
 }
-
-?>
