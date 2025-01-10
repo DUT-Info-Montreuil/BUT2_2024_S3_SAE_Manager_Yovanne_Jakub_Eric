@@ -34,26 +34,20 @@ class VueSoutenanceEtud extends VueGenerique
                                  aria-labelledby="heading-<?= $index ?>" data-bs-parent="#soutenanceAccordion">
                                 <div class="accordion-body p-3">
 
-                                    <div class="d-flex justify-content-center mb-2">
-                                        <div class="mx-2">
-                                            <p><strong>Date de Soutenance :</strong> <?= $this->formatDate($soutenance['date_soutenance']) ?></p>
-                                        </div>
-                                        <?php if (!$soutenance['id_evaluation']): ?>
-                                            <div class="mx-2">
-                                                <p><strong>Évaluation :</strong> <span>Aucune évaluation définie</span></p>
-                                            </div>
-                                        <?php endif; ?>
+                                    <div class="mb-3">
+                                        <p class="bg-light p-2 border rounded"><strong>Date de Soutenance :</strong> <?= $this->formatDate($soutenance['date_soutenance']) ?></p>
                                     </div>
 
                                     <?php if (!empty($soutenance['note'])): ?>
-                                        <div class="mt-3 p-3 bg-light border rounded">
+                                        <div class="p-3 bg-light border rounded">
                                             <p><strong>Coefficient :</strong> <?= htmlspecialchars($soutenance['coefficient']) ?></p>
                                             <p><strong>Note :</strong> <?= htmlspecialchars($soutenance['note']) ?> / <?= htmlspecialchars($soutenance['note_max']) ?></p>
-                                            <p><strong>Commentaire :</strong> <?= htmlspecialchars($soutenance['commentaire']) ?: 'Aucun commentaire' ?></p>
+                                            <p class="mb-0"><strong>Commentaire :</strong> <?= htmlspecialchars($soutenance['commentaire']) ?: 'Aucun commentaire' ?></p>
                                         </div>
                                     <?php endif; ?>
                                 </div>
                             </div>
+
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

@@ -32,22 +32,20 @@ Class VueDepotEtud extends VueGenerique
                             <div id="collapse-<?= $index ?>" class="accordion-collapse collapse"
                                  aria-labelledby="heading-<?= $index ?>" data-bs-parent="#depotAccordion">
                                 <div class="accordion-body p-3">
-                                    <div class="d-flex justify-content-center">
-                                        <div class="mx-2">
-                                            <p><strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?></p>
-                                        </div>
-                                        <div class="mx-2">
-                                            <p><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
-                                        </div>
+
+                                    <div class="p-3 bg-light border rounded mb-3">
+                                        <p><strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?></p>
+                                        <p class="mb-0"><strong>Statut :</strong> <?= htmlspecialchars($depot['statut']) ?></p>
                                     </div>
 
                                     <?php if (!empty($depot['note'])): ?>
-                                        <div class="p-3 bg-light border rounded">
+                                        <div class="p-3 bg-light border rounded mb-3">
                                             <p><strong>Coefficient :</strong> <?= htmlspecialchars($depot['coefficient']) ?></p>
                                             <p><strong>Note :</strong> <?= htmlspecialchars($depot['note']) ?> / <?= htmlspecialchars($depot['note_max']) ?></p>
-                                            <p><strong>Commentaire :</strong> <?= htmlspecialchars($depot['commentaire']) ?: 'Aucun commentaire' ?></p>
+                                            <p class="mb-0"><strong>Commentaire :</strong> <?= htmlspecialchars($depot['commentaire']) ?: 'Aucun commentaire' ?></p>
                                         </div>
                                     <?php endif; ?>
+
 
                                     <?php if ($depot['statut'] === 'Remis'): ?>
                                         <p class="mt-3"><strong>Fichiers remis :</strong></p>
@@ -81,6 +79,7 @@ Class VueDepotEtud extends VueGenerique
                                     <?php endif; ?>
                                 </div>
                             </div>
+
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
