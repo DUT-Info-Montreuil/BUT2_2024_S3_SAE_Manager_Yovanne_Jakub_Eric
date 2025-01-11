@@ -81,13 +81,38 @@ class ContAccueilProf
     public function choixSae()
     {
         if (isset($_GET['id'])) {
+            $sections = [
+                "Responsable" => [
+                    ["href" => "index.php?module=infosae", "title" => "Gestion de la SAE"],
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                ],
+                "Co-Responsable" => [
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                ],
+                "Intervenant" => [
+                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
+                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
+                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
+                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                ]
+            ];
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
             $titre = ModeleCommun::getTitreSAE($idProjet);
             $desc = ModeleCommun::getDescriptionSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
             $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur);
-            $this->vue->afficherSaeDetails($titre, $role, $desc);
+            $this->vue->afficherSaeDetails($titre, $role, $desc, $sections);
         } else {
             $this->accueil();
         }

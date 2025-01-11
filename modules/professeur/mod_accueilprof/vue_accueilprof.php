@@ -72,7 +72,9 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherSaeDetails($titre, $role, $desc)
+
+
+    public function afficherSaeDetails($titre, $role, $desc, $sections)
     {
         ?>
         <div class="container mt-5">
@@ -89,32 +91,6 @@ class VueAccueilProf extends VueGenerique
                 <div class="container">
                     <div class="row justify-content-center">
                         <?php
-                        $sections = [
-                            "Responsable" => [
-                                ["href" => "index.php?module=infosae", "title" => "Gestion de la SAE"],
-                                ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                                ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ],
-                            "Co-Responsable" => [
-                                ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                                ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ],
-                            "Intervenant" => [
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ]
-                        ];
-
                         $availableSections = isset($sections[$role]) ? $sections[$role] : [];
                         foreach ($availableSections as $section):
                             ?>

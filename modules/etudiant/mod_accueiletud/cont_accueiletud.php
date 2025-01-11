@@ -39,10 +39,17 @@ Class ContAccueilEtud {
     public function choixSae()
     {
         if (isset($_GET['id'])) {
+            $sections = [
+                ["href" => "index.php?module=groupeetud", "title" => "Groupe"],
+                ["href" => "index.php?module=depotetud", "title" => "Dépôt"],
+                ["href" => "index.php?module=ressourceetud", "title" => "Ressource"],
+                ["href" => "index.php?module=soutenanceetud", "title" => "Soutenance"]
+            ];
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
             $titre = ModeleCommun::getTitreSAE($idProjet);
-            $this->vue->afficherSaeDetails($titre);
+            $desc = ModeleCommun::getDescriptionSAE($idProjet);
+            $this->vue->afficherSaeDetails($titre, $desc, $sections);
         } else {
             $this->accueil();
         }
