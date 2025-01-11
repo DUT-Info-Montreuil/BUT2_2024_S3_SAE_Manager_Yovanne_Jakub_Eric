@@ -1,6 +1,7 @@
 <?php
 
 require_once 'generique/composant/vue_composant_generique.php';
+require_once 'ModeleCommun.php';
 
 class VueCompMenu extends VueCompGenerique {
     public function __construct() {
