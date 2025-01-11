@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_ressourceprof/modele_ressourceprof.php';
 include_once 'modules/professeur/mod_ressourceprof/vue_ressourceprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 class ContRessourceProf
 {
@@ -20,7 +21,7 @@ class ContRessourceProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionRessourceSAE";
-        if ($this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
             switch ($this->action) {
                 case "gestionRessourceSAE":
                     $this->gestionRessourceSAE();
@@ -42,12 +43,6 @@ class ContRessourceProf
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
         }
 
-    }
-
-    public function estProfOuIntervenant()
-    {
-        $typeUser = ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser === "professeur" || $typeUser === "intervenant";
     }
 
     private function gestionRessourceSAE()

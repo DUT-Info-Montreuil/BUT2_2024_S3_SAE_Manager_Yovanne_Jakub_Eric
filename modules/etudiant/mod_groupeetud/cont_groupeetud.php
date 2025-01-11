@@ -3,6 +3,7 @@ include_once "modules/etudiant/mod_groupeetud/modele_groupeetud.php";
 include_once "modules/etudiant/mod_groupeetud/vue_groupeetud.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
+require_once "ControllerCommun.php";
 Class ContGroupeEtud
 {
     private $modele;
@@ -18,7 +19,7 @@ Class ContGroupeEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "membreGroupeSAE";
-        if ($this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
             switch ($this->action) {
                 case "membreGroupeSAE":
                     $this->membreGroupeSAE();
@@ -31,10 +32,6 @@ Class ContGroupeEtud
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
         }
 
-    }
-
-    public function estEtudiant(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
     public function membreGroupeSAE(){

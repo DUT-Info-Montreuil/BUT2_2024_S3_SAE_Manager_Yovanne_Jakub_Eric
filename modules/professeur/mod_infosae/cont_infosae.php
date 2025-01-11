@@ -3,6 +3,7 @@ include_once "modules/professeur/mod_infosae/modele_infosae.php";
 include_once "modules/professeur/mod_infosae/vue_infosae.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 class ContInfoSae
 {
@@ -19,7 +20,7 @@ class ContInfoSae
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionSAE";
-        if ($this->estProf()) {
+        if (ControllerCommun::estProf()) {
             switch ($this->action) {
                 case "gestionSAE" :
                     $this->gestionSAE();
@@ -54,12 +55,6 @@ class ContInfoSae
         }
 
     }
-
-    public function estProf()
-    {
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "professeur";
-    }
-
     public function gestionSAE()
     {
         $choix = [

@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_evaluationprof/modele_evaluationprof.php';
 include_once 'modules/professeur/mod_evaluationprof/vue_evaluationprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContEvaluationProf
 {
     private $modele;
@@ -18,7 +19,7 @@ class ContEvaluationProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionEvaluationsSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
             switch ($this->action) {
                 case "gestionEvaluationsSAE":
                     $this->gestionEvaluationsSAE();
@@ -56,12 +57,6 @@ class ContEvaluationProf
         }
 
     }
-
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
-    }
-
     public function gestionEvaluationsSAE()
     {
         $idSae = $_SESSION['id_projet'];

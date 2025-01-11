@@ -3,6 +3,7 @@ include_once "modules/etudiant/mod_soutenanceetud/modele_soutenanceetud.php";
 include_once "modules/etudiant/mod_soutenanceetud/vue_soutenanceetud.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
+require_once "ControllerCommun.php";
 Class ContSoutenanceEtud {
     private $modele;
     private $vue;
@@ -18,7 +19,7 @@ Class ContSoutenanceEtud {
     {
 
         $this->action = isset($_GET['action']) ? $_GET['action'] : "affichageDesSoutenances";
-        if ($this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
             switch ($this->action) {
                 case "affichageDesSoutenances":
                     $this->affichageDesSoutenances();
@@ -32,11 +33,6 @@ Class ContSoutenanceEtud {
 
     }
 
-    public function estEtudiant(){
-
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
-
-    }
 
     public function affichageDesSoutenances()
     {

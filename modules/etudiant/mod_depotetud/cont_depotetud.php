@@ -4,6 +4,7 @@ include_once "modules/etudiant/mod_depotetud/vue_depotetud.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
+require_once "ControllerCommun.php";
 class ContDepotEtud
 {
     private $modele;
@@ -19,7 +20,7 @@ class ContDepotEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherDepot";
-        if ($this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
             switch ($this->action) {
                 case "afficherDepot":
                     $this->afficherDepot();
@@ -36,12 +37,6 @@ class ContDepotEtud
         }
 
     }
-
-    public function estEtudiant()
-    {
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
-    }
-
 
     public function afficherDepot()
     {

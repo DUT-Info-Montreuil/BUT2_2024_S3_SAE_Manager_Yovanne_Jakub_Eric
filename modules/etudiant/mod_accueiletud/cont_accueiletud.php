@@ -3,6 +3,7 @@ include_once "modules/etudiant/mod_accueiletud/modele_accueiletud.php";
 include_once "modules/etudiant/mod_accueiletud/vue_accueiletud.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
+require_once "ControllerCommun.php";
 Class ContAccueilEtud {
     private $modele;
     private $vue;
@@ -15,7 +16,7 @@ Class ContAccueilEtud {
 
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if ($this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
             switch ($this->action) {
                 case "accueil":
                     $this->accueil();
@@ -27,10 +28,6 @@ Class ContAccueilEtud {
         }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
         }
-    }
-
-    public function estEtudiant(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
     public function accueil() {
         $saeInscrit = $this->modele->saeInscrit($_SESSION['id_utilisateur']);

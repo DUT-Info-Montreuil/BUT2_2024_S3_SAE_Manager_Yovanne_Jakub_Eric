@@ -3,6 +3,7 @@ include_once "modules/professeur/mod_accueilprof/modele_accueilprof.php";
 include_once "modules/professeur/mod_accueilprof/vue_accueilprof.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 class ContAccueilProf
 {
@@ -19,7 +20,7 @@ class ContAccueilProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if ($this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
             switch ($this->action) {
                 case "accueil":
                     $this->accueil();
@@ -71,12 +72,6 @@ class ContAccueilProf
             DossierManager::creerDossiersSAE($idSae, $nomSae);
         }
         $this->accueil();
-    }
-
-
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     public function choixSae()

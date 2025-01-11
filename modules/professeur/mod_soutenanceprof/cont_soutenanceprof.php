@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_soutenanceprof/modele_soutenanceprof.php';
 include_once 'modules/professeur/mod_soutenanceprof/vue_soutenanceprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContSoutenanceProf
 {
     private $modele;
@@ -18,7 +19,7 @@ class ContSoutenanceProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionSoutenancesSAE";
-        if ($this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
             switch ($this->action) {
                 case "gestionSoutenancesSAE":
                     $this->gestionSoutenancesSAE();
@@ -41,11 +42,6 @@ class ContSoutenanceProf
         }
 
     }
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
-    }
-
     private function gestionSoutenancesSAE()
     {
         $idSae = $_SESSION['id_projet'];

@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_gerantprof/modele_gerantprof.php';
 include_once 'modules/professeur/mod_gerantprof/vue_gerantprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContGerantProf
 {
     private $modele;
@@ -18,7 +19,7 @@ class ContGerantProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGerantSAE";
-        if ($this->estProf()) {
+        if (ControllerCommun::estProf()) {
             switch ($this->action) {
                 case "gestionGerantSAE":
                     $this->gestionGerantSAE();
@@ -43,9 +44,6 @@ class ContGerantProf
             echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
         }
 
-    }
-    public function estProf(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";
     }
     public function gestionGerantSAE(){
         $idSae = $_SESSION['id_projet'];
