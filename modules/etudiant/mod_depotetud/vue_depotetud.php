@@ -70,8 +70,6 @@ Class VueDepotEtud extends VueGenerique
                                             <p>Aucun fichier associé.</p>
                                         <?php endif; ?>
 
-
-
                                         <form
                                                 action="index.php?module=depotetud&action=supprimerTravailRemis"
                                                 method="post"
@@ -83,9 +81,6 @@ Class VueDepotEtud extends VueGenerique
                                         </form>
                                         <script src="scriptConfirmationSuppr.js"></script>
 
-
-
-                                        </form>
                                     <?php else: ?>
                                         <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data" class="mt-3">
                                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">

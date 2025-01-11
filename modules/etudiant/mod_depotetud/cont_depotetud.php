@@ -31,6 +31,7 @@ class ContDepotEtud
                 $this->upload();
                 break;
             case "supprimerTravailRemis" :
+                //popup de suppresion
                 $this->supprimerTravailRemis();
                 break;
         }
