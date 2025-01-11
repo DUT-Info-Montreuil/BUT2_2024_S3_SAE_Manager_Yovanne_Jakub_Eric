@@ -36,7 +36,7 @@ Class VueAccueilEtud extends VueGenerique{
         </div>
         <?php
     }
-    public function afficherSaeDetails($titre, $desc, $sections)
+    public function afficherSaeDetails($titre, $desc, $sections, $allChamp)
     {
         ?>
         <div class="container mt-5">
@@ -47,6 +47,12 @@ Class VueAccueilEtud extends VueGenerique{
                 <p class="lead" style="color: #6c757d; font-size: 1.2rem;">
                     <?= htmlspecialchars($desc) ?>
                 </p>
+
+                <div class="mt-4">
+                    <div style="color: #6c757d; font-size: 1rem;">
+                        <?= $allChamp ?>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-light p-5 rounded border mb-3">
@@ -72,6 +78,10 @@ Class VueAccueilEtud extends VueGenerique{
         </div>
         <?php
     }
+
+
+
+
 
 
 

@@ -2,6 +2,7 @@
 include_once "modules/etudiant/mod_accueiletud/modele_accueiletud.php";
 include_once "modules/etudiant/mod_accueiletud/vue_accueiletud.php";
 require_once "ModeleCommun.php";
+require_once "modules/etudiant/ModeleCommunEtudiant.php";
 Class ContAccueilEtud {
     private $modele;
     private $vue;
@@ -47,9 +48,11 @@ Class ContAccueilEtud {
             ];
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idProjet, $_SESSION['id_utilisateur']);
             $titre = ModeleCommun::getTitreSAE($idProjet);
             $desc = ModeleCommun::getDescriptionSAE($idProjet);
-            $this->vue->afficherSaeDetails($titre, $desc, $sections);
+            $allChamp = $this->modele->getAllChamp($idProjet, $idGroupe);
+            $this->vue->afficherSaeDetails($titre, $desc, $sections, $allChamp);
         } else {
             $this->accueil();
         }
