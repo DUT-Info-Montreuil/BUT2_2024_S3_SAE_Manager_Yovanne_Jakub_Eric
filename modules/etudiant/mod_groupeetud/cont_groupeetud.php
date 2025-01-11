@@ -26,6 +26,9 @@ Class ContGroupeEtud
             case "membreGroupeSAE":
                 $this->membreGroupeSAE();
                 break;
+            case "updateChamps" :
+                $this->updateChamps();
+                break;
         }
     }
 
@@ -37,6 +40,25 @@ Class ContGroupeEtud
         $idGroupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
         $grpSAE = $this->modele->getGroupeSAE($idGroupe);
         $nomGrp = $this->modele->getNomGroupe($idGroupe);
-        $this->vue->afficherGroupeSAE($grpSAE, $nomGrp);
+        $idSae = $_SESSION['id_projet'];
+        $champARemplir = $this->modele->getChampARemplir($idGroupe, $idSae);
+        $this->vue->afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir);
     }
+
+    public function updateChamps() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
+            foreach ($_POST as $key => $value) { //parcours tt les valeurs et name
+                if (strpos($key, 'champ_') === 0) { //true si champ_ au début
+                    $idChamp = str_replace('champ_', '', $key); //prend l'id
+                    $champValeur = htmlspecialchars(trim($value));
+                    if (!empty($champValeur)) {
+                        $this->modele->updateChampGroupe($idGroupe, $idChamp, $champValeur);
+                    }
+                }
+            }
+        }
+        $this->membreGroupeSAE();
+    }
+
 }
