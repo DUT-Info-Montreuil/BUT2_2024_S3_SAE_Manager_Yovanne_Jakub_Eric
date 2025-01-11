@@ -57,7 +57,6 @@ class ContDepotEtud
             $depot['auteur'] = isset($auteurEtDate['nom']) && isset($auteurEtDate['prenom']) ? $auteurEtDate['nom'] . ' ' . $auteurEtDate['prenom'] : null;
             $depot['date_remise'] = isset($auteurEtDate['date_remise']) ? $auteurEtDate['date_remise'] : null;
         }
-
         $this->vue->afficherAllDepot($tabAllDepot);
     }
 
