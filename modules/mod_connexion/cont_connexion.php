@@ -44,7 +44,6 @@ class ContConnexion {
         }
     }
 
-
     public function testConnexion($identifiant, $mdp) {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
