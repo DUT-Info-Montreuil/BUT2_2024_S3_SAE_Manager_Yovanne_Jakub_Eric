@@ -13,6 +13,7 @@ class VueCompMenu extends VueCompGenerique {
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="index.php?module=connexion&action=deconnexion">Déconnexion</a></li>
+                        <li><a class="dropdown-item" href="index.php?module=parametre">Paramètre</a></li>
                     </ul>
                 </div>';
         }

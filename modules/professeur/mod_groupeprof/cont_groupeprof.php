@@ -3,6 +3,7 @@ include_once "modules/professeur/mod_groupeprof/modele_groupeprof.php";
 include_once "modules/professeur/mod_groupeprof/vue_groupeprof.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 Class ContGroupeProf {
     private $modele;
     private $vue;
@@ -15,40 +16,38 @@ Class ContGroupeProf {
 
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGroupeSAE";
-        if (!$this->estProf()) {
-            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
-            return;
-        }
-        switch ($this->action) {
-            case "gestionGroupeSAE":
-                $this->gestionGroupeSAE();
-                break;
-            case "ajouterGroupeFormulaire" :
-                $this->ajouterGroupeFormulaire();
-                break;
-            case "creerGroupe" :
-                $this->creerGroupe();
-                break;
-            case "versModifierGroupe" :
-                $this->versModifierGroupe();
-                break;
-            case "ajouterNouveauMembreGrp" :
-                $this->ajouterNouveauMembreGrp();
-                break;
-            case "modifierGroupe" :
-                $this->modifierGroupe();
-                break;
-            case "enregistrerModificationsGroupe" :
-                $this->enregistrerModificationsGroupe();
-                break;
-            case "supprimerGrp" :
-                $this->supprimerGrp();
-                break;
+        if (ControllerCommun::estProf()) {
+            switch ($this->action) {
+                case "gestionGroupeSAE":
+                    $this->gestionGroupeSAE();
+                    break;
+                case "ajouterGroupeFormulaire" :
+                    $this->ajouterGroupeFormulaire();
+                    break;
+                case "creerGroupe" :
+                    $this->creerGroupe();
+                    break;
+                case "versModifierGroupe" :
+                    $this->versModifierGroupe();
+                    break;
+                case "ajouterNouveauMembreGrp" :
+                    $this->ajouterNouveauMembreGrp();
+                    break;
+                case "modifierGroupe" :
+                    $this->modifierGroupe();
+                    break;
+                case "enregistrerModificationsGroupe" :
+                    $this->enregistrerModificationsGroupe();
+                    break;
+                case "supprimerGrp" :
+                    $this->supprimerGrp();
+                    break;
 
+            }
+        }else{
+            echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
         }
-    }
-    public function estProf(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";
+
     }
     public function gestionGroupeSAE() {
         $idSae = $_SESSION['id_projet'];

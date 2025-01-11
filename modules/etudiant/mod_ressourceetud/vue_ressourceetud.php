@@ -16,7 +16,7 @@ Class VueRessourceEtud extends VueGenerique
             <div class="accordion" id="saeAccordion">
                 <?php if (!is_array($tabAllSae) || empty($tabAllSae)): ?>
                     <div class="text-center">
-                        <p>Aucune ressources mise en avant disponible pour ce projet.</p>
+                        <p style="font-style: italic">Aucune ressources mise en avant disponible pour ce projet.</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($tabAllSae as $index => $sae): ?>

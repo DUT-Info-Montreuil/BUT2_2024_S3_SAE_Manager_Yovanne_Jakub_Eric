@@ -2,6 +2,7 @@
 include_once "modules/admin/mod_gestuser/modele_gestuser.php";
 include_once "modules/admin/mod_gestuser/vue_gestuser.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 class ContGestUser
 {
@@ -18,35 +19,31 @@ class ContGestUser
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "menuGestUser";
-        if (!$this->estAdmin()) {
+        if (ControllerCommun::estAdmin()) {
+            switch ($this->action) {
+                case "menuGestUser":
+                    $this->menuGestUser();
+                    break;
+                case "versModifierDesUsers":
+                    $this->versModifierDesUsers();
+                    break;
+                case "modifierUser" :
+                    $this->modifierUser();
+                    break;
+                case "enregistrerModifications" :
+                    $this->enregistrerModifications();
+                    break;
+                case "addUser" :
+                    $this->addUser();
+                    break;
+                case "ajouterUser" :
+                    $this->ajouterUser();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "menuGestUser":
-                $this->menuGestUser();
-                break;
-            case "versModifierDesUsers":
-                $this->versModifierDesUsers();
-                break;
-            case "modifierUser" :
-                $this->modifierUser();
-                break;
-            case "enregistrerModifications" :
-                $this->enregistrerModifications();
-                break;
-            case "addUser" :
-                $this->addUser();
-                break;
-            case "ajouterUser" :
-                $this->ajouterUser();
-                break;
-        }
-    }
 
-    public function estAdmin()
-    {
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "admin";
     }
 
     public function menuGestUser()

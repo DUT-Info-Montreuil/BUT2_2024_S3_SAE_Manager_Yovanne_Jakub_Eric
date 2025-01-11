@@ -8,6 +8,7 @@ class VueAccueilProf extends VueGenerique
     {
         parent::__construct();
     }
+
     public function afficherSaeGerer($saeGerer, $typeUser) {
         ?>
         <div class="container">

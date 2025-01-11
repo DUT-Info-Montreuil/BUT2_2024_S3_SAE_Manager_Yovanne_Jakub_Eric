@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_gerantprof/modele_gerantprof.php';
 include_once 'modules/professeur/mod_gerantprof/vue_gerantprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContGerantProf
 {
     private $modele;
@@ -18,33 +19,31 @@ class ContGerantProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGerantSAE";
-        if (!$this->estProf()) {
+        if (ControllerCommun::estProf()) {
+            switch ($this->action) {
+                case "gestionGerantSAE":
+                    $this->gestionGerantSAE();
+                    break;
+                case "versModifierGerant":
+                    $this->versModifierGerant();
+                    break;
+                case "ajouterGerantFormulaire" :
+                    $this->ajouterGerantFormulaire();
+                    break;
+                case "ajouterGerants" :
+                    $this->ajouterGerants();
+                    break;
+                case "enregistrerModificationsGerant" :
+                    $this->enregistrerModificationsGerant();
+                    break;
+                case "supprimerGerant" :
+                    $this->supprimerGerant();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionGerantSAE":
-                $this->gestionGerantSAE();
-                break;
-            case "versModifierGerant":
-                $this->versModifierGerant();
-                break;
-            case "ajouterGerantFormulaire" :
-                $this->ajouterGerantFormulaire();
-                break;
-            case "ajouterGerants" :
-                $this->ajouterGerants();
-                break;
-            case "enregistrerModificationsGerant" :
-                $this->enregistrerModificationsGerant();
-                break;
-            case "supprimerGerant" :
-                $this->supprimerGerant();
-                break;
-        }
-    }
-    public function estProf(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";
+
     }
     public function gestionGerantSAE(){
         $idSae = $_SESSION['id_projet'];

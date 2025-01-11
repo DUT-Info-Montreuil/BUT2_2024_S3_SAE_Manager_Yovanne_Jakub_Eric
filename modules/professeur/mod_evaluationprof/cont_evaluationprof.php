@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_evaluationprof/modele_evaluationprof.php';
 include_once 'modules/professeur/mod_evaluationprof/vue_evaluationprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContEvaluationProf
 {
     private $modele;
@@ -18,49 +19,44 @@ class ContEvaluationProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionEvaluationsSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionEvaluationsSAE":
+                    $this->gestionEvaluationsSAE();
+                    break;
+                case "choixNotation" :
+                    $this->choixNotation();
+                    break;
+                case "traitementNotationIndividuelle" :
+                    $this->traitementNotationIndividuelle();
+                    break;
+                case "formEvaluation" :
+                    $this->formEvaluation();
+                    break;
+                case "creerEvaluation" :
+                    $this->creerEvaluation();
+                    break;
+                case "traitementNotationGroupe" :
+                    $this->traitementNotationGroupe();
+                    break;
+                case "modifierEvaluation" :
+                    $this->modifierEvaluation();
+                    break;
+                case "traitementModificationNote" :
+                    $this->traitementModificationNote();
+                    break;
+                case "supprimerEvaluation" :
+                    $this->supprimerEvaluation();
+                    break;
+                case "versModifierEvaluation":
+                    $this->versModifierEvaluation();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionEvaluationsSAE":
-                $this->gestionEvaluationsSAE();
-                break;
-            case "choixNotation" :
-                $this->choixNotation();
-                break;
-            case "traitementNotationIndividuelle" :
-                $this->traitementNotationIndividuelle();
-                break;
-            case "formEvaluation" :
-                $this->formEvaluation();
-                break;
-            case "creerEvaluation" :
-                $this->creerEvaluation();
-                break;
-            case "traitementNotationGroupe" :
-                $this->traitementNotationGroupe();
-                break;
-            case "modifierEvaluation" :
-                $this->modifierEvaluation();
-                break;
-            case "traitementModificationNote" :
-                $this->traitementModificationNote();
-                break;
-            case "supprimerEvaluation" :
-                $this->supprimerEvaluation();
-                break;
-            case "versModifierEvaluation":
-                $this->versModifierEvaluation();
-                break;
-        }
-    }
 
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
-
     public function gestionEvaluationsSAE()
     {
         $idSae = $_SESSION['id_projet'];

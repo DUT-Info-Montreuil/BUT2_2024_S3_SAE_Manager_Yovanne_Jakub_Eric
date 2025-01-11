@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_depotprof/modele_depotprof.php';
 include_once 'modules/professeur/mod_depotprof/vue_depotprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContDepotProf{
     private $modele;
     private $vue;
@@ -18,36 +19,32 @@ class ContDepotProf{
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionDepotSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionDepotSAE":
+                    $this->gestionDepotSAE();
+                    break;
+                case "creerDepot" :
+                    $this->creerDepot();
+                    break;
+                case "submitDepot" :
+                    $this->submitDepot();
+                    break;
+                case "modifierDepot" :
+                    $this->modifierDepot();
+                    break;
+                case "supprimerDepot" :
+                    $this->supprimerDepot();
+                    break;
+                case "ajouterTemps" :
+                    $this->ajouterTempsSupplementaire();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionDepotSAE":
-                $this->gestionDepotSAE();
-                break;
-            case "creerDepot" :
-                $this->creerDepot();
-                break;
-            case "submitDepot" :
-                $this->submitDepot();
-                break;
-            case "modifierDepot" :
-                $this->modifierDepot();
-                break;
-            case "supprimerDepot" :
-                $this->supprimerDepot();
-                break;
-            case "ajouterTemps" :
-                $this->ajouterTempsSupplementaire();
-                break;
-        }
-    }
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
-    }
 
+    }
     public function gestionDepotSAE(){
         $idSae = $_SESSION['id_projet'];
         if($idSae){

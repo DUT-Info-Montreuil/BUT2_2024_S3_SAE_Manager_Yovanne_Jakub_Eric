@@ -1,9 +1,9 @@
 <?php
-require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 if (isset($_SESSION['id_projet'])) {
     $idSae = $_SESSION['id_projet'];
-    $isProfOuIntervenant = ModeleCommun::pasEtudiant($idSae, $_SESSION['id_utilisateur']);
+    $isProfOuIntervenant = ControllerCommun::pasEtudiant($idSae, $_SESSION['id_utilisateur']);
     if ($isProfOuIntervenant) {
         $headerUrl = "http://localhost/index.php?module=accueilprof&action=choixSae&id=" . $idSae;
     } else {

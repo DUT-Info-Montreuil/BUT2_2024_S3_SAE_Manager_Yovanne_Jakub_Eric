@@ -4,7 +4,10 @@ include_once 'modules/professeur/mod_ressourceprof/modele_ressourceprof.php';
 include_once 'modules/professeur/mod_ressourceprof/vue_ressourceprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
-class ContRessourceProf{
+require_once "ControllerCommun.php";
+
+class ContRessourceProf
+{
     private $modele;
     private $vue;
     private $action;
@@ -15,46 +18,47 @@ class ContRessourceProf{
         $this->vue = new VueRessourceProf();
     }
 
-    public function exec(){
+    public function exec()
+    {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionRessourceSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionRessourceSAE":
+                    $this->gestionRessourceSAE();
+                    break;
+                case "creerRessource" :
+                    $this->creerRessource();
+                    break;
+                case "submitRessource" :
+                    $this->submitRessource();
+                    break;
+                case "supprimerRessource" :
+                    $this->supprimerRessource();
+                    break;
+                case "modifierRessource" :
+                    $this->modifierRessource();
+                    break;
+            }
+        } else {
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionRessourceSAE":
-                $this->gestionRessourceSAE();
-                break;
-            case "creerRessource" :
-                $this->creerRessource();
-                break;
-            case "submitRessource" :
-                $this->submitRessource();
-                break;
-            case "supprimerRessource" :
-                $this->supprimerRessource();
-                break;
-            case "modifierRessource" :
-                $this->modifierRessource();
-                break;
-        }
-    }
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
+
     }
 
-    private function gestionRessourceSAE(){
+    private function gestionRessourceSAE()
+    {
         $idSae = $_SESSION['id_projet'];
         $allRessources = $this->modele->getAllRessourceSAE($idSae);
         $this->vue->afficherAllRessource($allRessources);
     }
 
-    public function creerRessource(){
+    public function creerRessource()
+    {
         $this->vue->formulaireCreerRessource();
     }
 
-    public function submitRessource() {
+    public function submitRessource()
+    {
         if (isset($_POST['titre']) && !empty($_POST['titre'])) {
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
@@ -76,8 +80,9 @@ class ContRessourceProf{
     }
 
 
-    public function supprimerRessource(){
-        if(isset($_POST['id_ressource'])){
+    public function supprimerRessource()
+    {
+        if (isset($_POST['id_ressource'])) {
             $idRessource = $_POST['id_ressource'];
             $cheminFichier = $this->modele->getRessourceLien($idRessource);
             DossierManager::supprimerFichier($cheminFichier);
@@ -86,8 +91,9 @@ class ContRessourceProf{
         $this->gestionRessourceSAE();
     }
 
-    public function modifierRessource(){
-        if(isset($_POST['id_ressource']) && isset($_POST['titre']) && !empty($_POST['titre'])){
+    public function modifierRessource()
+    {
+        if (isset($_POST['id_ressource']) && isset($_POST['titre']) && !empty($_POST['titre'])) {
             $idRessource = $_POST['id_ressource'];
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
@@ -109,7 +115,6 @@ class ContRessourceProf{
         }
         $this->gestionRessourceSAE();
     }
-
 
 
 }

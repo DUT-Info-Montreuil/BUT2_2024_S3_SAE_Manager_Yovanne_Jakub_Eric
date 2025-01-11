@@ -2,6 +2,7 @@
 include_once "modules/etudiant/mod_ressourceetud/modele_ressourceetud.php";
 include_once "modules/etudiant/mod_ressourceetud/vue_ressourceetud.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 Class ContRessourceEtud
 {
     private $modele;
@@ -17,19 +18,16 @@ Class ContRessourceEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherAllRessources";
-        if (!$this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
+            switch ($this->action) {
+                case "afficherAllRessources":
+                    $this->afficherAllRessources();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "afficherAllRessources":
-                $this->afficherAllRessources();
-                break;
-        }
-    }
 
-    public function estEtudiant(){
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
 
     public function afficherAllRessources(){

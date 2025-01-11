@@ -33,11 +33,6 @@ class ModeleCommun extends Connexion
         return null;
     }
 
-    public static function pasEtudiant($idSAE, $idUtilisateur) {
-        $role = self::getRoleSAE($idSAE, $idUtilisateur);
-        return $role !== "etudiant" && $role !== null;
-    }
-
     public static function getTypeUtilisateur($idUtilisateur) {
         $bdd = self::getBdd();
         $sql = "SELECT type_utilisateur FROM Utilisateur WHERE id_utilisateur = ?";
@@ -57,6 +52,5 @@ class ModeleCommun extends Connexion
         $sae = $stmt->fetch(PDO::FETCH_ASSOC);
         return $sae['titre'];
     }
-
 
 }

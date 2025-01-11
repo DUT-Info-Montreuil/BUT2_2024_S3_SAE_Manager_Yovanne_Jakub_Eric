@@ -18,7 +18,7 @@ class VueSoutenanceEtud extends VueGenerique
             <div class="accordion" id="soutenanceAccordion">
                 <?php if (!is_array($tabAllSoutenances) || empty($tabAllSoutenances)): ?>
                     <div class="text-center">
-                        <p>Aucune soutenance disponible pour ce projet.</p>
+                        <p style="font-style: italic">Aucune soutenance disponible pour ce projet.</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($tabAllSoutenances as $index => $soutenance): ?>

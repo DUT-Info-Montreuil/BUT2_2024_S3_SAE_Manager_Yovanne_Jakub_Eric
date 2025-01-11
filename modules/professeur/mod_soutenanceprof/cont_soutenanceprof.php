@@ -3,6 +3,7 @@
 include_once 'modules/professeur/mod_soutenanceprof/modele_soutenanceprof.php';
 include_once 'modules/professeur/mod_soutenanceprof/vue_soutenanceprof.php';
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 class ContSoutenanceProf
 {
     private $modele;
@@ -18,33 +19,29 @@ class ContSoutenanceProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionSoutenancesSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionSoutenancesSAE":
+                    $this->gestionSoutenancesSAE();
+                    break;
+                case "modifierSoutenance" :
+                    $this->modifierSoutenance();
+                    break;
+                case "supprimerSoutenance" :
+                    $this->supprimerSoutenance();
+                    break;
+                case "creerSoutenance" :
+                    $this->creerSoutenance();
+                    break;
+                case "submitSoutenance" :
+                    $this->submitSoutenance();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionSoutenancesSAE":
-                $this->gestionSoutenancesSAE();
-                break;
-            case "modifierSoutenance" :
-                $this->modifierSoutenance();
-                break;
-            case "supprimerSoutenance" :
-                $this->supprimerSoutenance();
-                break;
-            case "creerSoutenance" :
-                $this->creerSoutenance();
-                break;
-            case "submitSoutenance" :
-                $this->submitSoutenance();
-                break;
-        }
-    }
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
-    }
 
+    }
     private function gestionSoutenancesSAE()
     {
         $idSae = $_SESSION['id_projet'];
