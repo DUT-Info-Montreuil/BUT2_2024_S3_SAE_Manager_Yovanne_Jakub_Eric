@@ -13,7 +13,7 @@ Class VueAccueilEtud extends VueGenerique{
             <div class="row justify-content-center g-4">
                 <?php if (empty($saeGerer)): ?>
                     <div class="col-12 text-center">
-                        <p>Aucun projet auquel vous êtes inscrit.</p>
+                        <p style="font-style: italic">Aucun projet auquel vous êtes inscrit.</p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($saeGerer as $sae): ?>

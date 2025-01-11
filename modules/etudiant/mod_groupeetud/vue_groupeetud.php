@@ -12,9 +12,9 @@ class VueGroupeEtud extends VueGenerique
     public function afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir) {
         ?>
         <div class="container mt-4">
-            <h2> Groupe : <?php echo htmlspecialchars($nomGrp); ?> </h2>
+            <h2 style="text-align: center"> Groupe : <?php echo htmlspecialchars($nomGrp); ?> </h2>
 
-            <table class="table table-bordered table-striped mt-4">
+            <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-4">
                 <thead class="thead-dark">
                 <tr>
                     <th>Nom</th>
@@ -35,9 +35,9 @@ class VueGroupeEtud extends VueGenerique
                 </tbody>
             </table>
 
-            <h3 class="mt-4">Champs à remplir :</h3>
+            <h3 style="text-align: center" class="mt-4">Champs à remplir :</h3>
             <form method="POST" action="index.php?module=groupeetud&action=updateChamps">
-                <table class="table table-bordered table-striped mt-3">
+                <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-3">
                     <thead class="thead-dark">
                     <tr>
                         <th>Nom du Champ</th>
