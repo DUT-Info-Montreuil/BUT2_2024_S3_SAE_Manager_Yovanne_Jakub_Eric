@@ -22,6 +22,17 @@ class ModeleCommun extends Connexion
         }
     }
 
+    public static function getDescriptionSAE($idProjet){
+        $bdd = self::getBdd();
+        $sql = "SELECT description_projet FROM Projet WHERE id_projet = ?";
+        $req = $bdd->prepare($sql);
+        $req->execute([$idProjet]);
+        if ($result = $req->fetch(PDO::FETCH_ASSOC)) {
+            return $result['description_projet'];
+        }
+        return null;
+    }
+
     public static function pasEtudiant($idSAE, $idUtilisateur) {
         $role = self::getRoleSAE($idSAE, $idUtilisateur);
         return $role !== "etudiant" && $role !== null;

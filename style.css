@@ -11,3 +11,11 @@ header {
     top: 25px;
     right: 40px;
 }
+/* Applique un dégradé bleu à violet sur tout le body */
+body {
+    background: linear-gradient(45deg, #00c6ff, #0072ff); /* Dégradé bleu */
+    background-size: cover; /* Assure que le dégradé couvre toute la page */
+    min-height: 100vh; /* Garantit que l'arrière-plan couvre toute la page */
+    color: white; /* Texte blanc pour contraster avec le fond */
+    font-family: Arial, sans-serif; /* Police par défaut */
+}
