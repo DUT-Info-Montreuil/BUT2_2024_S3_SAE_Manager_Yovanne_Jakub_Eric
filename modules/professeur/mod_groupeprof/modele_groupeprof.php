@@ -1,18 +1,25 @@
 <?php
 
 include_once 'Connexion.php';
-Class ModeleGroupeProf extends Connexion{
 
-    public function __construct() {
+class ModeleGroupeProf extends Connexion
+{
+
+    public function __construct()
+    {
 
     }
-    public function getSaeGroupe($idSae){
+
+    public function getGroupeDetails($idSae)
+    {
         $bdd = $this->getBdd();
         $stmt = $bdd->prepare("SELECT 
                             g.nom AS nom_groupe,
                             g.id_groupe AS id_groupe,
                             u.nom AS nom_membre,
-                            u.prenom AS prenom_membre
+                            u.prenom AS prenom_membre,
+                            c.champ_nom,
+                            cg.champ_valeur
                         FROM 
                             Projet_Groupe pg
                         INNER JOIN 
@@ -21,13 +28,43 @@ Class ModeleGroupeProf extends Connexion{
                             Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
                         INNER JOIN 
                             Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+                        LEFT JOIN 
+                            Champ_Groupe cg ON g.id_groupe = cg.id_groupe
+                        LEFT JOIN 
+                            Champ c ON cg.id_champ = c.id_champ
                         WHERE 
                             pg.id_projet = ?");
         $stmt->execute([$idSae]);
-        $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $groupes = [];
+        foreach ($result as $row) {
+            $idGroupe = $row['id_groupe'];
+
+            if (!isset($groupes[$idGroupe])) {
+                $groupes[$idGroupe] = [
+                    'nom_groupe' => $row['nom_groupe'],
+                    'id_groupe' => $row['id_groupe'],
+                    'membres' => [],
+                    'champs' => []
+                ];
+            }
+
+            $membreComplet = $row['prenom_membre'] . " " . $row['nom_membre'];
+            if (!in_array($membreComplet, $groupes[$idGroupe]['membres'])) {
+                $groupes[$idGroupe]['membres'][] = $membreComplet;
+            }
+
+            if (!empty($row['champ_nom']) && !in_array($row['champ_nom'] . ": " . $row['champ_valeur'], $groupes[$idGroupe]['champs'])) {
+                $groupes[$idGroupe]['champs'][] = $row['champ_nom'] . ": " . $row['champ_valeur'];
+            }
+        }
+
         return $groupes;
     }
-    public function getEtudiantsSansGroupe($idSae) {
+
+    public function getEtudiantsSansGroupe($idSae)
+    {
         $bdd = $this->getBdd();
         $query = "
         SELECT 
@@ -78,6 +115,7 @@ Class ModeleGroupeProf extends Connexion{
         $stmt->execute([$nomGroupe]);
         return $bdd->lastInsertId();
     }
+
     private function lierRendusAuGroupe($bdd, $idProjet, $idGroupe)
     {
         $query = "SELECT id_rendu FROM Rendu WHERE id_projet = ?";
@@ -93,6 +131,7 @@ Class ModeleGroupeProf extends Connexion{
             }
         }
     }
+
     private function lierSoutenancesAuGroupe($bdd, $idProjet, $idGroupe)
     {
         $query = "SELECT id_soutenance FROM Soutenance WHERE id_projet = ?";
@@ -125,79 +164,109 @@ Class ModeleGroupeProf extends Connexion{
         }
     }
 
-
-    public function lieeProjetGrp($idGroupe, $idSae){
+    public function lieeProjetGrp($idGroupe, $idSae)
+    {
         $bdd = $this->getBdd();
         $projetgrp = "INSERT INTO projet_groupe (id_groupe, id_projet) VALUES (?, ?)";
         $stmt2 = $bdd->prepare($projetgrp);
         $stmt2->execute([$idGroupe, $idSae]);
     }
-    public function ajouterEtudiantAuGroupe($idGroupe, $idEtudiant) {
+
+    public function ajouterEtudiantAuGroupe($idGroupe, $idEtudiant)
+    {
         $bdd = $this->getBdd();
         $query = "INSERT INTO groupe_etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idEtudiant, $idGroupe]);
     }
 
-    public function getGroupeById($idGroupe) {
+    public function getGroupeInfoById($idGroupe)
+    {
         $bdd = $this->getBdd();
-        $requete = $bdd->prepare("
-            SELECT 
-                g.id_groupe, 
-                g.nom AS nom_groupe, 
-                g.image_titre, 
-                g.modifiable_par_groupe,
-                u.id_utilisateur,
-                u.nom AS nom_membre,
-                u.prenom AS prenom_membre,
-                u.email
-            FROM 
-                Groupe g
-            LEFT JOIN 
-                Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
-            LEFT JOIN 
-                Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
-            WHERE 
-                g.id_groupe = :id_groupe
-        ");
+        $stmt = $bdd->prepare("
+    SELECT 
+        g.nom AS nom_groupe,
+        g.id_groupe AS id_groupe,
+        g.modifiable_par_groupe,
+        u.id_utilisateur,
+        u.nom AS nom_membre,
+        u.prenom AS prenom_membre,
+        u.email,
+        cg.champ_valeur,
+        c.champ_nom,
+        c.id_champ
+    FROM 
+        Groupe g
+    LEFT JOIN 
+        Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+    LEFT JOIN 
+        Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+    LEFT JOIN 
+        Champ_Groupe cg ON g.id_groupe = cg.id_groupe
+    LEFT JOIN 
+        Champ c ON cg.id_champ = c.id_champ
+    WHERE 
+        g.id_groupe = ?");
 
-        $requete->execute(['id_groupe' => $idGroupe]);
+        $stmt->execute([$idGroupe]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $resultats = $requete->fetchAll(PDO::FETCH_ASSOC);
+        $detailsGroupe = [];
+        $detailsGroupe['membres'] = [];
+        $detailsGroupe['champs'] = [];
 
-        if (empty($resultats)) {
-            return null;
-        }
+        $membresAjoutes = [];
 
-        $detailsGroupe = [
-            'id_groupe' => $resultats[0]['id_groupe'],
-            'nom_groupe' => $resultats[0]['nom_groupe'],
-            'image_titre' => $resultats[0]['image_titre'],
-            'modifiable_par_groupe' => $resultats[0]['modifiable_par_groupe'],
-            'membres' => []
-        ];
+        foreach ($result as $row) {
+            $detailsGroupe['nom_groupe'] = $row['nom_groupe'];
+            $detailsGroupe['id_groupe'] = $row['id_groupe'];
+            $detailsGroupe['modifiable_par_groupe'] = $row['modifiable_par_groupe'];
 
-        foreach ($resultats as $row) {
-            if ($row['id_utilisateur'] !== null) {
+            if (!isset($membresAjoutes[$row['id_utilisateur']])) {
                 $detailsGroupe['membres'][] = [
                     'id_utilisateur' => $row['id_utilisateur'],
-                    'nom' => $row['nom_membre'],
                     'prenom' => $row['prenom_membre'],
+                    'nom' => $row['nom_membre'],
                     'email' => $row['email']
+                ];
+
+                $membresAjoutes[$row['id_utilisateur']] = true;
+            }
+
+            if ($row['champ_nom'] && !in_array($row['champ_nom'], array_column($detailsGroupe['champs'], 'champ_nom'))) {
+                $detailsGroupe['champs'][] = [
+                    'champ_nom' => $row['champ_nom'],
+                    'champ_id' => $row['id_champ'],
+                    'champ_valeur' => $row['champ_valeur']
                 ];
             }
         }
 
         return $detailsGroupe;
     }
-    public function modifierModifiableParGroupe($modifiable, $idGroupe) {
+
+    public function modifierValeurChampGroupe($idGroupe, $idChamp, $champValeur) {
+        $bdd = $this->getBdd();
+        $query = "
+        UPDATE Champ_Groupe
+        SET champ_valeur = ?
+        WHERE id_groupe = ? AND id_champ = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$champValeur, $idGroupe, $idChamp]);
+    }
+
+
+    public function modifierModifiableParGroupe($modifiable, $idGroupe)
+    {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET modifiable_par_groupe = ? WHERE id_groupe = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$modifiable, $idGroupe]);
     }
 
-    public function supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur) {
+    public function supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur)
+    {
         $bdd = $this->getBdd();
         $query = "DELETE FROM Groupe_Etudiant WHERE id_groupe = :id_groupe AND id_utilisateur = :id_utilisateur";
         $stmt = $bdd->prepare($query);
@@ -206,21 +275,24 @@ Class ModeleGroupeProf extends Connexion{
         $stmt->execute();
     }
 
-    public function modifierNomGrp($idGroupe, $nomGroupe){
+    public function modifierNomGrp($idGroupe, $nomGroupe)
+    {
         $bdd = $this->getBdd();
         $query = "UPDATE Groupe SET nom = ? WHERE id_groupe = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$nomGroupe, $idGroupe]);
     }
 
-    public function supprimerGroupe($idGroupe){
+    public function supprimerGroupe($idGroupe)
+    {
         $bdd = $this->getBdd();
         $query = "DELETE FROM Groupe WHERE id_groupe = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idGroupe]);
     }
 
-    public function getNomGroupe($idGroupe){
+    public function getNomGroupe($idGroupe)
+    {
         $bdd = $this->getBdd();
         $query = "SELECT nom FROM Groupe WHERE id_groupe = ?";
         $stmt = $bdd->prepare($query);
@@ -228,7 +300,6 @@ Class ModeleGroupeProf extends Connexion{
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['nom'];
     }
-
 
 
 }

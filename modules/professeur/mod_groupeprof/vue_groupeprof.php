@@ -5,7 +5,7 @@ Class VueGroupeProf extends VueGenerique{
     public function __construct() {
         parent::__construct();
     }
-    public function afficherGroupeSAE($groupeSAE) {
+    public function afficherGroupeSAE($groupes) {
         ?>
         <div class="container mt-4">
             <h2>Gestion des Groupes pour la SAE</h2>
@@ -14,52 +14,27 @@ Class VueGroupeProf extends VueGenerique{
                 <tr>
                     <th>Nom du Groupe</th>
                     <th>Membres</th>
+                    <th>Champs</th>
                     <th>Modifier</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php
-                if (!empty($groupeSAE)) {
-                    $currentGroup = null;
-                    $members = [];
-
-                    foreach ($groupeSAE as $row) {
-                        if ($currentGroup === null || $currentGroup['id_groupe'] !== $row['id_groupe']) {
-                            if ($currentGroup !== null) {
-                                echo "<tr>";
-                                echo "<td>{$currentGroup['nom_groupe']}</td>";
-                                echo "<td>" . implode(', ', $members) . "</td>";
-                                echo "<td>
-                                    <a href='index.php?module=groupeprof&action=versModifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
-                                        <i class='fas fa-cog'></i>
-                                    </a>
-                                  </td>";
-                                echo "</tr>";
-                            }
-                            $currentGroup = [
-                                'id_groupe' => $row['id_groupe'],
-                                'nom_groupe' => $row['nom_groupe']
-                            ];
-                            $members = [];
-                        }
-                        $members[] = $row['prenom_membre'] . " " . $row['nom_membre'];
-                    }
-
-                    if ($currentGroup !== null) {
-                        echo "<tr>";
-                        echo "<td>{$currentGroup['nom_groupe']}</td>";
-                        echo "<td>" . implode(', ', $members) . "</td>";
-                        echo "<td>
-                            <a href='index.php?module=groupeprof&action=versModifierGroupe&idGroupe={$currentGroup['id_groupe']}' class='btn btn-sm btn-secondary'>
-                                <i class='fas fa-cog'></i>
-                            </a>
-                          </td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>Aucun groupe trouvé pour cette SAE</td></tr>";
-                }
-                ?>
+                <?php if (!empty($groupes)): ?>
+                    <?php foreach ($groupes as $groupe): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($groupe['nom_groupe']); ?></td>
+                            <td><?php echo implode(', ', $groupe['membres']); ?></td>
+                            <td><?php echo implode(', ', $groupe['champs']); ?></td>
+                            <td>
+                                <a href="index.php?module=groupeprof&action=versModifierGroupe&idGroupe=<?php echo $groupe['id_groupe']; ?>" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="4">Aucun groupe trouvé pour cette SAE</td></tr>
+                <?php endif; ?>
                 </tbody>
             </table>
 
@@ -71,69 +46,109 @@ Class VueGroupeProf extends VueGenerique{
         </div>
         <?php
     }
+
+
+
     public function formulaireModifierGroupe($detailsGroupe, $tabNvEtudiant, $idGroupe) {
         ?>
-        <div class="container mt-4">
-            <h2>Modifier le Groupe</h2>
-            <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe" method="post">
-                <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
+        <div class="container mt-5">
+            <div class="card shadow-lg p-4 mb-5">
+                <h3 class="text-center mb-4">Modifier le Groupe</h3>
+                <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe" method="post">
+                    <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
-                <div class="form-group">
-                    <label for="nomGroupe">Nom du Groupe</label>
-                    <input type="text" id="nomGroupe" name="nomGroupe" class="form-control"
-                           value="<?php echo htmlspecialchars($detailsGroupe['nom_groupe']); ?>" required>
-                </div>
-
-                <label>Modifiable par le groupe</label>
-                <div class="form-group">
-                    <div class="form-check form-check-inline">
-                        <input type="radio" id="modifiable_oui" name="modifiable_par_groupe" class="form-check-input" value="1"
-                            <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="modifiable_oui">Oui</label>
+                    <div class="mb-4">
+                        <label for="nomGroupe" class="form-label fs-5">Nom du Groupe</label>
+                        <input type="text" id="nomGroupe" name="nomGroupe" class="form-control form-control-lg"
+                               value="<?php echo htmlspecialchars($detailsGroupe['nom_groupe']); ?>" required>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input type="radio" id="modifiable_non" name="modifiable_par_groupe" class="form-check-input" value="0"
-                            <?php echo !$detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="modifiable_non">Non</label>
+
+                    <div class="mb-4">
+                        <label class="form-label fs-5">Modifiable par le groupe</label>
+                        <div class="d-flex justify-content-start">
+                            <div class="form-check me-4">
+                                <input type="radio" id="modifiable_oui" name="modifiable_par_groupe" class="form-check-input" value="1"
+                                    <?php echo $detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="modifiable_oui">Oui</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="modifiable_non" name="modifiable_par_groupe" class="form-check-input" value="0"
+                                    <?php echo !$detailsGroupe['modifiable_par_groupe'] ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="modifiable_non">Non</label>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <h3>Supprimer des membres</h3>
-                <ul>
-                    <?php foreach ($detailsGroupe['membres'] as $membre): ?>
-                        <li>
-                            <input type="checkbox" name="membres_a_supprimer[]" value="<?php echo htmlspecialchars($membre['id_utilisateur']); ?>">
-                            <?php echo htmlspecialchars($membre['prenom'] . ' ' . $membre['nom']); ?>
-                            (<?php echo htmlspecialchars($membre['email']); ?>)
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+                    <div class="mb-4">
+                        <h5 class="mb-3">Modifiez les Champs</h5>
+                        <?php if (!empty($detailsGroupe['champs'])): ?>
+                            <?php foreach ($detailsGroupe['champs'] as $champ): ?>
+                                <input type="hidden" name="champs[<?php echo htmlspecialchars($champ['champ_id']); ?>][id_champ]" value="<?php echo htmlspecialchars($champ['champ_id']); ?>">
 
-                <h3>Ajouter des étudiants</h3>
-                <div class="form-group mt-3">
-                    <label for="etudiants">Sélectionner des Étudiants</label>
-                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
-                        <?php foreach ($tabNvEtudiant as $etudiant): ?>
-                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
-                                <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-1">
+                                        <label for="champ_<?php echo htmlspecialchars($champ['champ_id']); ?>" class="form-label">
+                                            <?php echo htmlspecialchars($champ['champ_nom']); ?>
+                                        </label>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" id="champ_<?php echo htmlspecialchars($champ['champ_id']); ?>"
+                                               name="champs[<?php echo htmlspecialchars($champ['champ_id']); ?>][champ_valeur]"
+                                               class="form-control form-control-lg"
+                                               value="<?php echo htmlspecialchars($champ['champ_valeur']); ?>" />
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
 
-                <button type="submit" class="btn btn-primary mt-4">Enregistrer les modifications</button>
-            </form>
 
-            <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="mt-4">
-                <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
-                <button type="submit" class="btn btn-danger">Supprimer le groupe</button>
-            </form>
+                    <div class="mb-4">
+                        <h5 class="fs-5 mb-3">Supprimer des Membres</h5>
+                        <ul class="list-unstyled">
+                            <?php foreach ($detailsGroupe['membres'] as $membre): ?>
+                                <li class="d-flex justify-content-between mb-2">
+                                    <div>
+                                        <input type="checkbox" name="membres_a_supprimer[]" value="<?php echo htmlspecialchars($membre['id_utilisateur']); ?>" class="form-check-input me-2">
+                                        <strong><?php echo htmlspecialchars($membre['prenom'] . ' ' . $membre['nom']); ?></strong>
+                                        <span class="text-muted d-block"><?php echo htmlspecialchars($membre['email']); ?></span>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
 
-            <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+                    <div class="mb-4">
+                        <h5 class="fs-5 mb-3">Ajouter des Étudiants</h5>
+                        <select multiple class="form-select form-select-lg" id="etudiants" name="etudiants[]">
+                            <?php foreach ($tabNvEtudiant as $etudiant): ?>
+                                <option value="<?php echo $etudiant['id_utilisateur']; ?>">
+                                    <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm me-2">Enregistrer</button>
+                        <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary btn-lg w-100 shadow-sm">Retour</a>
+                    </div>
+
+
+                </form>
+                <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="text-center">
+                    <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
+                    <button type="submit" class="btn btn-danger btn-lg w-100 shadow-sm">Supprimer le groupe</button>
+                </form>
+            </div>
         </div>
-
         <?php
     }
+
+
+
+
+
     public function afficherFormulaireAjoutGroupe($etudiants) {
         ?>
         <div class="container mt-5">

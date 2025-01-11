@@ -53,7 +53,7 @@ Class ContGroupeProf {
     public function gestionGroupeSAE() {
         $idSae = $_SESSION['id_projet'];
         if($idSae) {
-            $groupe = $this->modele->getSaeGroupe($idSae);
+            $groupe = $this->modele->getGroupeDetails($idSae);
             $this->vue->afficherGroupeSAE($groupe);
         }
     }
@@ -94,7 +94,7 @@ Class ContGroupeProf {
         $idSae = $_SESSION['id_projet'];
         if (isset($_GET['idGroupe'])) {
             $idGroupe = $_GET['idGroupe'];
-            $tabDetailsGrp = $this->modele->getGroupeById($idGroupe);
+            $tabDetailsGrp = $this->modele->getGroupeInfoById($idGroupe);
             $tabNvEtudiant = $this->modele->getEtudiantsSansGroupe($idSae);
             $this->vue->formulaireModifierGroupe($tabDetailsGrp, $tabNvEtudiant, $idGroupe);
         }
@@ -103,9 +103,10 @@ Class ContGroupeProf {
         if (isset($_POST['id_groupe']) && isset($_POST['nomGroupe']) && isset($_POST['modifiable_par_groupe'])) {
             $idGroupe = $_POST['id_groupe'];
             $nouveauNomGroupe = $_POST['nomGroupe'];
+
             if (isset($_POST['modifiable_par_groupe']) && $_POST['modifiable_par_groupe'] == "1"){
                 $modifiableParGroupe = 1;
-            }else{
+            } else {
                 $modifiableParGroupe = 0;
             }
 
@@ -117,6 +118,14 @@ Class ContGroupeProf {
 
             $this->modele->modifierNomGrp($idGroupe, $nouveauNomGroupe);
             $this->modele->modifierModifiableParGroupe($modifiableParGroupe, $idGroupe);
+
+            if (isset($_POST['champs'])) {
+                foreach ($_POST['champs'] as $champ) {
+                    $idChamp = $champ['id_champ'];
+                    $champValeur = $champ['champ_valeur'];
+                    $this->modele->modifierValeurChampGroupe($idGroupe, $idChamp, $champValeur);
+                }
+            }
 
             if (isset($_POST['membres_a_supprimer'])) {
                 foreach ($_POST['membres_a_supprimer'] as $idUtilisateur) {
@@ -133,6 +142,7 @@ Class ContGroupeProf {
 
         $this->gestionGroupeSAE();
     }
+
 
 
     public function ajouterNouveauMembreGrp() {
