@@ -140,10 +140,16 @@ class VueDepotEtud extends VueGenerique
             <?php
         } else {
             ?>
-            <form action="index.php?module=depotetud&action=supprimerTravailRemis" method="post" class="mt-4">
-                <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
-                <button type="submit" class="btn btn-danger w-100">Supprimer le travail remis</button>
+            <form
+                    action="index.php?module=depotetud&action=supprimerTravailRemis"
+                    method="post"
+                    class="mt-4"
+                    onsubmit="return confirmationSupprimer();"
+            >
+                <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
+                <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
             </form>
+            <script src="scriptConfirmationSuppr.js"></script>
             <?php
         }
     }
