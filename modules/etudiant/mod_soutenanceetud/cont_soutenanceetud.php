@@ -18,16 +18,17 @@ Class ContSoutenanceEtud {
     {
 
         $this->action = isset($_GET['action']) ? $_GET['action'] : "affichageDesSoutenances";
-        if (!$this->estEtudiant()) {
+        if ($this->estEtudiant()) {
+            switch ($this->action) {
+                case "affichageDesSoutenances":
+                    $this->affichageDesSoutenances();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
 
-        switch ($this->action) {
-            case "affichageDesSoutenances":
-                $this->affichageDesSoutenances();
-                break;
-        }
+
 
     }
 

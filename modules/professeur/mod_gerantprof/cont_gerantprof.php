@@ -18,30 +18,31 @@ class ContGerantProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionGerantSAE";
-        if (!$this->estProf()) {
+        if ($this->estProf()) {
+            switch ($this->action) {
+                case "gestionGerantSAE":
+                    $this->gestionGerantSAE();
+                    break;
+                case "versModifierGerant":
+                    $this->versModifierGerant();
+                    break;
+                case "ajouterGerantFormulaire" :
+                    $this->ajouterGerantFormulaire();
+                    break;
+                case "ajouterGerants" :
+                    $this->ajouterGerants();
+                    break;
+                case "enregistrerModificationsGerant" :
+                    $this->enregistrerModificationsGerant();
+                    break;
+                case "supprimerGerant" :
+                    $this->supprimerGerant();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionGerantSAE":
-                $this->gestionGerantSAE();
-                break;
-            case "versModifierGerant":
-                $this->versModifierGerant();
-                break;
-            case "ajouterGerantFormulaire" :
-                $this->ajouterGerantFormulaire();
-                break;
-            case "ajouterGerants" :
-                $this->ajouterGerants();
-                break;
-            case "enregistrerModificationsGerant" :
-                $this->enregistrerModificationsGerant();
-                break;
-            case "supprimerGerant" :
-                $this->supprimerGerant();
-                break;
-        }
+
     }
     public function estProf(){
         return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur'])==="professeur";

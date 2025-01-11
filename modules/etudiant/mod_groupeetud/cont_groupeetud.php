@@ -18,18 +18,19 @@ Class ContGroupeEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "membreGroupeSAE";
-        if (!$this->estEtudiant()) {
+        if ($this->estEtudiant()) {
+            switch ($this->action) {
+                case "membreGroupeSAE":
+                    $this->membreGroupeSAE();
+                    break;
+                case "updateChamps" :
+                    $this->updateChamps();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "membreGroupeSAE":
-                $this->membreGroupeSAE();
-                break;
-            case "updateChamps" :
-                $this->updateChamps();
-                break;
-        }
+
     }
 
     public function estEtudiant(){

@@ -19,24 +19,25 @@ class ContAccueilProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if (!$this->estProfOuIntervenant()) {
+        if ($this->estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "accueil":
+                    $this->accueil();
+                    break;
+                case "creerSAEForm":
+                    $this->creerSAEForm();
+                    break;
+                case "choixSae" :
+                    $this->choixSae();
+                    break;
+                case "creerSAE":
+                    $this->creerSAE();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "accueil":
-                $this->accueil();
-                break;
-            case "creerSAEForm":
-                $this->creerSAEForm();
-                break;
-            case "choixSae" :
-                $this->choixSae();
-                break;
-            case "creerSAE":
-                $this->creerSAE();
-                break;
-        }
+
     }
 
     public function accueil()

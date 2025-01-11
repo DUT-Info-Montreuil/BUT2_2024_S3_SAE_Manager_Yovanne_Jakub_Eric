@@ -17,15 +17,16 @@ Class ContRessourceEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherAllRessources";
-        if (!$this->estEtudiant()) {
+        if ($this->estEtudiant()) {
+            switch ($this->action) {
+                case "afficherAllRessources":
+                    $this->afficherAllRessources();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "afficherAllRessources":
-                $this->afficherAllRessources();
-                break;
-        }
+
     }
 
     public function estEtudiant(){

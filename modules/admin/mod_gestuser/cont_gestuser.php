@@ -18,30 +18,31 @@ class ContGestUser
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "menuGestUser";
-        if (!$this->estAdmin()) {
+        if ($this->estAdmin()) {
+            switch ($this->action) {
+                case "menuGestUser":
+                    $this->menuGestUser();
+                    break;
+                case "versModifierDesUsers":
+                    $this->versModifierDesUsers();
+                    break;
+                case "modifierUser" :
+                    $this->modifierUser();
+                    break;
+                case "enregistrerModifications" :
+                    $this->enregistrerModifications();
+                    break;
+                case "addUser" :
+                    $this->addUser();
+                    break;
+                case "ajouterUser" :
+                    $this->ajouterUser();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "menuGestUser":
-                $this->menuGestUser();
-                break;
-            case "versModifierDesUsers":
-                $this->versModifierDesUsers();
-                break;
-            case "modifierUser" :
-                $this->modifierUser();
-                break;
-            case "enregistrerModifications" :
-                $this->enregistrerModifications();
-                break;
-            case "addUser" :
-                $this->addUser();
-                break;
-            case "ajouterUser" :
-                $this->ajouterUser();
-                break;
-        }
+
     }
 
     public function estAdmin()

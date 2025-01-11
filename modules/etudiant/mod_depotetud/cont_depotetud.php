@@ -19,21 +19,22 @@ class ContDepotEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherDepot";
-        if (!$this->estEtudiant()) {
+        if ($this->estEtudiant()) {
+            switch ($this->action) {
+                case "afficherDepot":
+                    $this->afficherDepot();
+                    break;
+                case "upload" :
+                    $this->upload();
+                    break;
+                case "supprimerTravailRemis" :
+                    $this->supprimerTravailRemis();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "afficherDepot":
-                $this->afficherDepot();
-                break;
-            case "upload" :
-                $this->upload();
-                break;
-            case "supprimerTravailRemis" :
-                $this->supprimerTravailRemis();
-                break;
-        }
+
     }
 
     public function estEtudiant()

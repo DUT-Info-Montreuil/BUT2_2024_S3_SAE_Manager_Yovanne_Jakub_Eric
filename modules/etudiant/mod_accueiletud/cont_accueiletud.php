@@ -15,17 +15,17 @@ Class ContAccueilEtud {
 
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if (!$this->estEtudiant()) {
+        if ($this->estEtudiant()) {
+            switch ($this->action) {
+                case "accueil":
+                    $this->accueil();
+                    break;
+                case "choixSae" :
+                    $this->choixSae();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
-        }
-        switch ($this->action) {
-            case "accueil":
-                $this->accueil();
-                break;
-            case "choixSae" :
-                $this->choixSae();
-                break;
         }
     }
 

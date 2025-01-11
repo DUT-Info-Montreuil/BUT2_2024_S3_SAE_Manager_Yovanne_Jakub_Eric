@@ -1,6 +1,7 @@
 <?php
-
-
+include_once "modules/mod_parametre/modele_parametre.php";
+include_once "modules/mod_parametre/vue_parametre.php";
+require_once "ModeleCommun.php";
 class ContParametre {
 
     private $modele;
@@ -14,15 +15,18 @@ class ContParametre {
 
 
     public function exec() {
-        $this->action = isset($_GET['action']) ? $_GET['action'] : "parametre utilisateur";
+        $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherCompte";
         switch ($this->action) {
+            case "afficherCompte":
+                $this->afficherCompte();
+                break;
 
         }
 
     }
 
-    public function afficherParametreUtilisateur() {
-
+    public function afficherCompte() {
+        echo "afficherCompte";
     }
 
 }

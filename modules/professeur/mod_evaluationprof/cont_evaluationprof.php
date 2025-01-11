@@ -19,41 +19,42 @@ class ContEvaluationProf
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionEvaluationsSAE";
         if (!$this->estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionEvaluationsSAE":
+                    $this->gestionEvaluationsSAE();
+                    break;
+                case "choixNotation" :
+                    $this->choixNotation();
+                    break;
+                case "traitementNotationIndividuelle" :
+                    $this->traitementNotationIndividuelle();
+                    break;
+                case "formEvaluation" :
+                    $this->formEvaluation();
+                    break;
+                case "creerEvaluation" :
+                    $this->creerEvaluation();
+                    break;
+                case "traitementNotationGroupe" :
+                    $this->traitementNotationGroupe();
+                    break;
+                case "modifierEvaluation" :
+                    $this->modifierEvaluation();
+                    break;
+                case "traitementModificationNote" :
+                    $this->traitementModificationNote();
+                    break;
+                case "supprimerEvaluation" :
+                    $this->supprimerEvaluation();
+                    break;
+                case "versModifierEvaluation":
+                    $this->versModifierEvaluation();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionEvaluationsSAE":
-                $this->gestionEvaluationsSAE();
-                break;
-            case "choixNotation" :
-                $this->choixNotation();
-                break;
-            case "traitementNotationIndividuelle" :
-                $this->traitementNotationIndividuelle();
-                break;
-            case "formEvaluation" :
-                $this->formEvaluation();
-                break;
-            case "creerEvaluation" :
-                $this->creerEvaluation();
-                break;
-            case "traitementNotationGroupe" :
-                $this->traitementNotationGroupe();
-                break;
-            case "modifierEvaluation" :
-                $this->modifierEvaluation();
-                break;
-            case "traitementModificationNote" :
-                $this->traitementModificationNote();
-                break;
-            case "supprimerEvaluation" :
-                $this->supprimerEvaluation();
-                break;
-            case "versModifierEvaluation":
-                $this->versModifierEvaluation();
-                break;
-        }
+
     }
 
     public function estProfOuIntervenant(){

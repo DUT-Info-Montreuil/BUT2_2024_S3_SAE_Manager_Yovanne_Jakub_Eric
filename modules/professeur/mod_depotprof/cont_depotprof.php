@@ -18,30 +18,31 @@ class ContDepotProf{
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionDepotSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if ($this->estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionDepotSAE":
+                    $this->gestionDepotSAE();
+                    break;
+                case "creerDepot" :
+                    $this->creerDepot();
+                    break;
+                case "submitDepot" :
+                    $this->submitDepot();
+                    break;
+                case "modifierDepot" :
+                    $this->modifierDepot();
+                    break;
+                case "supprimerDepot" :
+                    $this->supprimerDepot();
+                    break;
+                case "ajouterTemps" :
+                    $this->ajouterTempsSupplementaire();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionDepotSAE":
-                $this->gestionDepotSAE();
-                break;
-            case "creerDepot" :
-                $this->creerDepot();
-                break;
-            case "submitDepot" :
-                $this->submitDepot();
-                break;
-            case "modifierDepot" :
-                $this->modifierDepot();
-                break;
-            case "supprimerDepot" :
-                $this->supprimerDepot();
-                break;
-            case "ajouterTemps" :
-                $this->ajouterTempsSupplementaire();
-                break;
-        }
+
     }
     public function estProfOuIntervenant(){
         $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
