@@ -72,14 +72,19 @@ Class ContGroupeProf {
             if (isset($_POST['nom_groupe']) && isset($_POST['etudiants'])) {
                 $nomGroupe = trim($_POST['nom_groupe']);
                 $etudiants = $_POST['etudiants'];
-                $idGroupe = $this->modele->ajouterGroupe($nomGroupe, $idSae);
-                $this->modele->lieeProjetGrp($idGroupe, $idSae);
-                $nomSae = ModeleCommun::getTitreSAE($idSae);
-                $nomDossier = $nomGroupe . '_' . $idGroupe;
-                DossierManager::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
-                foreach ($etudiants as $etudiantId) {
-                    $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
+                try {
+                    $idGroupe = $this->modele->ajouterGroupe($nomGroupe, $idSae);
+                    $this->modele->lieeProjetGrp($idGroupe, $idSae);
+                    $nomSae = ModeleCommun::getTitreSAE($idSae);
+                    $nomDossier = $nomGroupe . '_' . $idGroupe;
+                    DossierManager::creerDossier($idSae, $nomSae, $nomDossier, 'depots');
+                    foreach ($etudiants as $etudiantId) {
+                        $this->modele->ajouterEtudiantAuGroupe($idGroupe, $etudiantId);
+                    }
+                }catch (Exception $e) {
+                    throw new Exception("erreur pdt ajout du groupe : " . $e->getMessage());
                 }
+
             }
         }
         $this->gestionGroupeSAE();

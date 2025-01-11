@@ -135,7 +135,11 @@ class ContInfoSae
             $champNom = trim($_POST['champ_nom']);
             $rempliPar = trim($_POST['rempli_par']);
             $idSae = $_SESSION['id_projet'];
-            $this->modele->addChamp($champNom, $rempliPar, $idSae);
+            $idChamp = $this->modele->addChamp($champNom, $rempliPar, $idSae);
+            $allGrp = $this->modele->getAllIdGroupeSAE($idSae);
+            foreach ($allGrp as $grp) {
+                $this->modele->addChampGrp($idChamp, $grp);
+            }
         }
         $this->gestionSAE();
     }

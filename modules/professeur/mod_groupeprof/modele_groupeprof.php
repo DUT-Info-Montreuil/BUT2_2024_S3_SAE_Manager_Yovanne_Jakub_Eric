@@ -4,6 +4,7 @@ include_once 'Connexion.php';
 Class ModeleGroupeProf extends Connexion{
 
     public function __construct() {
+
     }
     public function getSaeGroupe($idSae){
         $bdd = $this->getBdd();
@@ -60,6 +61,7 @@ Class ModeleGroupeProf extends Connexion{
             $idGroupe = $this->ajouterGroupeDansBase($bdd, $nomGroupe);
             $this->lierRendusAuGroupe($bdd, $idProjet, $idGroupe);
             $this->lierSoutenancesAuGroupe($bdd, $idProjet, $idGroupe);
+            $this->lierChampAuGroupe($bdd, $idGroupe, $idProjet);
             $bdd->commit();
 
             return $idGroupe;
@@ -106,6 +108,23 @@ Class ModeleGroupeProf extends Connexion{
             }
         }
     }
+
+    private function lierChampAuGroupe($bdd, $idGroupe, $idProjet)
+    {
+        $query = "SELECT id_champ FROM Champ WHERE id_projet = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idProjet]);
+        $champs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($champs)) {
+            $query = "INSERT INTO Champ_Groupe (id_champ, id_groupe) VALUES (?, ?)";
+            $stmt = $bdd->prepare($query);
+            foreach ($champs as $champ) {
+                $stmt->execute([$champ['id_champ'], $idGroupe]);
+            }
+        }
+    }
+
 
     public function lieeProjetGrp($idGroupe, $idSae){
         $bdd = $this->getBdd();

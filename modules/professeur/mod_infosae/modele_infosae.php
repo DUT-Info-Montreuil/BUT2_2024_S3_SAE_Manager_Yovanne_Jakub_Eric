@@ -37,7 +37,30 @@ Class ModeleInfoSae extends Connexion
         $sql = "INSERT INTO Champ (id_champ, id_projet, champ_nom, rempli_par) VALUES (DEFAULT, ?, ?, ?) ";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$idSae, $champNom, $rempliPar]);
+        return $bdd->lastInsertId();
     }
+    public function addChampGrp($idChamp, $idGroupe){
+        $bdd = $this->getBdd();
+        $sql = "INSERT INTO Champ_Groupe (id_champ, id_groupe) VALUES (?, ?)";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idChamp, $idGroupe]);
+    }
+
+    public function getAllIdGroupeSAE($idSae) {
+        $bdd = $this->getBdd();
+        $stmt = $bdd->prepare("SELECT 
+                            g.id_groupe AS id_groupe
+                        FROM 
+                            Projet_Groupe pg
+                        INNER JOIN 
+                            Groupe g ON pg.id_groupe = g.id_groupe
+                        WHERE 
+                            pg.id_projet = ?");
+        $stmt->execute([$idSae]);
+        $groupes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $groupes;
+    }
+
 
     public function getAllChamp($idSae)
     {
