@@ -65,10 +65,11 @@ class VueSoutenanceProf extends VueGenerique
                                         </div>
                                     </form>
 
-                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance" method="post" class="d-inline">
+                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
+                                    <script src="scriptConfirmationSuppr.js"></script>
                                 </div>
                             </div>
                         </div>
