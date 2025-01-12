@@ -136,10 +136,11 @@ Class VueGroupeProf extends VueGenerique{
 
 
                 </form>
-                <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="text-center">
+                <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="text-center" onsubmit="return confirmationSupprimer();">
                     <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
                     <button type="submit" class="btn btn-danger btn-lg w-100 shadow-sm">Supprimer le groupe</button>
                 </form>
+                <script src="scriptConfirmationSuppr.js"></script>
             </div>
         </div>
         <?php
