@@ -90,9 +90,10 @@ class VueInfoSae extends VueGenerique
 
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
             </form>
-            <form action="index.php?module=infosae&action=supprimerSAE" method="post">
+            <form action="index.php?module=infosae&action=supprimerSAE" method="post" onsubmit="return confirmationSupprimer();">
                 <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
             </form>
+            <script src="scriptConfirmationSuppr.js"></script>
         </div>
         <?php
     }
