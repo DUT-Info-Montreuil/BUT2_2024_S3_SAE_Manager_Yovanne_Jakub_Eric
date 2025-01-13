@@ -26,6 +26,10 @@ class ContParametre {
     }
 
     public function afficherCompte() {
+
+        $compte = $this->modele->afficherCompte($_SESSION['id_utilisateur']);
+        $this->vue->afficherCompte($compte);
+
         echo "afficherCompte";
     }
 

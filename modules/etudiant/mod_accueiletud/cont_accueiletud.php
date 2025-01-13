@@ -29,6 +29,7 @@ Class ContAccueilEtud {
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
         }
     }
+
     public function accueil() {
         $saeInscrit = $this->modele->saeInscrit($_SESSION['id_utilisateur']);
         $this->vue->afficherSaeGerer($saeInscrit);
