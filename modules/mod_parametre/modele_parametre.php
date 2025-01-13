@@ -20,5 +20,25 @@ Class ModeleParametre extends Connexion
         return $compte;
     }
 
+    public function modifierCompte($id_utilisateur, $nom, $prenom, $email, $login_utilisateur, $password_utilisateur = null){
+        $bdd = $this->getBdd();
+
+        // Si un mot de passe a été fourni, on met à jour aussi le mot de passe
+        if ($password_utilisateur) {
+            $query = "
+            UPDATE utilisateur 
+            SET nom = ?, prenom = ?, email = ?, login_utilisateur = ?, password_utilisateur = ?
+            WHERE id_utilisateur = ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$nom, $prenom, $email, $login_utilisateur, $password_utilisateur, $id_utilisateur]);
+        } else {
+            $query = "
+            UPDATE utilisateur 
+            SET nom = ?, prenom = ?, email = ?, login_utilisateur = ?
+            WHERE id_utilisateur = ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$nom, $prenom, $email, $login_utilisateur, $id_utilisateur]);
+        }
+    }
 
 }
