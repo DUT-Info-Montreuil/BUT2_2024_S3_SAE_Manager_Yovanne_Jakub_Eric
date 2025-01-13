@@ -51,6 +51,7 @@ class VueEvaluationProf extends VueGenerique
                             <th>Prénom</th>
                             <th>Email</th>
                             <th>Note</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -62,14 +63,25 @@ class VueEvaluationProf extends VueGenerique
                                 <td><?= htmlspecialchars($note['email']) ?></td>
                                 <td>
                                     <input type="number"
-                                           class="form-control"
+                                           class="form-control note-input"
                                            name="notes[<?= htmlspecialchars($note['id_utilisateur']) ?>]"
                                            value="<?= htmlspecialchars($note['note']) ?>"
                                            step="0.01"
                                            min="0"
                                            max="20"
+                                           data-original-value="<?= htmlspecialchars($note['note']) ?>"
                                            placeholder="Note"
                                            required>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm malus-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#malusModal"
+                                            data-student-id="<?= htmlspecialchars($note['id_utilisateur']) ?>"
+                                            data-current-note="<?= htmlspecialchars($note['note']) ?>">
+                                        Ajouter malus
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -81,7 +93,33 @@ class VueEvaluationProf extends VueGenerique
                     <button type="submit" class="btn btn-success">Soumettre les Modifications</button>
                 </div>
             </form>
+
+            <!-- Modal pour le malus -->
+            <div class="modal fade" id="malusModal" tabindex="-1" aria-labelledby="malusModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="malusModalLabel">Appliquer un malus</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="malusInput">Valeur du malus :</label>
+                                <input type="number" class="form-control" id="malusInput" step="0.01" min="0" max="20">
+                                <div class="invalid-feedback">
+                                    Le malus ne peut pas être supérieur à la note actuelle.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-primary" id="applyMalus">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <script src="scripteMalus.js"></script>
         <?php
     }
 
