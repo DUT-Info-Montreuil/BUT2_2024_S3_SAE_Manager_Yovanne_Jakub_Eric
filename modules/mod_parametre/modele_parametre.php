@@ -23,7 +23,6 @@ Class ModeleParametre extends Connexion
     public function modifierCompte($id_utilisateur, $nom, $prenom, $email, $login_utilisateur, $password_utilisateur = null){
         $bdd = $this->getBdd();
 
-        // Si un mot de passe a été fourni, on met à jour aussi le mot de passe
         if ($password_utilisateur) {
             $query = "
             UPDATE utilisateur 
@@ -41,4 +40,20 @@ Class ModeleParametre extends Connexion
         }
     }
 
+    public function modifierPhotoDeProfil($id_utilisateur, $logo){
+
+        $bdd = $this->getBdd();
+        $query = "
+        UPDATE utilisateur
+        SET logo = ?
+        WHERE id_utilisateur = ?";
+
+        $stmt = $bdd->prepare($query);
+        $success =$stmt->execute([$logo, $id_utilisateur]);
+
+        if (!$success) {
+            // Si la requête échoue, affiche une erreur
+            echo 'Erreur lors de la mise à jour de la base de données';
+        }
+    }
 }

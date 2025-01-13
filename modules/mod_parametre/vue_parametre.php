@@ -17,12 +17,23 @@ class VueParametre extends VueGenerique
             <div class="container mt-5">
                 <h2 class="text-center mb-4">Informations du compte</h2>
 
-                <!-- Formulaire pour modifier les informations de l'utilisateur -->
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <form action="index.php?module=parametre&action=modifierCompte" method="POST">
+                                    <div style="margin-bottom: 20px; text-align: center" >
+                                        <?php
+                                        // Vérifie si le champ 'logo' est vide
+                                        if (!empty($compte[0]['logo'])):
+                                            ?>
+                                            <img height="75" width="75" src="<?php echo htmlspecialchars($compte[0]['logo']); ?>">
+                                        <?php else: ?>
+                                            <!-- Image par défaut si 'logo' est vide -->
+                                            <img  height="75" width="75" src="path/to/default_image.png">
+                                        <?php endif; ?>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label for="nom" class="form-label">Nom</label>
                                         <input type="text" class="form-control" id="nom" name="nom"
