@@ -198,7 +198,7 @@ class VueEvaluationProf extends VueGenerique
             </form>
 
             <div class="text-center mt-3">
-                <form method="POST" action="index.php?module=evaluationprof&action=supprimerEvaluation">
+                <form method="POST" action="index.php?module=evaluationprof&action=supprimerEvaluation" onsubmit="return confirmationSupprimer();">
                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
                     <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
                 </form>

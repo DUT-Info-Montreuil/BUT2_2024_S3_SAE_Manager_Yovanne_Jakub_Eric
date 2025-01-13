@@ -89,7 +89,7 @@ class ContInfoSae
         $idSae = $_SESSION['id_projet'];
         DossierManager::supprimerDossiersSAE($idSae, ModeleCommun::getTitreSAE($idSae));
         $this->modele->supprimerSAE($idSae);
-        $this->gestionSAE();
+        header("Location: index.php?module=accueilprof");
     }
 
     public function infoGeneralSae()

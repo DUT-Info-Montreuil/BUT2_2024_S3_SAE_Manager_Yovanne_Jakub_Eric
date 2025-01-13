@@ -73,7 +73,7 @@ class VueRessourceProf extends VueGenerique
                                         </div>
                                     </form>
 
-                                    <form action="index.php?module=ressourceprof&action=supprimerRessource" method="post" class="d-inline">
+                                    <form action="index.php?module=ressourceprof&action=supprimerRessource" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                                         <input type="hidden" name="id_ressource" value="<?= htmlspecialchars($ressource['id_ressource']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>

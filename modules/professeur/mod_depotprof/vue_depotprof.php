@@ -96,7 +96,7 @@ class VueDepotProf extends VueGenerique
                             </div>
                         </form>
 
-                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline">
+                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
 
                             <div class="mt-3 d-flex justify-content-center">

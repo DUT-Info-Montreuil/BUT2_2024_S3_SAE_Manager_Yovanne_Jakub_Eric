@@ -149,7 +149,6 @@ class VueDepotEtud extends VueGenerique
                 <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
                 <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
             </form>
-            <script src="scriptConfirmationSuppr.js"></script>
             <?php
         }
     }

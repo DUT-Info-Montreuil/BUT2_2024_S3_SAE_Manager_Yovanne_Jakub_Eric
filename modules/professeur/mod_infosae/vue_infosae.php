@@ -90,7 +90,7 @@ class VueInfoSae extends VueGenerique
 
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
             </form>
-            <form action="index.php?module=infosae&action=supprimerSAE" method="post">
+            <form action="index.php?module=infosae&action=supprimerSAE" method="post" onsubmit="return confirmationSupprimer();">
                 <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
             </form>
         </div>
@@ -168,7 +168,7 @@ class VueInfoSae extends VueGenerique
                                             </div>
                                         </form>
                                         <div class="modal-footer d-flex justify-content-center">
-                                            <form method="POST" action="index.php?module=infosae&action=supprimerChamp">
+                                            <form method="POST" action="index.php?module=infosae&action=supprimerChamp" onsubmit="return confirmationSupprimer();">
                                                 <input type="hidden" name="id_champ"
                                                        value="<?php echo htmlspecialchars($champ['id_champ']); ?>">
                                                 <button type="submit" class="btn btn-danger w-50">Supprimer</button>

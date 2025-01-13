@@ -39,5 +39,6 @@ include "headerController.php";
 <footer></footer>
 <script src="scriptNotation.js" defer></script>
 <script src="scriptDelegation.js" defer></script>
+<script src="scriptConfirmationSuppr.js"></script>
 </body>
 </html>

@@ -106,7 +106,7 @@ class VueGerantProf extends VueGenerique{
                     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                 </div>
             </form>
-            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post">
+            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post" onsubmit="return confirmationSupprimer();">
                 <input type="hidden" name="idGerant" value="<?php echo htmlspecialchars($idGerant); ?>">
                 <div class="d-flex mt-3 gap-3">
                     <button type="submit" class="btn btn-danger">Supprimer le Gérant</button>
