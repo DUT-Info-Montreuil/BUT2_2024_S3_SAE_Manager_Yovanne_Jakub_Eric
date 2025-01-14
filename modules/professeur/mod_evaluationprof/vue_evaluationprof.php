@@ -265,6 +265,11 @@ class VueEvaluationProf extends VueGenerique
 
                 </tbody>
             </table>
+            <div class="text-center mt-4">
+                <a href="index.php?module=notefinalprof" class="btn btn-success" style="padding: 10px 18px; font-size: 16px;">
+                    <i class="bi bi-clipboard-check"></i> Voir les notes finales
+                </a>
+            </div>
         </div>
         <?php
     }
