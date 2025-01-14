@@ -42,7 +42,8 @@ Class ContAccueilEtud {
                 ["href" => "index.php?module=groupeetud", "title" => "Groupe"],
                 ["href" => "index.php?module=depotetud", "title" => "Dépôt"],
                 ["href" => "index.php?module=ressourceetud", "title" => "Ressource"],
-                ["href" => "index.php?module=soutenanceetud", "title" => "Soutenance"]
+                ["href" => "index.php?module=soutenanceetud", "title" => "Soutenance"],
+                ["href" => "index.php?module=notesetud", "title" => "Notes"]
             ];
             $idProjet = $_GET['id'];
             $_SESSION['id_projet'] = $idProjet;
