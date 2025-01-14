@@ -16,7 +16,6 @@ Class VueGroupeProf extends VueGenerique{
                     <th>Membres</th>
                     <th>Champs</th>
                     <th>Modifier</th>
-                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,11 +29,6 @@ Class VueGroupeProf extends VueGenerique{
                                 <a href="index.php?module=groupeprof&action=versModifierGroupe&idGroupe=<?php echo $groupe['id_groupe']; ?>" class="btn btn-sm btn-secondary">
                                     <i class="fas fa-cog"></i>
                                 </a>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-warning malus-btn" data-student-id="<?php echo $groupe['id_groupe']; ?>" data-bs-toggle="modal" data-bs-target="#malusModal">
-                                    <i class="fas fa-minus-circle"></i> Appliquer Malus
-                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -50,34 +44,6 @@ Class VueGroupeProf extends VueGenerique{
                 </a>
             </div>
         </div>
-
-        <!-- Modal pour appliquer le malus -->
-        <div class="modal fade" id="malusModal" tabindex="-1" aria-labelledby="malusModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="malusModalLabel">Appliquer un Malus</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="malusInput" class="form-label">Valeur du malus</label>
-                                <input type="number" class="form-control" id="malusInput" min="0" step="0.01">
-                                <div class="invalid-feedback">
-                                    Veuillez entrer une valeur valide.
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="applyMalus">Appliquer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script src="scripteMalus.js"></script>
         <?php
     }
 

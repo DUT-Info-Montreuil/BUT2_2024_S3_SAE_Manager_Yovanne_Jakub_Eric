@@ -242,6 +242,7 @@ class ContEvaluationProf
             $type_evaluation = $_POST['type_evaluation'];
             $id_groupe = $_POST['id_groupe'];
             $allMembres = $this->modele->getAllMembreSAE($id_groupe);
+            $champsRemplis = $this->modele->getChampsRemplisParGroupe($id_groupe);
 
             $contenue = null;
 
@@ -253,7 +254,7 @@ class ContEvaluationProf
             }
 
             if (!isset($_POST['id_evaluation'])) {
-                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue);
+                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue, $champsRemplis);
             } else {
                 $id_evaluation = $_POST['id_evaluation'];
                 $notes = $this->modele->getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation);

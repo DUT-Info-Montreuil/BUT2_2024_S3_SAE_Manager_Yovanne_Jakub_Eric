@@ -28,6 +28,7 @@ class ModeleEvaluationProf extends Connexion
         return $this->modeleRendu->infNoteMaxRendu($id_evaluation);
     }
 
+
     public function getAllGerantNonEvaluateur($idSAE, $idEvaluation) {
         $bdd = $this->getBdd();
 
@@ -324,13 +325,29 @@ class ModeleEvaluationProf extends Connexion
         return true;
     }
 
+    public function getChampsRemplisParGroupe($id_groupe)
+    {
+        $bdd =$this->getBdd();
+        $query = "
+        SELECT c.champ_nom, cg.champ_valeur
+        FROM Champ c
+        JOIN Champ_Groupe cg ON c.id_champ = cg.id_champ
+        WHERE cg.id_groupe = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_groupe]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
         $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
+        ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
     }
-    public function sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
+    public function sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {
-       $this->modeleSoutenance->sauvegarderNoteSoutenance($idUtilisateur, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
+       $this->modeleSoutenance->sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
+        ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
     }
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
     {

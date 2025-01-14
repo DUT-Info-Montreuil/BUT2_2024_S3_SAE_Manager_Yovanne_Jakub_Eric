@@ -265,6 +265,11 @@ class VueEvaluationProf extends VueGenerique
 
                 </tbody>
             </table>
+            <div class="text-center mt-4">
+                <a href="index.php?module=notefinalprof" class="btn btn-success" style="padding: 10px 18px; font-size: 16px;">
+                    <i class="bi bi-clipboard-check"></i> Voir les notes finales
+                </a>
+            </div>
         </div>
         <?php
     }
@@ -396,12 +401,13 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue)
+    public function afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue, $champsRemplis)
     {
         $mode = "individuel";
         ?>
         <div class="container mt-5">
             <h2 class="mb-4 text-center fw-bold">Notation des Membres</h2>
+
             <?php if ($type_evaluation === 'rendu' && !empty($contenue)): ?>
                 <div class="mt-5">
                     <h3>Fichiers Rendus :</h3>
@@ -416,6 +422,28 @@ class VueEvaluationProf extends VueGenerique
                     </ul>
                 </div>
             <?php endif; ?>
+
+            <?php if (!empty($champsRemplis)): ?>
+                <div class="mt-4">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Champ</th>
+                            <th>Valeur</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($champsRemplis as $champ): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($champ['champ_nom']) ?></td>
+                                <td><?= htmlspecialchars($champ['champ_valeur']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+
             <div class="d-flex justify-content-center mb-4">
                 <button class="btn btn-outline-primary me-2" id="btn-individuel">Noter Individuellement</button>
                 <button class="btn btn-outline-secondary" id="btn-groupe">Noter en Groupe</button>
@@ -443,14 +471,7 @@ class VueEvaluationProf extends VueGenerique
                                 <td><?= htmlspecialchars($membre['prenom']) ?></td>
                                 <td><?= htmlspecialchars($membre['email']) ?></td>
                                 <td>
-                                    <input type="number"
-                                           class="form-control"
-                                           name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>]"
-                                           step="0.01"
-                                           min="0"
-                                           max="20"
-                                           placeholder="Note"
-                                           required>
+                                    <input type="number" class="form-control" name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>]" step="0.01" min="0" max="20" placeholder="Note" required>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -489,15 +510,7 @@ class VueEvaluationProf extends VueGenerique
                 </div>
                 <div class="mt-3">
                     <label for="note_groupe" class="form-label fw-bold">Note pour le groupe</label>
-                    <input type="number"
-                           class="form-control"
-                           id="note_groupe"
-                           name="note_groupe"
-                           step="0.01"
-                           min="0"
-                           max="20"
-                           placeholder="Attribuer une note au groupe"
-                           required>
+                    <input type="number" class="form-control" id="note_groupe" name="note_groupe" step="0.01" min="0" max="20" placeholder="Attribuer une note au groupe" required>
                 </div>
                 <div class="mt-4">
                     <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire</label>

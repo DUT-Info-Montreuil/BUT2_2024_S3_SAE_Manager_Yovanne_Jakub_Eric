@@ -86,8 +86,6 @@ class ModeleGroupeProf extends Connexion
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
     public function ajouterGroupe($nomGroupe, $idProjet)
     {
         $bdd = $this->getBdd();

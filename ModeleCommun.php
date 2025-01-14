@@ -53,4 +53,58 @@ class ModeleCommun extends Connexion
         return $sae['titre'];
     }
 
+    public static function mettreAJourNoteFinale($idEtudiant, $idGroupe)
+    {
+        $bdd = static::getBdd();
+
+        $queryRenduEvaluations = "
+        SELECT RE.id_evaluation, RE.note, E.coefficient
+        FROM Rendu_Evaluation RE
+        JOIN Evaluation E ON RE.id_evaluation = E.id_evaluation
+        WHERE RE.id_etudiant = ? AND RE.id_groupe = ?
+    ";
+        $stmtRenduEvaluations = $bdd->prepare($queryRenduEvaluations);
+        $stmtRenduEvaluations->execute([$idEtudiant, $idGroupe]);
+        $renduEvaluations = $stmtRenduEvaluations->fetchAll(PDO::FETCH_ASSOC);
+
+        $querySoutenanceEvaluations = "
+        SELECT SE.id_evaluation, SE.note, E.coefficient
+        FROM Soutenance_Evaluation SE
+        JOIN Evaluation E ON SE.id_evaluation = E.id_evaluation
+        WHERE SE.id_etudiant = ? AND SE.id_groupe = ?
+    ";
+        $stmtSoutenanceEvaluations = $bdd->prepare($querySoutenanceEvaluations);
+        $stmtSoutenanceEvaluations->execute([$idEtudiant, $idGroupe]);
+        $soutenanceEvaluations = $stmtSoutenanceEvaluations->fetchAll(PDO::FETCH_ASSOC);
+
+        $totalNotePonderee = 0;
+        $totalCoef = 0;
+
+        foreach ($renduEvaluations as $rendu) {
+            $totalNotePonderee += $rendu['note'] * $rendu['coefficient'];
+            $totalCoef += $rendu['coefficient'];
+        }
+
+        foreach ($soutenanceEvaluations as $soutenance) {
+            $totalNotePonderee += $soutenance['note'] * $soutenance['coefficient'];
+            $totalCoef += $soutenance['coefficient'];
+        }
+
+        if ($totalCoef > 0) {
+            $nouvelleNoteFinale = $totalNotePonderee / $totalCoef;
+        } else {
+            $nouvelleNoteFinale = 0;
+        }
+
+        $updateQuery = "
+        UPDATE Groupe_Etudiant
+        SET note_finale = ?
+        WHERE id_utilisateur = ? AND id_groupe = ?
+    ";
+        $updateStmt = $bdd->prepare($updateQuery);
+        $updateStmt->execute([$nouvelleNoteFinale, $idEtudiant, $idGroupe]);
+
+        return true;
+    }
+
 }
