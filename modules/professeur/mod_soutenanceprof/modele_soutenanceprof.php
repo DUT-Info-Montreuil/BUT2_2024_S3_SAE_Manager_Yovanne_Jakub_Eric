@@ -27,15 +27,16 @@ Class ModeleSoutenanceProf extends Connexion
     {
         $bdd = static::getBdd();
         $query = "
-        SELECT GE.id_utilisateur, GE.id_groupe
-        FROM Groupe_Etudiant GE
-        JOIN Soutenance_Etudiant SE ON GE.id_utilisateur = SE.id_etudiant
-        WHERE SE.id_soutenance = ?
+    SELECT GE.id_utilisateur, GE.id_groupe
+    FROM Groupe_Etudiant GE
+    JOIN Soutenance_Groupe SG ON GE.id_groupe = SG.id_groupe
+    WHERE SG.id_soutenance = ?
     ";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSoutenance]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function ajouterSoutenance($idSae, $titre, $date_soutenance){
         $bdd = $this->getBdd();

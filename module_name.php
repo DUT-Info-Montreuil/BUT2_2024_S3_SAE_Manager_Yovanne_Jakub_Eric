@@ -9,7 +9,7 @@ class ModuleName {
         $this->module_name = isset($_GET['module']) ? $_GET['module'] : "connexion";
         if (in_array($this->module_name, ['groupeprof', 'gerantprof', 'depotprof', 'ressourceprof', 'soutenanceprof', "accueilprof", "evaluationprof", "infosae", "notefinalprof"])) {
             $module_path = "modules/professeur/mod_{$this->module_name}/mod_{$this->module_name}.php";
-        } else if (in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud'])) {
+        } else if (in_array($this->module_name, ['accueiletud', 'groupeetud', 'soutenanceetud', 'ressourceetud', 'depotetud', 'notesetud'])) {
             $module_path = "modules/etudiant/mod_{$this->module_name}/mod_{$this->module_name}.php";
         } else if(in_array($this->module_name, ['accueiladmin', 'gestuser'])){
             $module_path = "modules/admin/mod_{$this->module_name}/mod_{$this->module_name}.php";

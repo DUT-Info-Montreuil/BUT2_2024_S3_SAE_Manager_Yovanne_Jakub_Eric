@@ -32,7 +32,7 @@ class VueDepotEtud extends VueGenerique
     {
         ?>
         <div class="text-center">
-            <p style="font-style: italic">Aucun dépôt disponible pour ce projet.</p>
+            <p style="font-style: italic">Aucun dépôt disponible pour ce projet</p>
         </div>
         <?php
     }
