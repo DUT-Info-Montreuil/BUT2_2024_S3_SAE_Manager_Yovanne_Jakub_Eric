@@ -65,11 +65,17 @@ class ContSoutenanceProf
     {
         if (isset($_POST['id_soutenance'])) {
             $idSoutenance = $_POST['id_soutenance'];
+            $etudiants = $this->modele->getEtudiantsParSoutenance($idSoutenance);
             $this->modele->supprimerSoutenance($idSoutenance);
+            foreach ($etudiants as $etudiant) {
+                $idEtudiant = $etudiant['id_utilisateur'];
+                $idGroupe = $etudiant['id_groupe'];
+                ModeleCommun::mettreAJourNoteFinale($idEtudiant, $idGroupe);
+            }
         }
         $this->gestionSoutenancesSAE();
-
     }
+
 
     private function creerSoutenance()
     {

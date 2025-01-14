@@ -34,7 +34,7 @@ class VueGroupeEtud extends VueGenerique
                 ?>
                 </tbody>
             </table>
-
+            <?php if(!empty($champARemplir)) : ?>
             <h3 style="text-align: center" class="mt-4">Champs à remplir :</h3>
             <form method="POST" action="index.php?module=groupeetud&action=updateChamps">
                 <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-3">
@@ -61,6 +61,7 @@ class VueGroupeEtud extends VueGenerique
                 </table>
                 <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
             </form>
+            <?php endif; ?>
         </div>
         <?php
     }
