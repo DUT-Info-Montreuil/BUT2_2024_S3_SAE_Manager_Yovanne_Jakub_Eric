@@ -114,6 +114,21 @@ class ModeleEvaluationProf extends Connexion
         $req->execute([$idEvaluateur, $idEvaluation]);
     }
 
+    public function getEtudiantsParEvaluation($idEvaluation)
+    {
+        $bdd = static::getBdd();
+        $query = "
+        SELECT GE.id_utilisateur, GE.id_groupe
+        FROM Groupe_Etudiant GE
+        JOIN Rendu_Evaluation RE ON GE.id_utilisateur = RE.id_etudiant
+        WHERE RE.id_evaluation = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idEvaluation]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 
     public function getEvaluationById($id){
         $bdd = $this->getBdd();

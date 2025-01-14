@@ -99,27 +99,24 @@ class ContDepotProf{
         }
         $this->gestionDepotSAE();
     }
-    public function supprimerDepot(){
+    public function supprimerDepot()
+    {
         if (isset($_POST['id_rendu'])) {
-            $id_rendu = $_POST['id_rendu'];
-            $nomDepot = $this->modele->getNomDepot($id_rendu);
-
+            $idRendu = $_POST['id_rendu'];
             $idSae = $_SESSION['id_projet'];
-            $groupes = $this->modele->getGroupesParSae($idSae);
 
-            $nomSae = ModeleCommun::getTitreSAE($idSae);
+            $etudiants = $this->modele->getEtudiantsParProjet($idSae);
+            $this->modele->supprimerDepot($idRendu);
 
-            foreach ($groupes as $groupe) {
-                $idGroupe = $groupe['id_groupe'];
-                $nomGroupe = $groupe['nom'];
-
-                DossierManager::supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $nomDepot);
+            foreach ($etudiants as $etudiant) {
+                $idEtudiant = $etudiant['id_utilisateur'];
+                $idGroupe = $etudiant['id_groupe'];
+                ModeleCommun::mettreAJourNoteFinale($idEtudiant, $idGroupe);
             }
-
-            $this->modele->supprimerDepot($id_rendu);
         }
         $this->gestionDepotSAE();
     }
+
 
     public function ajouterTempsSupplementaire()
     {

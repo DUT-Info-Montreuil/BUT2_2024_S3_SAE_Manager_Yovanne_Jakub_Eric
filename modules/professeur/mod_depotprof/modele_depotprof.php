@@ -97,6 +97,22 @@ Class ModeleDepotProf extends Connexion {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getEtudiantsParProjet($idSae)
+    {
+        $bdd = static::getBdd();
+        $query = "
+        SELECT GE.id_utilisateur, GE.id_groupe
+        FROM Groupe_Etudiant GE
+        JOIN Projet_Groupe PG ON GE.id_groupe = PG.id_groupe
+        WHERE PG.id_projet = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
     public function ajouterTempsSupplementairePourGroupe($idRendu, $idGroupe, $newDateLimite)
     {
         $bdd = $this->getBdd();

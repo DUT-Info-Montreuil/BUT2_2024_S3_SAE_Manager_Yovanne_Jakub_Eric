@@ -58,20 +58,20 @@ class ModeleCommun extends Connexion
         $bdd = static::getBdd();
 
         $queryRenduEvaluations = "
-        SELECT RE.id_evaluation, RE.note, E.coefficient
-        FROM Rendu_Evaluation RE
-        JOIN Evaluation E ON RE.id_evaluation = E.id_evaluation
-        WHERE RE.id_etudiant = ? AND RE.id_groupe = ?
+    SELECT RE.id_evaluation, RE.note, E.coefficient, E.note_max
+    FROM Rendu_Evaluation RE
+    JOIN Evaluation E ON RE.id_evaluation = E.id_evaluation
+    WHERE RE.id_etudiant = ? AND RE.id_groupe = ?
     ";
         $stmtRenduEvaluations = $bdd->prepare($queryRenduEvaluations);
         $stmtRenduEvaluations->execute([$idEtudiant, $idGroupe]);
         $renduEvaluations = $stmtRenduEvaluations->fetchAll(PDO::FETCH_ASSOC);
 
         $querySoutenanceEvaluations = "
-        SELECT SE.id_evaluation, SE.note, E.coefficient
-        FROM Soutenance_Evaluation SE
-        JOIN Evaluation E ON SE.id_evaluation = E.id_evaluation
-        WHERE SE.id_etudiant = ? AND SE.id_groupe = ?
+    SELECT SE.id_evaluation, SE.note, E.coefficient, E.note_max
+    FROM Soutenance_Evaluation SE
+    JOIN Evaluation E ON SE.id_evaluation = E.id_evaluation
+    WHERE SE.id_etudiant = ? AND SE.id_groupe = ?
     ";
         $stmtSoutenanceEvaluations = $bdd->prepare($querySoutenanceEvaluations);
         $stmtSoutenanceEvaluations->execute([$idEtudiant, $idGroupe]);
@@ -81,30 +81,33 @@ class ModeleCommun extends Connexion
         $totalCoef = 0;
 
         foreach ($renduEvaluations as $rendu) {
-            $totalNotePonderee += $rendu['note'] * $rendu['coefficient'];
+            $noteSur20 = ($rendu['note'] / $rendu['note_max']) * 20;
+            $totalNotePonderee += $noteSur20 * $rendu['coefficient'];
             $totalCoef += $rendu['coefficient'];
         }
 
         foreach ($soutenanceEvaluations as $soutenance) {
-            $totalNotePonderee += $soutenance['note'] * $soutenance['coefficient'];
+            $noteSur20 = ($soutenance['note'] / $soutenance['note_max']) * 20;
+            $totalNotePonderee += $noteSur20 * $soutenance['coefficient'];
             $totalCoef += $soutenance['coefficient'];
         }
 
         if ($totalCoef > 0) {
-            $nouvelleNoteFinale = $totalNotePonderee / $totalCoef;
+            $noteFinale = $totalNotePonderee / $totalCoef;
         } else {
-            $nouvelleNoteFinale = 0;
+            $noteFinale = 0;
         }
 
         $updateQuery = "
-        UPDATE Groupe_Etudiant
-        SET note_finale = ?
-        WHERE id_utilisateur = ? AND id_groupe = ?
+    UPDATE Groupe_Etudiant
+    SET note_finale = ?
+    WHERE id_utilisateur = ? AND id_groupe = ?
     ";
         $updateStmt = $bdd->prepare($updateQuery);
-        $updateStmt->execute([$nouvelleNoteFinale, $idEtudiant, $idGroupe]);
+        $updateStmt->execute([$noteFinale, $idEtudiant, $idGroupe]);
 
         return true;
     }
+
 
 }

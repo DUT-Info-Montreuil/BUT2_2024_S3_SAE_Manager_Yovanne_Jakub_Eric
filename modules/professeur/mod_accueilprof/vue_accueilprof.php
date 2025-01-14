@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../../../styleprof.css">
+<link rel="stylesheet" href="../../../styleaccueil.css">
 <?php
 include_once 'generique/vue_generique.php';
 

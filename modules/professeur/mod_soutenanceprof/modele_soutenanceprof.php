@@ -23,6 +23,20 @@ Class ModeleSoutenanceProf extends Connexion
         return $grpReq->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    public function getEtudiantsParSoutenance($idSoutenance)
+    {
+        $bdd = static::getBdd();
+        $query = "
+        SELECT GE.id_utilisateur, GE.id_groupe
+        FROM Groupe_Etudiant GE
+        JOIN Soutenance_Etudiant SE ON GE.id_utilisateur = SE.id_etudiant
+        WHERE SE.id_soutenance = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSoutenance]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function ajouterSoutenance($idSae, $titre, $date_soutenance){
         $bdd = $this->getBdd();
 

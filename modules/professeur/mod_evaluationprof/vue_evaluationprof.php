@@ -471,7 +471,7 @@ class VueEvaluationProf extends VueGenerique
                                 <td><?= htmlspecialchars($membre['prenom']) ?></td>
                                 <td><?= htmlspecialchars($membre['email']) ?></td>
                                 <td>
-                                    <input type="number" class="form-control" name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>]" step="0.01" min="0" max="20" placeholder="Note" required>
+                                    <input type="number" class="form-control" name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>]" step="0.01" placeholder="Note" required>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -510,7 +510,7 @@ class VueEvaluationProf extends VueGenerique
                 </div>
                 <div class="mt-3">
                     <label for="note_groupe" class="form-label fw-bold">Note pour le groupe</label>
-                    <input type="number" class="form-control" id="note_groupe" name="note_groupe" step="0.01" min="0" max="20" placeholder="Attribuer une note au groupe" required>
+                    <input type="number" class="form-control" id="note_groupe" name="note_groupe" step="0.01" placeholder="Attribuer une note au groupe" required>
                 </div>
                 <div class="mt-4">
                     <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire</label>

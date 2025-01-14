@@ -168,12 +168,19 @@ class ContEvaluationProf
 
             $this->modele->modifierEvaluation($id, $note_max, $coefficient);
 
+            $etudiants = $this->modele->getEtudiantsParEvaluation($id);
+
+            foreach ($etudiants as $etudiant) {
+                $idEtudiant = $etudiant['id_utilisateur'];
+                $idGroupe = $etudiant['id_groupe'];
+                ModeleCommun::mettreAJourNoteFinale($idEtudiant, $idGroupe);
+            }
+
             if (isset($_POST['deleguer_evaluation']) && !empty($_POST['deleguer_evaluation']) && isset($_POST['delegation_action'])) {
                 $idNvEvalueur = $_POST['deleguer_evaluation'];
                 $delegation_action = $_POST['delegation_action'];
                 $this->modele->modifierEvaluateurPrincipal($idNvEvalueur, $id, $delegation_action);
             }
-
 
             if (isset($_POST['ajouter_evaluateurs']) && !empty($_POST['ajouter_evaluateurs'])) {
                 $ajouterEvaluateurs = $_POST['ajouter_evaluateurs'];
@@ -193,6 +200,7 @@ class ContEvaluationProf
         }
         $this->gestionEvaluationsSAE();
     }
+
 
 
 
@@ -400,7 +408,14 @@ class ContEvaluationProf
     {
         if (isset($_POST['id_evaluation'])) {
             $id_evaluation = $_POST['id_evaluation'];
+            $etudiants = $this->modele->getEtudiantsParEvaluation($id_evaluation);
             $this->modele->supprimerEvaluation($id_evaluation);
+
+            foreach ($etudiants as $etudiant) {
+                $idEtudiant = $etudiant['id_utilisateur'];
+                $idGroupe = $etudiant['id_groupe'];
+                ModeleCommun::mettreAJourNoteFinale($idEtudiant, $idGroupe);
+            }
         }
         $this->gestionEvaluationsSAE();
     }
