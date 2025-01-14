@@ -14,6 +14,7 @@ class VueParametre extends VueGenerique
         // Vérifie si les données du compte sont présentes
         if (!empty($compte)) {
             ?>
+
             <div class="container mt-5">
                 <h2 class="text-center mb-4">Informations du compte</h2>
 
@@ -21,16 +22,22 @@ class VueParametre extends VueGenerique
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <form action="index.php?module=parametre&action=modifierCompte" method="POST">
-                                    <div style="margin-bottom: 20px; text-align: center" >
+                                <form action="index.php?module=parametre&action=modifierCompte" method="POST" enctype="multipart/form-data">
+                                    <div style="margin-bottom: 20px; text-align: center">
+
                                         <?php
                                         // Vérifie si le champ 'logo' est vide
                                         if (!empty($compte[0]['logo'])):
                                             ?>
-                                            <img height="75" width="75" src="<?php echo htmlspecialchars($compte[0]['logo']); ?>">
+                                            <label for="logoFile">
+                                                <img height="75" width="75" src="<?php echo htmlspecialchars($compte[0]['logo']); ?>" style="cursor: pointer;">
+                                            </label>
+                                            <input type="file" id="logoFile" name="logo" accept="image/jpeg, image/jpg, image/png" style="display:none;">
                                         <?php else: ?>
-                                            <!-- Image par défaut si 'logo' est vide -->
-                                            <img  height="75" width="75" src="path/to/default_image.png">
+                                            <label for="logoFile">
+                                                <img height="75" width="75" src="path/to/default_image.png" style="cursor: pointer;">
+                                            </label>
+                                            <input type="file" id="logoFile" name="logo" accept="image/jpeg, image/jpg, image/png" style="display:none;">
                                         <?php endif; ?>
                                     </div>
 

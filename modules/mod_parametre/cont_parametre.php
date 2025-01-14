@@ -25,9 +25,6 @@ class ContParametre {
                 $this->modifierCompte();
                 break;
 
-            case "modifierPhotoDeProfil" :
-                $this->modifierPhotoDeProfil();
-                break;
         }
 
     }
@@ -55,51 +52,41 @@ class ContParametre {
                 $password_utilisateur = null;  // Si aucun mot de passe n'est fourni, ne pas le modifier
             }
 
-            // Mettre à jour uniquement les champs qui sont définis
+            // Mettre à jour les informations du compte
             $this->modele->modifierCompte($id_utilisateur, $nom, $prenom, $email, $login_utilisateur, $password_utilisateur);
+            echo "Information mis à jour. ";
+            // Vérification et traitement de la photo de profil si un fichier a été téléchargé
+            if (isset($_FILES['logo'])) {
 
-            echo "Modifications réussis !";
+                $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                $fileExtension = pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
+
+                if (in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png']) && $_FILES['logo']['size'] <= 500000) {
+                    // Vérifiez si le dossier existe et a les bonnes permissions
+                    $uploadDir = 'photo_profil/';
+
+                    // Générer un nom unique pour l'image
+                    $imageName = 'photo_de_profil' . '_'. $id_utilisateur . '.' . $fileExtension;
+                    $uploadPath = $uploadDir . $imageName;
+
+                    if (move_uploaded_file($_FILES['logo']['tmp_name'], $uploadPath)) {
+                        $this->modele->modifierPhotoDeProfil($id_utilisateur, $uploadPath);
+                        echo "Logo mis à jour avec succès!";
+                    } else {
+                        echo "Erreur lors du téléchargement de l'image.";
+                    }
+                } else {
+                    echo "Le fichier doit être une image JPG ou PNG et ne pas dépasser 500 Ko.";
+                }
+            }
+
+            // Afficher les modifications effectuées
             $this->afficherCompte();
 
         }
     }
 
-    public function modifierPhotoDeProfil() {
-        if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
-            $id_utilisateur = $_SESSION['id_utilisateur'];
 
-            // Vérification du type et de la taille de l'image
-            $allowedTypes = ['image/jpeg', 'image/png'];
-            if (in_array($_FILES['logo']['type'], $allowedTypes) && $_FILES['logo']['size'] <= 500000){
-
-                echo 'Type du fichier: ' . $_FILES['logo']['type']; // Afficher le type du fichier
-                echo 'Taille du fichier: ' . $_FILES['logo']['size']; // Afficher la taille du fichier
-
-
-                // Générer un nom unique pour l'image
-                $imageName = 'profil_photo_' . $id_utilisateur . '.' . pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION);
-                $uploadDir = 'photo_profil/'; // Répertoire où les images seront stockées
-                $uploadPath = $uploadDir . $imageName;
-
-                // Déplacer le fichier téléchargé vers le dossier photo_profil
-                if (move_uploaded_file($_FILES['logo']['tmp_name'], $uploadPath)) {
-                    // Si l'upload est réussi, mettre à jour la base de données avec le nom du fichier
-                    $this->modele->modifierLogo($id_utilisateur, $imageName);
-
-                    echo "Logo mis à jour avec succès!";
-                } else {
-                    echo "Erreur lors du téléchargement de l'image.";
-                }
-            } else {
-                echo "Le fichier doit être une image JPG ou PNG et ne pas dépasser 500 Ko.";
-            }
-        } else {
-            echo "Aucun fichier n'a été téléchargé.";
-        }
-
-        echo "Reussi";
-        $this->afficherCompte();
-    }
 
 
 

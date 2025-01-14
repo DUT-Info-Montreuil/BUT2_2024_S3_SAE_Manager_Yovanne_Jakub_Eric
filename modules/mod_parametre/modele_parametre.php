@@ -30,6 +30,7 @@ Class ModeleParametre extends Connexion
             WHERE id_utilisateur = ?";
             $stmt = $bdd->prepare($query);
             $stmt->execute([$nom, $prenom, $email, $login_utilisateur, $password_utilisateur, $id_utilisateur]);
+
         } else {
             $query = "
             UPDATE utilisateur 
@@ -37,12 +38,14 @@ Class ModeleParametre extends Connexion
             WHERE id_utilisateur = ?";
             $stmt = $bdd->prepare($query);
             $stmt->execute([$nom, $prenom, $email, $login_utilisateur, $id_utilisateur]);
+
         }
     }
 
     public function modifierPhotoDeProfil($id_utilisateur, $logo){
 
         $bdd = $this->getBdd();
+
         $query = "
         UPDATE utilisateur
         SET logo = ?
@@ -52,8 +55,9 @@ Class ModeleParametre extends Connexion
         $success =$stmt->execute([$logo, $id_utilisateur]);
 
         if (!$success) {
-            // Si la requête échoue, affiche une erreur
-            echo 'Erreur lors de la mise à jour de la base de données';
+            echo 'Erreur lors de la mise à jour du logo';
+        } else {
+            echo 'Logo mis à jour avec succès!';
         }
     }
 }
