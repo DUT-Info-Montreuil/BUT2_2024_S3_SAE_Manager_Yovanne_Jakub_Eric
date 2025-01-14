@@ -324,6 +324,21 @@ class ModeleEvaluationProf extends Connexion
         $stmtInsert->execute([$id_evaluation, $id_utilisateur, $is_principal ? 1 : 0]);
         return true;
     }
+
+    public function getChampsRemplisParGroupe($id_groupe)
+    {
+        $bdd =$this->getBdd();
+        $query = "
+        SELECT c.champ_nom, cg.champ_valeur
+        FROM Champ c
+        JOIN Champ_Groupe cg ON c.id_champ = cg.id_champ
+        WHERE cg.id_groupe = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_groupe]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function mettreAJourNoteFinale($idEtudiant, $idGroupe)
     {
         $bdd = $this->getBdd();
