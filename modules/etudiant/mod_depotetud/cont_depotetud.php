@@ -40,9 +40,9 @@ class ContDepotEtud
 
     public function afficherDepot()
     {
-        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
-        $id_projet = $_SESSION["id_projet"];
-        $tabAllDepot = $this->modele->getAllDepot($id_groupe, $id_projet);
+        $idSae = $_GET['idProjet'];
+        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
+        $tabAllDepot = $this->modele->getAllDepot($id_groupe, $idSae);
 
         if (!empty($tabAllDepot)){
             foreach ($tabAllDepot as &$depot) {
@@ -58,7 +58,7 @@ class ContDepotEtud
         if(empty($tabAllDepot)){
             $this->vue->afficherMessageAucunDepot();
         }else{
-            $this->vue->afficherAllDepot($tabAllDepot);
+            $this->vue->afficherAllDepot($tabAllDepot, $idSae);
         }
 
     }
@@ -67,7 +67,7 @@ class ContDepotEtud
     public function upload()
     {
         if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
-            $idSae = $_SESSION["id_projet"];
+            $idSae = $_GET['idProjet'];
             $idUser = $_SESSION["id_utilisateur"];
             $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
             $idRendu = $_POST['id_rendu'];
@@ -104,7 +104,7 @@ class ContDepotEtud
     {
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
-            $idSae = $_SESSION["id_projet"];
+            $idSae = $_GET['idProjet'];
             $idUser = $_SESSION["id_utilisateur"];
             $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
 

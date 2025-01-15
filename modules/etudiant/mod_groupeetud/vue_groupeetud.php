@@ -9,7 +9,7 @@ class VueGroupeEtud extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir) {
+    public function afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir, $idSae) {
         ?>
         <div class="container mt-4">
             <h2 style="text-align: center"> Groupe : <?php echo htmlspecialchars($nomGrp); ?> </h2>
@@ -36,7 +36,7 @@ class VueGroupeEtud extends VueGenerique
             </table>
             <?php if(!empty($champARemplir)) : ?>
             <h3 style="text-align: center" class="mt-4">Champs à remplir :</h3>
-            <form method="POST" action="index.php?module=groupeetud&action=updateChamps">
+            <form method="POST" action="index.php?module=groupeetud&action=updateChamps&idProjet=<?php echo $idSae; ?>">
                 <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-3">
                     <thead class="thead-dark">
                     <tr>

@@ -36,10 +36,9 @@ Class ContSoutenanceEtud {
 
     public function affichageDesSoutenances()
     {
-
-        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
-        $idProjet = $_SESSION["id_projet"];
-        $allSoutenance = $this->modele->getAllSoutenances($idProjet);
+        $idSae = $_GET['idProjet'];
+        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
+        $allSoutenance = $this->modele->getAllSoutenances($idSae);
 
         foreach ($allSoutenance as &$soutenance) {
             $evaluation = $this->modele->getNoteEtCommentaire($soutenance['id_soutenance'], $id_groupe);

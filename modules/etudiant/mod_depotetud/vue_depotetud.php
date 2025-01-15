@@ -9,7 +9,7 @@ class VueDepotEtud extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherAllDepot($tabAllDepot)
+    public function afficherAllDepot($tabAllDepot, $idProjet)
     {
         ?>
         <div class="container mt-5">
@@ -17,7 +17,7 @@ class VueDepotEtud extends VueGenerique
             <div class="accordion" id="depotAccordion">
                 <?php
                 foreach ($tabAllDepot as $index => $depot) {
-                    $this->afficherDepot($index, $depot);
+                    $this->afficherDepot($index, $depot, $idProjet);
                 }
                 ?>
             </div>
@@ -34,7 +34,7 @@ class VueDepotEtud extends VueGenerique
         <?php
     }
 
-    private function afficherDepot($index, $depot)
+    private function afficherDepot($index, $depot, $idProjet)
     {
         ?>
         <div class="accordion-item mb-3">
@@ -54,7 +54,7 @@ class VueDepotEtud extends VueGenerique
                     <?= $this->afficherNoteEtCommentaire($depot) ?>
                     <?= $this->afficherAuteurEtDateRemise($depot) ?>
                     <?= $this->afficherFichiersRemis($depot) ?>
-                    <?= $this->afficherFormulaireDepot($depot) ?>
+                    <?= $this->afficherFormulaireDepot($depot, $idProjet) ?>
 
                 </div>
             </div>
@@ -127,11 +127,11 @@ class VueDepotEtud extends VueGenerique
         }
     }
 
-    private function afficherFormulaireDepot($depot)
+    private function afficherFormulaireDepot($depot, $idSae)
     {
         if ($depot['statut'] !== 'Remis') {
             ?>
-            <form action="index.php?module=depotetud&action=upload" method="post" enctype="multipart/form-data"
+            <form action="index.php?module=depotetud&action=upload&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data"
                   class="mt-3">
                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                 <div class="mb-3">
@@ -145,7 +145,7 @@ class VueDepotEtud extends VueGenerique
         } else {
             ?>
             <form
-                    action="index.php?module=depotetud&action=supprimerTravailRemis"
+                    action="index.php?module=depotetud&action=supprimerTravailRemis&idProjet=<?php echo $idSae; ?>"
                     method="post"
                     class="mt-4"
                     onsubmit="return confirmationSupprimer();"

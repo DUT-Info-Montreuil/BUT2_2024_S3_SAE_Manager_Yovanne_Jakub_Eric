@@ -33,7 +33,7 @@ Class ContNotesEtud
 
     public function allNotes(){
         $idUtilisateur = $_SESSION['id_utilisateur'];
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $allNotes = $this->modele->getAllNotesSAE($idUtilisateur, $idSae);
         $noteFinal = $this->modele->getNoteFinal($idUtilisateur, $idSae);
         if(empty($allNotes) && empty($noteFinal)){

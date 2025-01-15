@@ -38,15 +38,14 @@ Class ContAccueilEtud {
     public function choixSae()
     {
         if (isset($_GET['id'])) {
-            $sections = [
-                ["href" => "index.php?module=groupeetud", "title" => "Groupe"],
-                ["href" => "index.php?module=depotetud", "title" => "Dépôt"],
-                ["href" => "index.php?module=ressourceetud", "title" => "Ressource"],
-                ["href" => "index.php?module=soutenanceetud", "title" => "Soutenance"],
-                ["href" => "index.php?module=notesetud", "title" => "Notes"]
-            ];
             $idProjet = $_GET['id'];
-            $_SESSION['id_projet'] = $idProjet;
+            $sections = [
+                ["href" => "index.php?module=groupeetud&idProjet=" . $idProjet, "title" => "Groupe"],
+                ["href" => "index.php?module=depotetud&idProjet=" . $idProjet, "title" => "Dépôt"],
+                ["href" => "index.php?module=ressourceetud&idProjet=" . $idProjet, "title" => "Ressource"],
+                ["href" => "index.php?module=soutenanceetud&idProjet=" . $idProjet, "title" => "Soutenance"],
+                ["href" => "index.php?module=notesetud&idProjet=" . $idProjet, "title" => "Notes"]
+            ];
             $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idProjet, $_SESSION['id_utilisateur']);
             $titre = ModeleCommun::getTitreSAE($idProjet);
             $desc = ModeleCommun::getDescriptionSAE($idProjet);
