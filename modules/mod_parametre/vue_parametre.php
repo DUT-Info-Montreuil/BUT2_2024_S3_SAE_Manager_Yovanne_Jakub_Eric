@@ -29,8 +29,9 @@ class VueParametre extends VueGenerique
                                         // Vérifie si le champ 'logo' est vide
                                         if (!empty($compte[0]['logo'])):
                                             ?>
+
                                             <label for="logoFile">
-                                                <img height="75" width="75" src="<?php echo htmlspecialchars($compte[0]['logo']); ?>" style="cursor: pointer;">
+                                                <img height="75" width="75" style="cursor: pointer;" src="<?php echo htmlspecialchars($compte[0]['logo']);?> ">
                                             </label>
                                             <input type="file" id="logoFile" name="logo" accept="image/jpeg, image/jpg, image/png" style="display:none;">
                                         <?php else: ?>

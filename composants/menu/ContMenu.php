@@ -10,4 +10,6 @@ class ControleurCompMenu {
     public function getVue() {
         return $this->vue;
     }
+
+
 }
