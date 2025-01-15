@@ -147,11 +147,15 @@ class VueDepotEtud extends VueGenerique
             <form
                     action="index.php?module=depotetud&action=supprimerTravailRemis&idProjet=<?php echo $idSae; ?>"
                     method="post"
-                    class="mt-4"
-                    onsubmit="return confirmationSupprimer();"
+                    onsubmit="event.preventDefault(); confirmationSupprimer(
+                            'index.php?module=depotetud&action=supprimerTravailRemis&idProjet=<?php echo $idSae; ?>',
+                            'Voulez-vous vraiment supprimer le travail déposé ?',
+                            'Cette action est irréversible !'
+                            );"
             >
+
                 <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
-                <button type="submit" class="btn btn-danger">Supprimer le travail remis</button>
+                <button type="submit" class="btn btn-danger">Supprimer</button>
             </form>
             <?php
         }
