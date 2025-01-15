@@ -1,12 +1,14 @@
 <?php
 include_once 'generique/vue_generique.php';
 
-class VueGerantProf extends VueGenerique{
+class VueGerantProf extends VueGenerique
+{
     public function __construct()
     {
         parent::__construct();
     }
-    public function afficherGerantSAE($gerantSAE)
+
+    public function afficherGerantSAE($gerantSAE, $idSae)
     {
         ?>
         <div class="container mt-4">
@@ -32,7 +34,7 @@ class VueGerantProf extends VueGenerique{
                                 echo "<td>{$currentGroup['role_utilisateur']}</td>";
                                 echo "<td>";
                                 if ($currentGroup['role_utilisateur'] !== 'Responsable') {
-                                    echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
+                                    echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}&idProjet=" . $idSae . "' class='btn btn-sm btn-secondary'>
                                         <i class='fas fa-cog'></i>
                                       </a>";
                                 }
@@ -68,7 +70,7 @@ class VueGerantProf extends VueGenerique{
             </table>
 
             <div class="text-center mt-4">
-                <a href="index.php?module=gerantprof&action=ajouterGerantFormulaire" class="btn btn-primary btn-lg">
+                <a href="index.php?module=gerantprof&action=ajouterGerantFormulaire&idProjet=<?php echo $idSae; ?>" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Gérant
                 </a>
             </div>
@@ -76,13 +78,15 @@ class VueGerantProf extends VueGenerique{
         <?php
     }
 
-    public function formulaireModifierGerant($tabDetailsGerant, $idGerant)
+    public function formulaireModifierGerant($tabDetailsGerant, $idGerant, $idSae)
     {
         ?>
         <div class="container mt-4">
             <h2>Modifier le Gérant</h2>
-            <form action="index.php?module=gerantprof&action=enregistrerModificationsGerant" method="post">
-                <input type="hidden" name="id_utilisateur" value="<?php echo htmlspecialchars($tabDetailsGerant['id_utilisateur']); ?>">
+            <form action="index.php?module=gerantprof&action=enregistrerModificationsGerant&idProjet=<?php echo $idSae; ?>"
+                  method="post">
+                <input type="hidden" name="id_utilisateur"
+                       value="<?php echo htmlspecialchars($tabDetailsGerant['id_utilisateur']); ?>">
                 <div class="form-group">
                     <label for="nomGerant">Nom du Gérant</label>
                     <p id="nomGerant"><?php echo htmlspecialchars($tabDetailsGerant['nom_complet']); ?></p>
@@ -91,12 +95,14 @@ class VueGerantProf extends VueGenerique{
                     <label>Choisissez un rôle pour le gérant :</label>
                     <div class="btn-group btn-group-toggle d-flex mt-2" data-toggle="buttons">
                         <label class="btn btn-outline-primary flex-fill <?php echo $tabDetailsGerant['role_utilisateur'] === "Co-Responsable" ? 'active' : ''; ?>">
-                            <input type="radio" id="coreponsable" name="role_gerant" value="Co-Responsable" autocomplete="off"
+                            <input type="radio" id="coreponsable" name="role_gerant" value="Co-Responsable"
+                                   autocomplete="off"
                                 <?php echo $tabDetailsGerant['role_utilisateur'] === "Co-Responsable" ? 'checked' : ''; ?>>
                             Co-Responsable
                         </label>
                         <label class="btn btn-outline-primary flex-fill <?php echo $tabDetailsGerant['role_utilisateur'] === "Intervenant" ? 'active' : ''; ?>">
-                            <input type="radio" id="intervenant" name="role_gerant" value="Intervenant" autocomplete="off"
+                            <input type="radio" id="intervenant" name="role_gerant" value="Intervenant"
+                                   autocomplete="off"
                                 <?php echo $tabDetailsGerant['role_utilisateur'] === "Intervenant" ? 'checked' : ''; ?>>
                             Intervenant
                         </label>
@@ -106,24 +112,28 @@ class VueGerantProf extends VueGenerique{
                     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                 </div>
             </form>
-            <form action="index.php?module=gerantprof&action=supprimerGerant" method="post" onsubmit="return confirmationSupprimer();">
+            <form action="index.php?module=gerantprof&action=supprimerGerant&idProjet=<?php echo $idSae; ?>"
+                  method="post" onsubmit="return confirmationSupprimer();">
                 <input type="hidden" name="idGerant" value="<?php echo htmlspecialchars($idGerant); ?>">
                 <div class="d-flex mt-3 gap-3">
                     <button type="submit" class="btn btn-danger">Supprimer le Gérant</button>
                 </div>
             </form>
             <div class="d-flex mt-4 gap-3">
-                <a href="index.php?module=gerantprof&action=gestionGerantSAE" class="btn btn-secondary">Retour</a>
+                <a href="index.php?module=gerantprof&action=gestionGerantSAE&idProjet=<?php echo $idSae; ?>"
+                   class="btn btn-secondary">Retour</a>
             </div>
         </div>
 
         <?php
     }
-    public function afficherFormulaireAjoutGerant($tabGerant){
+
+    public function afficherFormulaireAjoutGerant($tabGerant, $idSae)
+    {
         ?>
         <div class="container mt-5">
             <h2>Ajouter des Gérants</h2>
-            <form method="post" action="index.php?module=gerantprof&action=ajouterGerants">
+            <form method="post" action="index.php?module=gerantprof&action=ajouterGerants&idProjet=<?php echo $idSae; ?>">
                 <div class="form-group">
                     <label>Choisissez un rôle pour les gérant :</label>
                     <div class="btn-group btn-group-toggle d-flex mt-2" data-toggle="buttons">
@@ -160,7 +170,7 @@ class VueGerantProf extends VueGenerique{
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Ajouter les Gérants</button>
-                <a href="index.php?module=gerantprof&action=gestionGerantSAE" class="btn btn-secondary mt-4">Retour</a>
+                <a href="index.php?module=gerantprof&action=gestionGerantSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php

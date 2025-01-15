@@ -8,7 +8,7 @@ class VueNoteFinalProf extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherAllNoteAndEtudiant($allNoteFinalAndEtudiant)
+    public function afficherAllNoteAndEtudiant($allNoteFinalAndEtudiant, $idSae)
     {
         ?>
         <div class="container mt-4">
@@ -48,7 +48,7 @@ class VueNoteFinalProf extends VueGenerique
                                                 <h5 class="modal-title" id="modalLabel<?= htmlspecialchars($etudiant['id_utilisateur']) ?>">Modifier la Note</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <form action="index.php?module=notefinalprof&action=modifierNoteFinal" method="POST">
+                                            <form action="index.php?module=notefinalprof&action=modifierNoteFinal&idProjet=<?php echo $idSae; ?>" method="POST">
                                                 <div class="modal-body">
                                                     <input type="hidden" name="id_utilisateur" value="<?= htmlspecialchars($etudiant['id_utilisateur']) ?>">
                                                     <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($etudiant['id_groupe']) ?>">
@@ -62,7 +62,7 @@ class VueNoteFinalProf extends VueGenerique
                                                 </div>
                                             </form>
                                             <div class="text-center mb-4">
-                                                <form action="index.php?module=notefinalprof&action=reinitialisernoteFinal" method="POST">
+                                                <form action="index.php?module=notefinalprof&action=reinitialisernoteFinal&idProjet=<?php echo $idSae; ?>" method="POST">
                                                     <input type="hidden" name="id_utilisateur" value="<?= htmlspecialchars($etudiant['id_utilisateur']) ?>">
                                                     <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($etudiant['id_groupe']) ?>">
                                                     <button type="submit" class="btn btn-warning text-white" style="background-color: #f0ad4e; border-color: #eea236;">

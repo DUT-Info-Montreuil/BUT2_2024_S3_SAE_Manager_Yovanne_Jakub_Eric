@@ -47,14 +47,15 @@ class ContRessourceProf
 
     private function gestionRessourceSAE()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $allRessources = $this->modele->getAllRessourceSAE($idSae);
-        $this->vue->afficherAllRessource($allRessources);
+        $this->vue->afficherAllRessource($allRessources, $idSae);
     }
 
     public function creerRessource()
     {
-        $this->vue->formulaireCreerRessource();
+        $idSae = $_GET['idProjet'];
+        $this->vue->formulaireCreerRessource($idSae);
     }
 
     public function submitRessource()
@@ -62,7 +63,7 @@ class ContRessourceProf
         if (isset($_POST['titre']) && !empty($_POST['titre'])) {
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $nomSae = ModeleCommun::getTitreSAE($idSae);
 
@@ -97,7 +98,7 @@ class ContRessourceProf
             $idRessource = $_POST['id_ressource'];
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $ancienCheminFichier = $this->modele->getRessourceLien($idRessource);
 

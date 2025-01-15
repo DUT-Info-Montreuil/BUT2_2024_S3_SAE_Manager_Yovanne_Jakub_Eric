@@ -7,7 +7,7 @@ class VueSoutenanceProf extends VueGenerique
     {
         parent::__construct();
     }
-    public function afficherAllSoutenance($allSoutenances){
+    public function afficherAllSoutenance($allSoutenances, $idSae){
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Liste des Soutenances</h1>
@@ -47,7 +47,7 @@ class VueSoutenanceProf extends VueGenerique
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="index.php?module=soutenanceprof&action=modifierSoutenance" method="post" enctype="multipart/form-data">
+                                    <form action="index.php?module=soutenanceprof&action=modifierSoutenance&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
                                         <div class="mb-3">
                                             <label for="titre-<?= $index ?>" class="form-label">Titre</label>
@@ -65,7 +65,7 @@ class VueSoutenanceProf extends VueGenerique
                                         </div>
                                     </form>
 
-                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
@@ -76,19 +76,19 @@ class VueSoutenanceProf extends VueGenerique
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">
-                <a href="index.php?module=soutenanceprof&action=creerSoutenance" class="btn btn-primary">
+                <a href="index.php?module=soutenanceprof&action=creerSoutenance&idProjet=<?php echo $idSae; ?>" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Ajouter une Soutenance
                 </a>
             </div>
         </div>
         <?php
     }
-    public function formulaireCreerSoutenance()
+    public function formulaireCreerSoutenance($idSae)
     {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Créer une Nouvelle Soutenance</h1>
-            <form action="index.php?module=soutenanceprof&action=submitSoutenance" method="POST" enctype="multipart/form-data">
+            <form action="index.php?module=soutenanceprof&action=submitSoutenance&idProjet=<?php echo $idSae; ?>" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la Soutenance</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre de la soutenance" required>
@@ -98,7 +98,7 @@ class VueSoutenanceProf extends VueGenerique
                     <input type="date" class="form-control" id="date_soutenance" name="date_soutenance" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Créer</button>
-                <a href="index.php?module=soutenanceprof&action=gestionSoutenancesSAE" class="btn btn-secondary">Annuler</a>
+                <a href="index.php?module=soutenanceprof&action=gestionSoutenancesSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary">Annuler</a>
             </form>
         </div>
         <?php

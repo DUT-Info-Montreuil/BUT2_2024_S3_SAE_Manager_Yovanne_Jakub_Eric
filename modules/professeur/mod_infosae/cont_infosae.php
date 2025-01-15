@@ -57,14 +57,15 @@ class ContInfoSae
     }
     public function gestionSAE()
     {
+        $idProjet = $_GET['idProjet'];
         $choix = [
             [
                 'title' => 'Information Général',
-                'link' => 'index.php?module=infosae&action=infoGeneralSae'
+                'link' => 'index.php?module=infosae&action=infoGeneralSae&idProjet='.$idProjet,
             ],
             [
                 'title' => 'Gestion des champs',
-                'link' => 'index.php?module=infosae&action=allChamp'
+                'link' => 'index.php?module=infosae&action=allChamp&idProjet='.$idProjet
             ]
         ];
         $this->vue->afficherChoix($choix);
@@ -72,7 +73,8 @@ class ContInfoSae
 
     public function formAddChamp()
     {
-        $this->vue->afficherFormAddChamp();
+        $idSae = $_GET['idProjet'];
+        $this->vue->afficherFormAddChamp($idSae);
     }
 
     public function supprimerChamp()
@@ -86,7 +88,7 @@ class ContInfoSae
 
     public function supprimerSAE()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         DossierManager::supprimerDossiersSAE($idSae, ModeleCommun::getTitreSAE($idSae));
         $this->modele->supprimerSAE($idSae);
         header("Location: index.php?module=accueilprof");
@@ -94,23 +96,23 @@ class ContInfoSae
 
     public function infoGeneralSae()
     {
-        $idProjet = $_SESSION['id_projet'];
-        if ($idProjet) {
-            $saeTabDetails = $this->modele->getSaeDetails($idProjet);
-            $this->vue->afficherSaeInfoGeneral($saeTabDetails);
+        $idSae = $_GET['idProjet'];
+        if ($idSae) {
+            $saeTabDetails = $this->modele->getSaeDetails($idSae);
+            $this->vue->afficherSaeInfoGeneral($saeTabDetails, $idSae);
         }
     }
 
     public function allChamp()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $allChamp = $this->modele->getAllChamp($idSae);
-        $this->vue->afficherAllChamp($allChamp);
+        $this->vue->afficherAllChamp($allChamp, $idSae);
     }
 
     public function updateSae()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
                 $nouveauTitre = trim($_POST['titre']);
@@ -136,7 +138,7 @@ class ContInfoSae
         if (isset($_POST['champ_nom']) && isset($_POST['rempli_par'])) {
             $champNom = trim($_POST['champ_nom']);
             $rempliPar = trim($_POST['rempli_par']);
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
             $idChamp = $this->modele->addChamp($champNom, $rempliPar, $idSae);
             $allGrp = $this->modele->getAllIdGroupeSAE($idSae);
             foreach ($allGrp as $grp) {

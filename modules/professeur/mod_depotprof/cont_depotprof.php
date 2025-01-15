@@ -46,23 +46,24 @@ class ContDepotProf{
 
     }
     public function gestionDepotSAE(){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if($idSae){
             $allDepot = $this->modele->getAllDepotSAE($idSae);
             $allGroupe = $this->modele->getGroupesParSae($idSae);
-            $this->vue->afficheAllDepotSAE($allDepot, $allGroupe);
+            $this->vue->afficheAllDepotSAE($allDepot, $allGroupe, $idSae);
         }
     }
 
     public function creerDepot(){
-        $this->vue->formulaireCreerDepot();
+        $idProjet = $_GET['idProjet'];
+        $this->vue->formulaireCreerDepot($idProjet);
     }
 
     public function submitDepot(){
         if (isset($_POST['titre']) && trim($_POST['titre']) !== '' && isset($_POST['date_limite'])) {
             $titre = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $idRendu = $this->modele->creerDepot($titre, $dateLimite, $idSae);
             $nomRendu = $this->modele->getNomDepot($idRendu);
@@ -83,7 +84,7 @@ class ContDepotProf{
             $nouveauNomDepot = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
             $id_rendu = $_POST['id_rendu'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $ancienNomDepot = $this->modele->getNomDepot($id_rendu);
             $this->modele->modifierRendu($id_rendu, $nouveauNomDepot, $dateLimite);
@@ -103,7 +104,7 @@ class ContDepotProf{
     {
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $etudiants = $this->modele->getEtudiantsParProjet($idSae);
             $this->modele->supprimerDepot($idRendu);

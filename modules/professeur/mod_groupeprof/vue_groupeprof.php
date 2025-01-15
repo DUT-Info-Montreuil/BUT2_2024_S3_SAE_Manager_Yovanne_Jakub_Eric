@@ -5,7 +5,7 @@ Class VueGroupeProf extends VueGenerique{
     public function __construct() {
         parent::__construct();
     }
-    public function afficherGroupeSAE($groupes) {
+    public function afficherGroupeSAE($groupes, $idSae) {
         ?>
         <div class="container mt-4">
             <h2>Gestion des Groupes pour la SAE</h2>
@@ -26,7 +26,7 @@ Class VueGroupeProf extends VueGenerique{
                             <td><?php echo implode(', ', $groupe['membres']); ?></td>
                             <td><?php echo implode(', ', $groupe['champs']); ?></td>
                             <td>
-                                <a href="index.php?module=groupeprof&action=versModifierGroupe&idGroupe=<?php echo $groupe['id_groupe']; ?>" class="btn btn-sm btn-secondary">
+                                <a href="index.php?module=groupeprof&action=versModifierGroupe&idGroupe=<?php echo $groupe['id_groupe']; ?>&idProjet=<?php echo $idSae; ?>" class="btn btn-sm btn-secondary">
                                     <i class="fas fa-cog"></i>
                                 </a>
                             </td>
@@ -39,7 +39,7 @@ Class VueGroupeProf extends VueGenerique{
             </table>
 
             <div class="text-center mt-4">
-                <a href="index.php?module=groupeprof&action=ajouterGroupeFormulaire" class="btn btn-primary btn-lg">
+                <a href="index.php?module=groupeprof&action=ajouterGroupeFormulaire&idProjet=<?php echo $idSae; ?>" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Groupe
                 </a>
             </div>
@@ -47,12 +47,12 @@ Class VueGroupeProf extends VueGenerique{
         <?php
     }
 
-    public function formulaireModifierGroupe($detailsGroupe, $tabNvEtudiant, $idGroupe) {
+    public function formulaireModifierGroupe($detailsGroupe, $tabNvEtudiant, $idGroupe, $idSae) {
         ?>
         <div class="container mt-5">
             <div class="card shadow-lg p-4 mb-5">
                 <h3 class="text-center mb-4">Modifier le Groupe</h3>
-                <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe" method="post">
+                <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe&idProjet=<?php echo $idSae; ?>" method="post">
                     <input type="hidden" name="id_groupe" value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
                     <div class="mb-4">
@@ -129,12 +129,12 @@ Class VueGroupeProf extends VueGenerique{
 
                     <div class="d-flex justify-content-center mt-4">
                         <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm me-2">Enregistrer</button>
-                        <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary btn-lg w-100 shadow-sm">Retour</a>
+                        <a href="index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary btn-lg w-100 shadow-sm">Retour</a>
                     </div>
 
 
                 </form>
-                <form action="index.php?module=groupeprof&action=supprimerGrp" method="post" class="text-center" onsubmit="return confirmationSupprimer();">
+                <form action="index.php?module=groupeprof&action=supprimerGrp&idProjet=<?php echo $idSae; ?>" method="post" class="text-center" onsubmit="return confirmationSupprimer();">
                     <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
                     <button type="submit" class="btn btn-danger btn-lg w-100 shadow-sm">Supprimer le groupe</button>
                 </form>
@@ -144,11 +144,11 @@ Class VueGroupeProf extends VueGenerique{
         <?php
     }
 
-    public function afficherFormulaireAjoutGroupe($etudiants) {
+    public function afficherFormulaireAjoutGroupe($etudiants, $idSae) {
         ?>
         <div class="container mt-5">
             <h2>Ajouter un Nouveau Groupe</h2>
-            <form method="post" action="index.php?module=groupeprof&action=creerGroupe">
+            <form method="post" action="index.php?module=groupeprof&action=creerGroupe&idProjet=<?php echo $idSae; ?>">
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
@@ -165,7 +165,7 @@ Class VueGroupeProf extends VueGenerique{
                     </select>
                 </div>
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
-                <a href="index.php?module=groupeprof&action=gestionGroupeSAE" class="btn btn-secondary mt-4">Retour</a>
+                <a href="index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php

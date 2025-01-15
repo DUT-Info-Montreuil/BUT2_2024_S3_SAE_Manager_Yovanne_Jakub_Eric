@@ -55,8 +55,12 @@ class ContDepotEtud
                 $depot['date_remise'] = isset($auteurEtDate['date_remise']) ? $auteurEtDate['date_remise'] : null;
             }
         }
+        if(empty($tabAllDepot)){
+            $this->vue->afficherMessageAucunDepot();
+        }else{
+            $this->vue->afficherAllDepot($tabAllDepot);
+        }
 
-        $this->vue->afficherAllDepot($tabAllDepot);
     }
 
 

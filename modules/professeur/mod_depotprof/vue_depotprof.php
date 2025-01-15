@@ -8,7 +8,7 @@ class VueDepotProf extends VueGenerique
         parent::__construct();
     }
 
-    public function afficheAllDepotSAE($allDepot, $allGroupe)
+    public function afficheAllDepotSAE($allDepot, $allGroupe, $idSae)
     {
         ?>
         <div class="container mt-4">
@@ -36,20 +36,20 @@ class VueDepotProf extends VueGenerique
                         </div>
                     </div>
                     <?php
-                    $this->afficheModifDepot($index, $depot);
-                    $this->afficheAjoutTpsSupplementaire($index, $depot, $allGroupe);
+                    $this->afficheModifDepot($index, $depot, $idSae);
+                    $this->afficheAjoutTpsSupplementaire($index, $depot, $allGroupe, $idSae);
                     ?>
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">
-                <a href="index.php?module=depotprof&action=creerDepot" class="btn btn-primary">
+                <a href="index.php?module=depotprof&action=creerDepot&idProjet=<?php echo $idSae; ?>" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Ajouter un Dépôt
                 </a>
             </div>
         </div>
         <?php
     }
-    private function afficheModifDepot($index, $depot)
+    private function afficheModifDepot($index, $depot, $idSae)
     {
         ?>
         <div class="modal fade" id="editModal-<?= $index ?>" tabindex="-1" aria-labelledby="editModalLabel-<?= $index ?>" aria-hidden="true">
@@ -62,7 +62,7 @@ class VueDepotProf extends VueGenerique
                         <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="index.php?module=depotprof&action=modifierDepot" method="post">
+                        <form action="index.php?module=depotprof&action=modifierDepot&idProjet=<?php echo $idSae; ?>" method="post">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                             <div class="alert alert-warning text-center" role="alert">
                                 <strong>Attention :</strong> La suppression d'un dépôt est irréversible !
@@ -96,7 +96,7 @@ class VueDepotProf extends VueGenerique
                             </div>
                         </form>
 
-                        <form action="index.php?module=depotprof&action=supprimerDepot" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                        <form action="index.php?module=depotprof&action=supprimerDepot&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
 
                             <div class="mt-3 d-flex justify-content-center">
@@ -111,7 +111,7 @@ class VueDepotProf extends VueGenerique
         </div>
         <?php
     }
-    private function afficheAjoutTpsSupplementaire($index, $depot, $allGroupe)
+    private function afficheAjoutTpsSupplementaire($index, $depot, $allGroupe, $idSae)
     {
         ?>
         <div class="modal fade" id="extendTimeModal-<?= $index ?>" tabindex="-1" aria-labelledby="extendTimeModalLabel-<?= $index ?>" aria-hidden="true">
@@ -124,7 +124,7 @@ class VueDepotProf extends VueGenerique
                         <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="index.php?module=depotprof&action=ajouterTemps" method="post">
+                        <form action="index.php?module=depotprof&action=ajouterTemps&idProjet=<?php echo $idSae; ?>" method="post">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
 
                             <div class="mb-3">
@@ -162,12 +162,12 @@ class VueDepotProf extends VueGenerique
         </div>
         <?php
     }
-    public function formulaireCreerDepot()
+    public function formulaireCreerDepot($idSae)
     {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Créer un Nouveau Dépôt</h1>
-            <form action="index.php?module=depotprof&action=submitDepot" method="POST">
+            <form action="index.php?module=depotprof&action=submitDepot&idProjet=<?php echo $idSae; ?>" method="POST">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre du Dépôt</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre du dépôt"
@@ -178,7 +178,7 @@ class VueDepotProf extends VueGenerique
                     <input type="date" class="form-control" id="date_limite" name="date_limite" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Créer</button>
-                <a href="index.php?module=depotprof&action=gestionDepotSAE" class="btn btn-secondary">Annuler</a>
+                <a href="index.php?module=depotprof&action=gestionDepotSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary">Annuler</a>
             </form>
         </div>
         <?php

@@ -7,7 +7,7 @@ class VueRessourceProf extends VueGenerique
     {
         parent::__construct();
     }
-    public function afficherAllRessource($allRessources){
+    public function afficherAllRessource($allRessources, $idSae){
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Liste des Ressources</h1>
@@ -45,7 +45,7 @@ class VueRessourceProf extends VueGenerique
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="index.php?module=ressourceprof&action=modifierRessource" method="post" enctype="multipart/form-data">
+                                    <form action="index.php?module=ressourceprof&action=modifierRessource&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="id_ressource" value="<?= htmlspecialchars($ressource['id_ressource']) ?>">
                                         <div class="mb-3">
                                             <label for="titre-<?= $index ?>" class="form-label">Titre</label>
@@ -73,7 +73,7 @@ class VueRessourceProf extends VueGenerique
                                         </div>
                                     </form>
 
-                                    <form action="index.php?module=ressourceprof&action=supprimerRessource" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                                    <form action="index.php?module=ressourceprof&action=supprimerRessource&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
                                         <input type="hidden" name="id_ressource" value="<?= htmlspecialchars($ressource['id_ressource']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
@@ -85,19 +85,19 @@ class VueRessourceProf extends VueGenerique
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">
-                <a href="index.php?module=ressourceprof&action=creerRessource" class="btn btn-primary">
+                <a href="index.php?module=ressourceprof&action=creerRessource&idProjet=<?php echo $idSae; ?>" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Ajouter une Ressource
                 </a>
             </div>
         </div>
         <?php
     }
-    public function formulaireCreerRessource()
+    public function formulaireCreerRessource($idSae)
     {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Créer une Nouvelle Ressource</h1>
-            <form action="index.php?module=ressourceprof&action=submitRessource" method="POST" enctype="multipart/form-data">
+            <form action="index.php?module=ressourceprof&action=submitRessource&idProjet=<?php echo $idSae; ?>" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la Ressource</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre de la ressource" required>
@@ -112,7 +112,7 @@ class VueRessourceProf extends VueGenerique
                     <label class="form-check-label" for="mise_en_avant">Mettre en avant cette ressource</label>
                 </div>
                 <button type="submit" class="btn btn-primary">Créer</button>
-                <a href="index.php?module=ressourceprof&action=gestionRessourceSAE" class="btn btn-secondary">Annuler</a>
+                <a href="index.php?module=ressourceprof&action=gestionRessourceSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary">Annuler</a>
             </form>
         </div>
         <?php

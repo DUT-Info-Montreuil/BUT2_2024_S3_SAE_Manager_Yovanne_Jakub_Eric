@@ -77,33 +77,33 @@ class ContAccueilProf
     public function choixSae()
     {
         if (isset($_GET['id'])) {
+            $idProjet = $_GET['id'];
             $sections = [
                 "Responsable" => [
-                    ["href" => "index.php?module=infosae", "title" => "Gestion de la SAE"],
-                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ["href" => "index.php?module=infosae&idProjet=$idProjet", "title" => "Gestion de la SAE"],
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof&idProjet=$idProjet", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
                 ],
                 "Co-Responsable" => [
-                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                    ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof&idProjet=$idProjet", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
                 ],
                 "Intervenant" => [
-                    ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                    ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                    ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                    ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
                 ]
             ];
-            $idProjet = $_GET['id'];
-            $_SESSION['id_projet'] = $idProjet;
+
             $titre = ModeleCommun::getTitreSAE($idProjet);
             $desc = ModeleCommun::getDescriptionSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
@@ -113,5 +113,6 @@ class ContAccueilProf
             $this->accueil();
         }
     }
+
 
 }

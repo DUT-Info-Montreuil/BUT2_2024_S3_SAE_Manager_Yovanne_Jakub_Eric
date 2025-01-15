@@ -59,7 +59,7 @@ class ContEvaluationProf
     }
     public function gestionEvaluationsSAE()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = isset($_GET['idProjet']) ? $_GET['idProjet'] : NULL;
         $allRendue = $this->modele->getAllRenduSAE($idSae);
         $allSoutenance = $this->modele->getAllSoutenanceSAE($idSae);
         $id_prof = $_SESSION['id_utilisateur'];
@@ -76,7 +76,7 @@ class ContEvaluationProf
                 : false;
         }
 
-        $this->vue->afficherTableauAllEvaluation($allRendue, $allSoutenance);
+        $this->vue->afficherTableauAllEvaluation($allRendue, $allSoutenance, $idSae);
     }
 
 
@@ -84,16 +84,17 @@ class ContEvaluationProf
     public function versModifierEvaluation(){
         if(isset($_POST['id_evaluation'])){
             $idEvaluation = $_POST['id_evaluation'];
-            $idSAE = $_SESSION['id_projet'];
+            $idSAE = $_GET['idProjet'];
             $tabAllGerant = $this->modele->getAllGerantSae($idSAE);
             $tabAllGerantNonEvaluateur = $this->modele->getAllGerantNonEvaluateur($idSAE, $idEvaluation);
             $tabAllEvaluateur= $this->modele->getAllEvaluateurSansLePrincipal($idEvaluation);
-            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur);
+            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSAE);
         }
 
     }
     public function formEvaluation()
     {
+        $idSAE = $_GET['idProjet'];
         if (isset($_POST['id_soutenance'])) {
             $id_soutenance = $_POST['id_soutenance'];
             if (isset($_POST['type_demande'])) {
@@ -103,7 +104,7 @@ class ContEvaluationProf
                 } else if ($type_demande === "voir") {
                     $this->voirSoutenance($id_soutenance);
                 } else if ($type_demande === "creer") {
-                    $this->vue->formulaireCreationEvaluation($id_soutenance, 'soutenance');
+                    $this->vue->formulaireCreationEvaluation($id_soutenance, 'soutenance', $idSAE);
                 }
 
             }
@@ -116,7 +117,7 @@ class ContEvaluationProf
                 } else if ($type_demande === "voir") {
                     $this->voirUnRendu($id_rendu);
                 } else if ($type_demande === "creer") {
-                    $this->vue->formulaireCreationEvaluation($id_rendu, 'rendu');
+                    $this->vue->formulaireCreationEvaluation($id_rendu, 'rendu', $idSAE);
                 }
             }
         }
@@ -124,7 +125,7 @@ class ContEvaluationProf
 
 
     public function voirSoutenance($id_soutenance){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae, $id_soutenance);
         $idEvaluation = $this->modele->getIdEvaluationBySoutenance($id_soutenance);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
@@ -132,7 +133,7 @@ class ContEvaluationProf
     }
 
     public function voirUnRendu($id_rendu){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $rendueEvaluations = $this->modele->getRenduEvaluation($idSae, $id_rendu);
         $idEvaluation = $this->modele->getIdEvaluationByRendu($id_rendu);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
@@ -224,29 +225,30 @@ class ContEvaluationProf
 
     public function gestionEvaluationsRendu($id_rendu)
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
         $rendueEvaluations = $this->modele->getRenduEvaluationGerer($idSae, $id_rendu, $id_evaluateur);
         $idEvaluation = $this->modele->getEvaluationByIdRendu($id_rendu);
         $tabAllEvaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
-        $this->vue->afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs);
+        $this->vue->afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs, $idSae);
     }
 
     public function gestionEvaluationsSoutenance($id_soutenance)
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $id_evaluateur = $_SESSION['id_utilisateur'];
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $id_evaluateur);
         $idEvaluation = $this->modele->getEvaluationByIdSoutenance($id_soutenance);
         $tabAllEvaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
-        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs);
+        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs, $idSae);
     }
 
     public function choixNotation()
     {
         if (isset($_POST['id_groupe']) && isset($_POST['type_evaluation'])) {
+            $idSae = $_GET['idProjet'];
             $type_evaluation = $_POST['type_evaluation'];
             $id_groupe = $_POST['id_groupe'];
             $allMembres = $this->modele->getAllMembreSAE($id_groupe);
@@ -262,11 +264,11 @@ class ContEvaluationProf
             }
 
             if (!isset($_POST['id_evaluation'])) {
-                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue, $champsRemplis);
+                $this->vue->afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue, $champsRemplis, $idSae);
             } else {
                 $id_evaluation = $_POST['id_evaluation'];
                 $notes = $this->modele->getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation);
-                $this->vue->afficherFormulaireModifierNote($notes, $id_groupe, $id_evaluation, $type_evaluation);
+                $this->vue->afficherFormulaireModifierNote($notes, $id_groupe, $id_evaluation, $type_evaluation, $idSae);
             }
         }
     }
@@ -313,7 +315,6 @@ class ContEvaluationProf
         if ($type_evaluation === 'rendu') {
             $this->modele->modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note);
         } else {
-            echo "soutenance";
             $this->modele->modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note);
         }
     }

@@ -46,36 +46,36 @@ class ContGerantProf
 
     }
     public function gestionGerantSAE(){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             $gerantSAE = $this->modele->getGerantSAE($idSae);
-            $this->vue->afficherGerantSAE($gerantSAE);
+            $this->vue->afficherGerantSAE($gerantSAE, $idSae);
         }
     }
 
     public function versModifierGerant()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if (isset($_GET['idGerant'])) {
             $idGerant = intval($_GET['idGerant']);
             $tabDetailsGerant = $this->modele->getGerantById($idSae, $idGerant);
             if ($tabDetailsGerant) {
-                $this->vue->formulaireModifierGerant($tabDetailsGerant, $idGerant);
+                $this->vue->formulaireModifierGerant($tabDetailsGerant, $idGerant, $idSae);
             }
         }
     }
 
 
     public function ajouterGerantFormulaire() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if($idSae) {
             $professeurs = $this->modele->getProfesseurNonGerant($idSae);
-            $this->vue->afficherFormulaireAjoutGerant($professeurs);
+            $this->vue->afficherFormulaireAjoutGerant($professeurs, $idSae);
         }
     }
 
     public function ajouterGerants() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['role_gerant']) && isset($_POST['gerants'])) {
                 $roleGerant = $_POST['role_gerant'];
@@ -89,7 +89,7 @@ class ContGerantProf
     }
 
     public function enregistrerModificationsGerant(){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['id_utilisateur']) && isset($_POST['role_gerant'])) {
                 $roleGerant = $_POST['role_gerant'];
@@ -101,11 +101,10 @@ class ContGerantProf
     }
 
     public function supprimerGerant(){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             if(isset($_POST['idGerant'])) {
                 $idGerant = intval($_POST['idGerant']);
-                echo $idGerant;
                 $this->modele->supprimerGerantSAE($idSae, $idGerant);
             }
         }

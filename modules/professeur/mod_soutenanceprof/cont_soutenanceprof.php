@@ -44,15 +44,14 @@ class ContSoutenanceProf
     }
     private function gestionSoutenancesSAE()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $allSoutenance = $this->modele->getAllSoutenance($idSae);
-        $this->vue->afficherAllSoutenance($allSoutenance);
+        $this->vue->afficherAllSoutenance($allSoutenance, $idSae);
     }
 
     private function modifierSoutenance()
     {
         if (isset($_POST['id_soutenance']) && isset($_POST['titre']) && isset($_POST['date_soutenance'])) {
-            $idSae = $_SESSION['id_projet'];
             $idSoutenance = $_POST['id_soutenance'];
             $titre = $_POST['titre'];
             $dateSoutenance = $_POST['date_soutenance'];
@@ -79,12 +78,13 @@ class ContSoutenanceProf
 
     private function creerSoutenance()
     {
-        $this->vue->formulaireCreerSoutenance();
+        $idSae = $_GET['idProjet'];
+        $this->vue->formulaireCreerSoutenance($idSae);
     }
 
     private function submitSoutenance()
     {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if (isset($_POST['titre']) && !empty($_POST['titre']) && isset($_POST['date_soutenance'])) {
             $titre = $_POST['titre'];
             $date_soutenance = $_POST['date_soutenance'];

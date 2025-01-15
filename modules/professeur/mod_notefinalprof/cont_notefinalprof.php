@@ -39,16 +39,15 @@ class ContNoteFinalProf
     }
 
     public function allNotesFinal(){
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         $allNoteFinalAndEtudiant = $this->modele->getAllNoteFinalAndEtudiant($idSae);
-        $this->vue->afficherAllNoteAndEtudiant($allNoteFinalAndEtudiant);
+        $this->vue->afficherAllNoteAndEtudiant($allNoteFinalAndEtudiant, $idSae);
     }
 
     public function modifierNoteFinal(){
         if(isset($_POST['id_utilisateur']) && isset($_POST['id_groupe']) && isset($_POST['note_finale'])){
             $id_utilisateur = $_POST['id_utilisateur'];
             $id_groupe = $_POST['id_groupe'];
-            // Remplace la virgule par un point pour gérer les décimales
             $note_finale = str_replace(',', '.', $_POST['note_finale']);
             if(is_numeric($note_finale)) {
                 $this->modele->modifierNote($note_finale, $id_utilisateur, $id_groupe);

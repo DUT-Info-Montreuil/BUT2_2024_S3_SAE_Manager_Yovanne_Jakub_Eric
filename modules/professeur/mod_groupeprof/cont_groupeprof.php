@@ -50,23 +50,23 @@ Class ContGroupeProf {
 
     }
     public function gestionGroupeSAE() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if($idSae) {
             $groupe = $this->modele->getGroupeDetails($idSae);
-            $this->vue->afficherGroupeSAE($groupe);
+            $this->vue->afficherGroupeSAE($groupe, $idSae);
         }
     }
 
     public function ajouterGroupeFormulaire() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if($idSae) {
             $etudiants = $this->modele->getEtudiantsSansGroupe($idSae);
-            $this->vue->afficherFormulaireAjoutGroupe($etudiants);
+            $this->vue->afficherFormulaireAjoutGroupe($etudiants, $idSae);
         }
     }
 
     public function creerGroupe() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['nom_groupe']) && isset($_POST['etudiants'])) {
                 $nomGroupe = trim($_POST['nom_groupe']);
@@ -90,12 +90,12 @@ Class ContGroupeProf {
     }
 
     public function versModifierGroupe() {
-        $idSae = $_SESSION['id_projet'];
+        $idSae = $_GET['idProjet'];
         if (isset($_GET['idGroupe'])) {
             $idGroupe = $_GET['idGroupe'];
             $tabDetailsGrp = $this->modele->getGroupeInfoById($idGroupe);
             $tabNvEtudiant = $this->modele->getEtudiantsSansGroupe($idSae);
-            $this->vue->formulaireModifierGroupe($tabDetailsGrp, $tabNvEtudiant, $idGroupe);
+            $this->vue->formulaireModifierGroupe($tabDetailsGrp, $tabNvEtudiant, $idGroupe, $idSae);
         }
     }
     public function enregistrerModificationsGroupe() {
@@ -109,7 +109,7 @@ Class ContGroupeProf {
                 $modifiableParGroupe = 0;
             }
 
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
             $nomSae = ModeleCommun::getTitreSAE($idSae);
             $ancienNom = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
             $nvNomDossier = $nouveauNomGroupe . '_' . $idGroupe;
@@ -168,7 +168,7 @@ Class ContGroupeProf {
     public function supprimerGrp(){
         if(isset($_POST['idGroupe'])){
             $idGroupe = $_POST['idGroupe'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
             $nomSae = ModeleCommun::getTitreSAE($idSae);
             $nomgrp = $this->modele->getNomGroupe($idGroupe) . '_' . $idGroupe;
             DossierManager::supprimerDossier($idSae, $nomSae, $nomgrp, 'depots');
