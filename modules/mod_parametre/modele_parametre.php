@@ -10,7 +10,7 @@ Class ModeleParametre extends Connexion
     public function afficherCompte($id_utilisateur){
         $bdd = $this->getBdd();
         $query = "
-        SELECT nom, prenom, email, login_utilisateur, password_utilisateur 
+        SELECT *
         FROM utilisateur 
         WHERE id_utilisateur = ?";
 
