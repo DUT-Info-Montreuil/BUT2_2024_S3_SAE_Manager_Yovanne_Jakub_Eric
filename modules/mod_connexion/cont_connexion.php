@@ -60,7 +60,6 @@ class ContConnexion {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
-            $_SESSION['login_utilisateur'] = $utilisateur['login_utilisateur'];
             $_SESSION['token_connexion'] = bin2hex(random_bytes(32));
             setcookie('token_connexion', $_SESSION['token_connexion'], time() + 1800, '/', null, true, true); // token dans le cookie
             /*

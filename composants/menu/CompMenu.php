@@ -1,5 +1,5 @@
 <?php
-require_once "ContMenu.php";
+require_once "ContCompMenu.php";
 require_once 'generique/composant/composant_generique.php';
 
 class ComposantMenu extends ComposantGenerique {
