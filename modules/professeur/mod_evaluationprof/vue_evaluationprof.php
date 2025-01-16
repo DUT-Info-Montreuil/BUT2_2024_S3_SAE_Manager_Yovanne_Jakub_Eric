@@ -15,6 +15,7 @@ class VueEvaluationProf extends VueGenerique
             <h1 class="mb-4">Créer une Évaluation</h1>
             <form method="POST"
                   action="index.php?module=evaluationprof&action=creerEvaluation&idProjet=<?php echo $idSAE; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
                 <input type="hidden" name="type_evaluation" value="<?= htmlspecialchars($type_evaluation) ?>">
                 <div class="mb-3">
@@ -128,6 +129,7 @@ class VueEvaluationProf extends VueGenerique
 
             <form id="modificationForm" method="POST"
                   action="index.php?module=evaluationprof&action=modifierEvaluation&idProjet=<?php echo $idSae; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
                 <input type="hidden" id="delegation_choice" name="delegation_choice" value="">
 
@@ -214,9 +216,10 @@ class VueEvaluationProf extends VueGenerique
             <div class="text-center mt-3">
                 <form method="POST"
                       action="index.php?module=evaluationprof&action=supprimerEvaluation&idProjet=<?php echo $idSae; ?>"
-                      onsubmit="return confirmationSupprimer();">
-                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
-                    <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                onsubmit="return confirmationSupprimer();">
+                <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
+                <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
                 </form>
             </div>
         </div>

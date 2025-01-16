@@ -97,6 +97,7 @@ class VueDepotProf extends VueGenerique
                         </form>
 
                         <form action="index.php?module=depotprof&action=supprimerDepot&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                             <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
 
                             <div class="mt-3 d-flex justify-content-center">
@@ -168,6 +169,7 @@ class VueDepotProf extends VueGenerique
         <div class="container mt-4">
             <h1 class="mb-4">Créer un Nouveau Dépôt</h1>
             <form action="index.php?module=depotprof&action=submitDepot&idProjet=<?php echo $idSae; ?>" method="POST">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre du Dépôt</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre du dépôt"

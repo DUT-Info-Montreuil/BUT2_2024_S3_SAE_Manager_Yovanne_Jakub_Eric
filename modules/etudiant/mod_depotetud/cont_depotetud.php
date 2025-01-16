@@ -5,6 +5,7 @@ require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContDepotEtud
 {
     private $modele;
@@ -40,6 +41,13 @@ class ContDepotEtud
 
     public function afficherDepot()
     {
+        TokenManager::stockerAndGenerateToken();
+        echo 'Token généré : ' . $_SESSION['token'];
+        if (isset($_SESSION['token'])) {
+            echo 'Token trouvé dans la session : ' . $_SESSION['token'];
+        } else {
+            echo 'Aucun token trouvé.';
+        }
         $idSae = $_GET['idProjet'];
         $id_groupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
         $tabAllDepot = $this->modele->getAllDepot($id_groupe, $idSae);
@@ -66,6 +74,10 @@ class ContDepotEtud
 
     public function upload()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
+
         if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
             $idSae = $_GET['idProjet'];
             $idUser = $_SESSION["id_utilisateur"];
@@ -104,6 +116,10 @@ class ContDepotEtud
 
     public function supprimerTravailRemis()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
+
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
             $idSae = $_GET['idProjet'];

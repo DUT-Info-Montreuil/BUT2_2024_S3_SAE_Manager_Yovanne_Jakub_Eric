@@ -74,6 +74,7 @@ class VueRessourceProf extends VueGenerique
                                     </form>
 
                                     <form action="index.php?module=ressourceprof&action=supprimerRessource&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                                        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                         <input type="hidden" name="id_ressource" value="<?= htmlspecialchars($ressource['id_ressource']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
@@ -98,6 +99,7 @@ class VueRessourceProf extends VueGenerique
         <div class="container mt-4">
             <h1 class="mb-4">Créer une Nouvelle Ressource</h1>
             <form action="index.php?module=ressourceprof&action=submitRessource&idProjet=<?php echo $idSae; ?>" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la Ressource</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre de la ressource" required>

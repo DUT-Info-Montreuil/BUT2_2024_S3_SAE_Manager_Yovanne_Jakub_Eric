@@ -131,8 +131,8 @@ class VueDepotEtud extends VueGenerique
     {
         if ($depot['statut'] !== 'Remis') {
             ?>
-            <form action="index.php?module=depotetud&action=upload&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data"
-                  class="mt-3">
+            <form action="index.php?module=depotetud&action=upload&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data" class="mt-3">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="id_rendu" value="<?= htmlspecialchars($depot['id_rendu']) ?>">
                 <div class="mb-3">
                     <label for="fileUpload-<?= $depot['id_rendu'] ?>" class="form-label">Uploader des fichiers :</label>
@@ -149,7 +149,7 @@ class VueDepotEtud extends VueGenerique
                     method="post"
                     onsubmit="confirmationSupprimer();"
             >
-
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="id_rendu" value="<?php echo $depot['id_rendu']; ?>">
                 <button type="submit" class="btn btn-danger">Supprimer</button>
             </form>

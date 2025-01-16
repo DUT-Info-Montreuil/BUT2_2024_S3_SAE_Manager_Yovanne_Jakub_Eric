@@ -4,6 +4,7 @@ include_once "modules/professeur/mod_notefinalprof/vue_notefinalprof.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 
 class ContNoteFinalProf
 {
@@ -39,12 +40,16 @@ class ContNoteFinalProf
     }
 
     public function allNotesFinal(){
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         $allNoteFinalAndEtudiant = $this->modele->getAllNoteFinalAndEtudiant($idSae);
         $this->vue->afficherAllNoteAndEtudiant($allNoteFinalAndEtudiant, $idSae);
     }
 
     public function modifierNoteFinal(){
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if(isset($_POST['id_utilisateur']) && isset($_POST['id_groupe']) && isset($_POST['note_finale'])){
             $id_utilisateur = $_POST['id_utilisateur'];
             $id_groupe = $_POST['id_groupe'];
@@ -60,6 +65,9 @@ class ContNoteFinalProf
 
 
     public function reinitialisernoteFinal(){
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if(isset($_POST['id_utilisateur']) && isset($_POST['id_groupe'])){
             $id_utilisateur = $_POST['id_utilisateur'];
             $id_groupe = $_POST['id_groupe'];

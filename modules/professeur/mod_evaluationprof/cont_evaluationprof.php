@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_evaluationprof/modele_evaluationprof.php';
 include_once 'modules/professeur/mod_evaluationprof/vue_evaluationprof.php';
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContEvaluationProf
 {
     private $modele;
@@ -60,6 +61,7 @@ class ContEvaluationProf
 
     public function gestionEvaluationsSAE()
     {
+        TokenManager::stockerAndGenerateToken();
         $idSae = isset($_GET['idProjet']) ? $_GET['idProjet'] : NULL;
         $allRendue = $this->modele->getAllRenduSAE($idSae);
         $allSoutenance = $this->modele->getAllSoutenanceSAE($idSae);
@@ -150,6 +152,9 @@ class ContEvaluationProf
 
     public function modifierEvaluation()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id'])) {
             $id = $_POST['id'];
 
@@ -214,6 +219,9 @@ class ContEvaluationProf
 
     public function creerEvaluation()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id'], $_POST['type_evaluation'], $_POST['coefficient'], $_POST['note_max'])) {
             $id = (int)$_POST['id'];
             $type_evaluation = $_POST['type_evaluation'];
@@ -420,6 +428,9 @@ class ContEvaluationProf
 
     public function supprimerEvaluation()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_evaluation'])) {
             $id_evaluation = $_POST['id_evaluation'];
             $etudiants = $this->modele->getEtudiantsParEvaluation($id_evaluation);

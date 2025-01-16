@@ -2,6 +2,7 @@
 include_once "modules/mod_parametre/modele_parametre.php";
 include_once "modules/mod_parametre/vue_parametre.php";
 require_once "ModeleCommun.php";
+require_once "TokenManager.php";
 class ContParametre {
 
     private $modele;
@@ -85,6 +86,11 @@ class ContParametre {
 
         }
     }
+
+    /*
+     *
+     * TOKEN A FAIRE ICI
+     */
 
 
 

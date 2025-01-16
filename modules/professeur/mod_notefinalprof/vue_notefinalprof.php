@@ -49,6 +49,7 @@ class VueNoteFinalProf extends VueGenerique
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <form action="index.php?module=notefinalprof&action=modifierNoteFinal&idProjet=<?php echo $idSae; ?>" method="POST">
+                                                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                                 <div class="modal-body">
                                                     <input type="hidden" name="id_utilisateur" value="<?= htmlspecialchars($etudiant['id_utilisateur']) ?>">
                                                     <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($etudiant['id_groupe']) ?>">
@@ -63,6 +64,7 @@ class VueNoteFinalProf extends VueGenerique
                                             </form>
                                             <div class="text-center mb-4">
                                                 <form action="index.php?module=notefinalprof&action=reinitialisernoteFinal&idProjet=<?php echo $idSae; ?>" method="POST">
+                                                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                                     <input type="hidden" name="id_utilisateur" value="<?= htmlspecialchars($etudiant['id_utilisateur']) ?>">
                                                     <input type="hidden" name="id_groupe" value="<?= htmlspecialchars($etudiant['id_groupe']) ?>">
                                                     <button type="submit" class="btn btn-warning text-white" style="background-color: #f0ad4e; border-color: #eea236;">

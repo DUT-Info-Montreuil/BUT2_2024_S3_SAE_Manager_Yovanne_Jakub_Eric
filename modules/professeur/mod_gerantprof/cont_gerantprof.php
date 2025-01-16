@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_gerantprof/modele_gerantprof.php';
 include_once 'modules/professeur/mod_gerantprof/vue_gerantprof.php';
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 
 class ContGerantProf
 {
@@ -49,6 +50,7 @@ class ContGerantProf
 
     public function gestionGerantSAE()
     {
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             $gerantSAE = $this->modele->getGerantSAE($idSae);
@@ -103,6 +105,9 @@ class ContGerantProf
 
     public function ajouterGerants()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['role_gerant']) && isset($_POST['gerants'])) {
@@ -131,6 +136,9 @@ class ContGerantProf
 
     public function supprimerGerant()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['idGerant'])) {

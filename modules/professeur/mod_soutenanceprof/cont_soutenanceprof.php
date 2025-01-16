@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_soutenanceprof/modele_soutenanceprof.php';
 include_once 'modules/professeur/mod_soutenanceprof/vue_soutenanceprof.php';
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContSoutenanceProf
 {
     private $modele;
@@ -44,6 +45,7 @@ class ContSoutenanceProf
     }
     private function gestionSoutenancesSAE()
     {
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         $allSoutenance = $this->modele->getAllSoutenance($idSae);
         $this->vue->afficherAllSoutenance($allSoutenance, $idSae);
@@ -62,6 +64,9 @@ class ContSoutenanceProf
 
     private function supprimerSoutenance()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_soutenance'])) {
             $idSoutenance = $_POST['id_soutenance'];
             $etudiants = $this->modele->getEtudiantsParSoutenance($idSoutenance);
@@ -84,6 +89,9 @@ class ContSoutenanceProf
 
     private function submitSoutenance()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         if (isset($_POST['titre']) && !empty($_POST['titre']) && isset($_POST['date_soutenance'])) {
             $titre = $_POST['titre'];

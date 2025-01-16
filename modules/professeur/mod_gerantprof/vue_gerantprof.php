@@ -88,6 +88,7 @@ class VueGerantProf extends VueGenerique
             </form>
             <form action="index.php?module=gerantprof&action=supprimerGerant&idProjet=<?php echo $idSae; ?>"
                   method="post" onsubmit="return confirmationSupprimer();">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="idGerant" value="<?php echo htmlspecialchars($idGerant); ?>">
                 <div class="d-flex mt-3 gap-3">
                     <button type="submit" class="btn btn-danger">Supprimer le Gérant</button>
@@ -108,6 +109,7 @@ class VueGerantProf extends VueGenerique
         <div class="container mt-5">
             <h2>Ajouter des Gérants</h2>
             <form method="post" action="index.php?module=gerantprof&action=ajouterGerants&idProjet=<?php echo $idSae; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="form-group">
                     <label>Choisissez un rôle pour les gérant :</label>
                     <div class="btn-group btn-group-toggle d-flex mt-2" data-toggle="buttons">

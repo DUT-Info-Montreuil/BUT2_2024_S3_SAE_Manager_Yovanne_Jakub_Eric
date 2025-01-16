@@ -67,6 +67,7 @@ class VueInfoSae extends VueGenerique
         <div class="container mt-4">
             <h2>Détails de la SAE</h2>
             <form method="POST" action="index.php?module=infosae&action=updateSae&idProjet=<?php echo $idSae; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="mb-3">
                     <label for="titre" class="form-label"><strong>Titre :</strong></label>
                     <input type="text" class="form-control" id="titre" name="titre"
@@ -90,7 +91,9 @@ class VueInfoSae extends VueGenerique
 
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
             </form>
-            <form action="index.php?module=infosae&action=supprimerSAE&idProjet=<?php echo $idSae; ?>" method="post" onsubmit="return confirmationSupprimer();">
+            <form action="index.php?module=infosae&action=supprimerSAE&idProjet=<?php echo $idSae; ?>" method="post"
+                  onsubmit="return confirmationSupprimer();">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
             </form>
         </div>
@@ -133,7 +136,8 @@ class VueInfoSae extends VueGenerique
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form method="POST" action="index.php?module=infosae&action=modifierChamp&idProjet=<?php echo $idSae; ?>">
+                                        <form method="POST"
+                                              action="index.php?module=infosae&action=modifierChamp&idProjet=<?php echo $idSae; ?>">
                                             <input type="hidden" name="id_champ"
                                                    value="<?php echo htmlspecialchars($champ['id_champ']); ?>">
 
@@ -168,7 +172,10 @@ class VueInfoSae extends VueGenerique
                                             </div>
                                         </form>
                                         <div class="modal-footer d-flex justify-content-center">
-                                            <form method="POST" action="index.php?module=infosae&action=supprimerChamp&idProjet=<?php echo $idSae; ?>" onsubmit="return confirmationSupprimer();">
+                                            <form method="POST"
+                                                  action="index.php?module=infosae&action=supprimerChamp&idProjet=<?php echo $idSae; ?>"
+                                                  onsubmit="return confirmationSupprimer();">
+                                                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                                 <input type="hidden" name="id_champ"
                                                        value="<?php echo htmlspecialchars($champ['id_champ']); ?>">
                                                 <button type="submit" class="btn btn-danger w-50">Supprimer</button>
@@ -182,7 +189,8 @@ class VueInfoSae extends VueGenerique
                     </tbody>
                 </table>
                 <div class="text-center mt-4">
-                    <a href="index.php?module=infosae&action=formAddChamp&idProjet=<?php echo $idSae; ?>" class="btn btn-primary btn-lg">
+                    <a href="index.php?module=infosae&action=formAddChamp&idProjet=<?php echo $idSae; ?>"
+                       class="btn btn-primary btn-lg">
                         <i class="fas fa-plus"></i> Ajouter un Champ
                     </a>
                 </div>

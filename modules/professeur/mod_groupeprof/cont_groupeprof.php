@@ -4,6 +4,7 @@ include_once "modules/professeur/mod_groupeprof/vue_groupeprof.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 Class ContGroupeProf {
     private $modele;
     private $vue;
@@ -33,9 +34,6 @@ Class ContGroupeProf {
                 case "ajouterNouveauMembreGrp" :
                     $this->ajouterNouveauMembreGrp();
                     break;
-                case "modifierGroupe" :
-                    $this->modifierGroupe();
-                    break;
                 case "enregistrerModificationsGroupe" :
                     $this->enregistrerModificationsGroupe();
                     break;
@@ -50,6 +48,7 @@ Class ContGroupeProf {
 
     }
     public function gestionGroupeSAE() {
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         if($idSae) {
             $groupe = $this->modele->getGroupeDetails($idSae);
@@ -66,6 +65,9 @@ Class ContGroupeProf {
     }
 
     public function creerGroupe() {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['nom_groupe']) && isset($_POST['etudiants'])) {
@@ -99,6 +101,9 @@ Class ContGroupeProf {
         }
     }
     public function enregistrerModificationsGroupe() {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_groupe']) && isset($_POST['nomGroupe']) && isset($_POST['modifiable_par_groupe'])) {
             $idGroupe = $_POST['id_groupe'];
             $nouveauNomGroupe = $_POST['nomGroupe'];
@@ -153,19 +158,10 @@ Class ContGroupeProf {
             }
         }
     }
-    public function modifierGroupe() {
-        if (isset($_POST['membres_a_supprimer']) && isset($_POST['id_groupe']) && isset($_GET['nomGroupe'])) {
-            $idGroupe = $_POST['id_groupe'];
-            $membresASupprimer = $_POST['membres_a_supprimer'];
-            $nouveauNomGroupe = $_POST['nomGroupe'];
-            foreach ($membresASupprimer as $idUtilisateur) {
-                $this->modele->supprimerEtudiantDuGroupe($idGroupe, $idUtilisateur);
-            }
-            $this->modele->modifierNomGrp($idGroupe, $nouveauNomGroupe);
-        }
-    }
-
     public function supprimerGrp(){
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if(isset($_POST['idGroupe'])){
             $idGroupe = $_POST['idGroupe'];
             $idSae = $_GET['idProjet'];

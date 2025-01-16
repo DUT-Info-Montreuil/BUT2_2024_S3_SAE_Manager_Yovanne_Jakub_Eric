@@ -5,6 +5,7 @@ include_once 'modules/professeur/mod_depotprof/vue_depotprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContDepotProf{
     private $modele;
     private $vue;
@@ -46,6 +47,7 @@ class ContDepotProf{
 
     }
     public function gestionDepotSAE(){
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         if($idSae){
             $allDepot = $this->modele->getAllDepotSAE($idSae);
@@ -60,6 +62,9 @@ class ContDepotProf{
     }
 
     public function submitDepot(){
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['titre']) && trim($_POST['titre']) !== '' && isset($_POST['date_limite'])) {
             $titre = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
@@ -102,6 +107,9 @@ class ContDepotProf{
     }
     public function supprimerDepot()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
             $idSae = $_GET['idProjet'];
@@ -121,6 +129,7 @@ class ContDepotProf{
 
     public function ajouterTempsSupplementaire()
     {
+
         if (isset($_POST['id_rendu'], $_POST['new_date_limite'], $_POST['groupes'])) {
             $idRendu = $_POST['id_rendu'];
             $newDateLimite = $_POST['new_date_limite'];

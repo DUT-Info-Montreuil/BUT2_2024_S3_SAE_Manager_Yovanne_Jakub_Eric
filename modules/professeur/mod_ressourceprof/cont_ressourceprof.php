@@ -5,6 +5,7 @@ include_once 'modules/professeur/mod_ressourceprof/vue_ressourceprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 
 class ContRessourceProf
 {
@@ -47,6 +48,7 @@ class ContRessourceProf
 
     private function gestionRessourceSAE()
     {
+        TokenManager::stockerAndGenerateToken();
         $idSae = $_GET['idProjet'];
         $allRessources = $this->modele->getAllRessourceSAE($idSae);
         $this->vue->afficherAllRessource($allRessources, $idSae);
@@ -60,6 +62,9 @@ class ContRessourceProf
 
     public function submitRessource()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['titre']) && !empty($_POST['titre'])) {
             $titre = $_POST['titre'];
             $mise_en_avant = isset($_POST['mise_en_avant']) ? 1 : 0;
@@ -83,6 +88,9 @@ class ContRessourceProf
 
     public function supprimerRessource()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_ressource'])) {
             $idRessource = $_POST['id_ressource'];
             $cheminFichier = $this->modele->getRessourceLien($idRessource);

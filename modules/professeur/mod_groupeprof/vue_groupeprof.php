@@ -64,6 +64,7 @@ class VueGroupeProf extends VueGenerique
                 <h3 class="text-center mb-4">Modifier le Groupe</h3>
                 <form action="index.php?module=groupeprof&action=enregistrerModificationsGroupe&idProjet=<?php echo $idSae; ?>"
                       method="post">
+                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                     <input type="hidden" name="id_groupe"
                            value="<?php echo htmlspecialchars($detailsGroupe['id_groupe']); ?>">
 
@@ -157,6 +158,7 @@ class VueGroupeProf extends VueGenerique
                 </form>
                 <form action="index.php?module=groupeprof&action=supprimerGrp&idProjet=<?php echo $idSae; ?>"
                       method="post" class="text-center" onsubmit="return confirmationSupprimer();">
+                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                     <input type="hidden" name="idGroupe" value="<?php echo $idGroupe; ?>">
                     <button type="submit" class="btn btn-danger btn-lg w-100 shadow-sm">Supprimer le groupe</button>
                 </form>
@@ -171,6 +173,7 @@ class VueGroupeProf extends VueGenerique
         <div class="container mt-5">
             <h2>Ajouter un Nouveau Groupe</h2>
             <form method="post" action="index.php?module=groupeprof&action=creerGroupe&idProjet=<?php echo $idSae; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"

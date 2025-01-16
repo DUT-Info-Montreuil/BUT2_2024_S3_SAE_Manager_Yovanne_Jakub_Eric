@@ -4,6 +4,7 @@ include_once "modules/professeur/mod_infosae/vue_infosae.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 
 class ContInfoSae
 {
@@ -57,6 +58,7 @@ class ContInfoSae
     }
     public function gestionSAE()
     {
+        TokenManager::stockerAndGenerateToken();
         $idProjet = $_GET['idProjet'];
         $choix = [
             [
@@ -79,6 +81,9 @@ class ContInfoSae
 
     public function supprimerChamp()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_champ'])) {
             $id_champ = $_POST['id_champ'];
             $this->modele->supprimerChamp($id_champ);
@@ -88,6 +93,9 @@ class ContInfoSae
 
     public function supprimerSAE()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         DossierManager::supprimerDossiersSAE($idSae, ModeleCommun::getTitreSAE($idSae));
         $this->modele->supprimerSAE($idSae);
@@ -112,6 +120,9 @@ class ContInfoSae
 
     public function updateSae()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {

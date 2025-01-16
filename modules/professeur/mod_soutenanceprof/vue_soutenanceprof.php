@@ -66,6 +66,7 @@ class VueSoutenanceProf extends VueGenerique
                                     </form>
 
                                     <form action="index.php?module=soutenanceprof&action=supprimerSoutenance&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                                        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
                                         <button type="submit" class="btn btn-danger">Supprimer</button>
                                     </form>
@@ -89,6 +90,7 @@ class VueSoutenanceProf extends VueGenerique
         <div class="container mt-4">
             <h1 class="mb-4">Créer une Nouvelle Soutenance</h1>
             <form action="index.php?module=soutenanceprof&action=submitSoutenance&idProjet=<?php echo $idSae; ?>" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la Soutenance</label>
                     <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre de la soutenance" required>
