@@ -12,7 +12,6 @@ Class VueRessourceEtud extends VueGenerique
         ?>
         <div class="container mt-5">
             <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Ressources mises en avant</h2>
-
             <div class="accordion" id="saeAccordion">
                 <?php if (!is_array($tabAllSae) || empty($tabAllSae)): ?>
                     <div class="text-center">

@@ -34,14 +34,26 @@ Class ContGroupeEtud
 
     }
 
-    public function membreGroupeSAE(){
+    public function membreGroupeSAE() {
         $idSae = $_GET['idProjet'];
         $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
         $grpSAE = $this->modele->getGroupeSAE($idGroupe);
         $nomGrp = $this->modele->getNomGroupe($idGroupe);
+
         $champARemplir = $this->modele->getChampARemplir($idGroupe, $idSae);
-        $this->vue->afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir, $idSae);
+
+        $champsPrepares = [];
+        foreach ($champARemplir as $champ) {
+            $champsPrepares[] = [
+                'id' => $champ['id_champ'],
+                'nom' => htmlspecialchars($champ['champ_nom']),
+                'valeur' => htmlspecialchars($champ['champ_valeur']),
+            ];
+        }
+
+        $this->vue->afficherGroupeSAE($grpSAE, $nomGrp, $champsPrepares, $idSae);
     }
+
 
     public function updateChamps() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

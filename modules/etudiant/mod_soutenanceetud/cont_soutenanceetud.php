@@ -14,7 +14,6 @@ Class ContSoutenanceEtud {
         $this->modele = new ModeleSoutenanceEtud();
         $this->vue = new VueSoutenanceEtud();
     }
-
     public function exec()
     {
 
@@ -33,7 +32,11 @@ Class ContSoutenanceEtud {
 
     }
 
-
+    private function formatDate($date)
+    {
+        $dateObj = DateTime::createFromFormat('Y-m-d', $date);
+        return $dateObj ? $dateObj->format('d/m/Y') : $date;
+    }
     public function affichageDesSoutenances()
     {
         $idSae = $_GET['idProjet'];
@@ -43,9 +46,13 @@ Class ContSoutenanceEtud {
         foreach ($allSoutenance as &$soutenance) {
             $evaluation = $this->modele->getNoteEtCommentaire($soutenance['id_soutenance'], $id_groupe);
             $soutenance['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
-            $soutenance['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : null;
+            $soutenance['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : "Aucun commentaire";
+            $soutenance['date_soutenance'] = $this->formatDate($soutenance['date_soutenance']);
         }
-        $this->vue->afficherAllSoutenances($allSoutenance);
+        if (!empty($allSoutenance)) {
+            $this->vue->afficherAllSoutenances($allSoutenance);
+        } else {
+            $this->vue->aucuneSoutenance();
+        }
     }
-
 }

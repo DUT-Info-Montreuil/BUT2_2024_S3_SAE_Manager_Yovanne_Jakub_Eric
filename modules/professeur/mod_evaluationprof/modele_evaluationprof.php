@@ -267,7 +267,7 @@ class ModeleEvaluationProf extends Connexion
 
     public function getRenduEvaluation($idSae, $id_rendu)
     {
-        return $this->getRenduEvaluation($idSae, $id_rendu);
+        return $this->modeleRendu->getRenduEvaluation($idSae, $id_rendu);
     }
     public function getSoutenanceEvaluation($idSae, $id_soutenance)
     {

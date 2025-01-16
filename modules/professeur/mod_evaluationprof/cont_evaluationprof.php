@@ -57,6 +57,7 @@ class ContEvaluationProf
         }
 
     }
+
     public function gestionEvaluationsSAE()
     {
         $idSae = isset($_GET['idProjet']) ? $_GET['idProjet'] : NULL;
@@ -68,12 +69,15 @@ class ContEvaluationProf
             $rendue['is_evaluateur'] = $rendue['id_evaluation']
                 ? $this->modele->estDejaEvaluateur($id_prof, $rendue['id_evaluation'])
                 : false;
+            $rendue['typeDemande'] = $rendue['id_evaluation'] ? ($rendue['is_evaluateur'] ? 'gestion' : 'voir') : 'creer';
         }
 
         foreach ($allSoutenance as &$soutenance) {
             $soutenance['is_evaluateur'] = $soutenance['id_evaluation']
                 ? $this->modele->estDejaEvaluateur($id_prof, $soutenance['id_evaluation'])
                 : false;
+            $soutenance['typeDemandeSoutenance'] = $soutenance['id_evaluation'] ? ($soutenance['is_evaluateur'] ? 'gestion' : 'voir') : 'creer';
+
         }
 
         $this->vue->afficherTableauAllEvaluation($allRendue, $allSoutenance, $idSae);
@@ -129,7 +133,10 @@ class ContEvaluationProf
         $soutenanceEvaluations = $this->modele->getSoutenanceEvaluation($idSae, $id_soutenance);
         $idEvaluation = $this->modele->getIdEvaluationBySoutenance($id_soutenance);
         $evaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
-        $this->vue->afficherTableauSoutenanceNonGerer($soutenanceEvaluations, $evaluateurs);
+        if(!empty($soutenanceEvaluations)){
+            $this->vue->afficherTableauSoutenanceNonGerer($soutenanceEvaluations, $evaluateurs);
+        }
+
     }
 
     public function voirUnRendu($id_rendu){
@@ -231,7 +238,10 @@ class ContEvaluationProf
         $idEvaluation = $this->modele->getEvaluationByIdRendu($id_rendu);
         $tabAllEvaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
-        $this->vue->afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs, $idSae);
+        if(!empty($rendueEvaluations)){
+            $this->vue->afficherTableauRenduGerer($rendueEvaluations, $tabAllEvaluateurs, $idSae, $iAmEvaluateurPrincipal);
+        }
+
     }
 
     public function gestionEvaluationsSoutenance($id_soutenance)
@@ -242,7 +252,10 @@ class ContEvaluationProf
         $idEvaluation = $this->modele->getEvaluationByIdSoutenance($id_soutenance);
         $tabAllEvaluateurs = $this->modele->getAllEvaluateur($idEvaluation);
         $iAmEvaluateurPrincipal = $this->modele->iAmEvaluateurPrincipal($idEvaluation, $id_evaluateur);
-        $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs, $idSae);
+        if(!empty($soutenanceEvaluations)){
+            $this->vue->afficherTableauSoutenanceGerer($soutenanceEvaluations, $iAmEvaluateurPrincipal, $tabAllEvaluateurs, $idSae);
+        }
+
     }
 
     public function choixNotation()

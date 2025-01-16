@@ -108,7 +108,8 @@ class ContAccueilProf
             $desc = ModeleCommun::getDescriptionSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
             $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur);
-            $this->vue->afficherSaeDetails($titre, $role, $desc, $sections);
+            $availableSections = $sections[$role];
+            $this->vue->afficherSaeDetails($titre, $desc, $availableSections);
         } else {
             $this->accueil();
         }

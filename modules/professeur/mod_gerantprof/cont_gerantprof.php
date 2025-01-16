@@ -4,6 +4,7 @@ include_once 'modules/professeur/mod_gerantprof/modele_gerantprof.php';
 include_once 'modules/professeur/mod_gerantprof/vue_gerantprof.php';
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
+
 class ContGerantProf
 {
     private $modele;
@@ -40,18 +41,43 @@ class ContGerantProf
                     $this->supprimerGerant();
                     break;
             }
-        }else{
+        } else {
             echo "Accès interdit. Vous devez être professeur pour accéder à cette page.";
         }
 
     }
-    public function gestionGerantSAE(){
+
+    public function gestionGerantSAE()
+    {
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             $gerantSAE = $this->modele->getGerantSAE($idSae);
-            $this->vue->afficherGerantSAE($gerantSAE, $idSae);
+            $gerantsData = [];
+            if (!empty($gerantSAE)) {
+                $currentGroup = null;
+                foreach ($gerantSAE as $row) {
+                    if ($currentGroup === null || $currentGroup['id_utilisateur'] !== $row['id_utilisateur']) {
+                        if ($currentGroup !== null) {
+                            $gerantsData[] = $currentGroup;
+                        }
+                        $currentGroup = [
+                            'nom_complet' => $row['nom_complet'],
+                            'id_utilisateur' => $row['id_utilisateur'],
+                            'role_utilisateur' => $row['role_utilisateur']
+                        ];
+                    }
+                }
+
+                if ($currentGroup !== null) {
+                    $gerantsData[] = $currentGroup;
+                }
+            }
+            $this->vue->afficherGerantSAE($gerantsData, $idSae);
+
+
         }
     }
+
 
     public function versModifierGerant()
     {
@@ -66,15 +92,17 @@ class ContGerantProf
     }
 
 
-    public function ajouterGerantFormulaire() {
+    public function ajouterGerantFormulaire()
+    {
         $idSae = $_GET['idProjet'];
-        if($idSae) {
+        if ($idSae) {
             $professeurs = $this->modele->getProfesseurNonGerant($idSae);
             $this->vue->afficherFormulaireAjoutGerant($professeurs, $idSae);
         }
     }
 
-    public function ajouterGerants() {
+    public function ajouterGerants()
+    {
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['role_gerant']) && isset($_POST['gerants'])) {
@@ -88,7 +116,8 @@ class ContGerantProf
         $this->gestionGerantSAE();
     }
 
-    public function enregistrerModificationsGerant(){
+    public function enregistrerModificationsGerant()
+    {
         $idSae = $_GET['idProjet'];
         if ($idSae) {
             if (isset($_POST['id_utilisateur']) && isset($_POST['role_gerant'])) {
@@ -100,10 +129,11 @@ class ContGerantProf
         $this->gestionGerantSAE();
     }
 
-    public function supprimerGerant(){
+    public function supprimerGerant()
+    {
         $idSae = $_GET['idProjet'];
         if ($idSae) {
-            if(isset($_POST['idGerant'])) {
+            if (isset($_POST['idGerant'])) {
                 $idGerant = intval($_POST['idGerant']);
                 $this->modele->supprimerGerantSAE($idSae, $idGerant);
             }

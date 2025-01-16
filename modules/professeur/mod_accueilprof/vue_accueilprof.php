@@ -75,7 +75,7 @@ class VueAccueilProf extends VueGenerique
     }
 
 
-    public function afficherSaeDetails($titre, $role, $desc, $sections)
+    public function afficherSaeDetails($titre, $desc, $availableSections)
     {
         ?>
         <div class="container mt-5">
@@ -92,7 +92,6 @@ class VueAccueilProf extends VueGenerique
                 <div class="container">
                     <div class="row justify-content-center">
                         <?php
-                        $availableSections = isset($sections[$role]) ? $sections[$role] : [];
                         foreach ($availableSections as $section):
                             ?>
                             <div class="col-12 mb-3">

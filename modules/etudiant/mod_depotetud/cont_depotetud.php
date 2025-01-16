@@ -64,50 +64,70 @@ class ContDepotEtud
     }
 
 
-    public function supprimerTravailRemis()
+    public function upload()
     {
-        // Vérification que 'id_rendu' est bien passé en POST
-        if (!isset($_POST['id_rendu']) || empty($_POST['id_rendu'])) {
-            echo "Erreur : ID rendu non défini.";
-            return;
-        }
-        // Récupération des variables
-        $idRendu = $_POST['id_rendu'];
-        $idSae = isset($_GET['idProjet']) ? $_GET['idProjet'] : null;
-        if ($idSae === null) {
-            echo "Erreur : ID projet manquant.";
-            return;
-        }
-        $idUser = isset($_SESSION["id_utilisateur"]) ? $_SESSION["id_utilisateur"] : null;
-        if ($idUser === null) {
-            echo "Erreur : ID utilisateur non défini.";
-            return;
-        }
-        // Récupération du groupe de l'utilisateur
-        $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
-        // Vérification que le groupe a bien été récupéré
-        if ($idGroupe === null) {
-            echo "Erreur : Groupe non trouvé pour cet utilisateur.";
-            return;
-        }
-        // Récupération des fichiers associés au rendu
-        $fichiers = $this->modele->getFichiersRemis($idRendu, $idGroupe);
+        if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
+            $idSae = $_GET['idProjet'];
+            $idUser = $_SESSION["id_utilisateur"];
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
+            $idRendu = $_POST['id_rendu'];
 
-        try {
-            foreach ($fichiers as $fichier) {
-                if (file_exists($fichier['chemin_fichier'])) {
-                    DossierManager::supprimerFichier($fichier['chemin_fichier']);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
+            $nomGroupe = $this->modele->getNomGroupe($idGroupe);
+            $nomRendu = $this->modele->getNomRendu($idRendu);
+
+            $uploadDossier = DossierManager::getDossierPathDepot($nomSae, $idSae, $nomGroupe, $idGroupe, $nomRendu, $idRendu);
+
+            foreach ($_FILES['uploaded_files']['name'] as $index => $fileName) {
+                try {
+                    $fichierSource = [
+                        'name' => $_FILES['uploaded_files']['name'][$index],
+                        'type' => $_FILES['uploaded_files']['type'][$index],
+                        'tmp_name' => $_FILES['uploaded_files']['tmp_name'][$index],
+                        'error' => $_FILES['uploaded_files']['error'][$index],
+                        'size' => $_FILES['uploaded_files']['size'][$index]
+                    ];
+
+                    $cheminFichier = DossierManager::uploadFichier($fichierSource, $uploadDossier);
+                    $this->modele->enregistrerFichierRendu($idRendu, $idGroupe, $fichierSource['name'], $cheminFichier);
+                } catch (Exception $e) {
+                    die("Erreur lors de l'upload du fichier : " . $e->getMessage());
                 }
             }
-            $this->modele->supprimerTousLesFichiersRendu($idRendu, $idGroupe);
-        } catch (Exception $e) {
-            echo "Erreur lors de la suppression des fichiers : " . $e->getMessage();
-            return;
+            $this->modele->setInfoRendu($idRendu, $idGroupe, $idUser);
+            $this->modele->setRenduStatut($idRendu, $idGroupe,'Remis');
         }
-        // Mise à jour du statut du rendu
-        $this->modele->setRenduStatut($idRendu, $idGroupe, "En attente");
+
+        $this->afficherDepot();
+    }
+
+
+    public function supprimerTravailRemis()
+    {
+        if (isset($_POST['id_rendu'])) {
+            $idRendu = $_POST['id_rendu'];
+            $idSae = $_GET['idProjet'];
+            $idUser = $_SESSION["id_utilisateur"];
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
+
+            $fichiers = $this->modele->getFichiersRemis($idRendu, $idGroupe);
+
+            try {
+                foreach ($fichiers as $fichier) {
+                    if (file_exists($fichier['chemin_fichier'])) {
+                        DossierManager::supprimerFichier($fichier['chemin_fichier']);
+                    }
+                }
+                $this->modele->supprimerTousLesFichiersRendu($idRendu, $idGroupe);
+            } catch (Exception $e) {
+                echo "Erreur lors de la suppression des fichiers : " . $e->getMessage();
+                return;
+            }
+            $this->modele->setRenduStatut($idRendu, $idGroupe, "En attente");
+        }
+
         $this->modele->setInfoRendu($idRendu, $idGroupe, null);
-        // Retour à l'affichage du dépôt
+
         $this->afficherDepot();
     }
 

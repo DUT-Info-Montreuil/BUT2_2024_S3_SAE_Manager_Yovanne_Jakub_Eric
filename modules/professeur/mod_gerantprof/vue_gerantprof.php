@@ -8,7 +8,7 @@ class VueGerantProf extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherGerantSAE($gerantSAE, $idSae)
+    public function afficherGerantSAE($gerantsData, $idSae)
     {
         ?>
         <div class="container mt-4">
@@ -22,61 +22,35 @@ class VueGerantProf extends VueGenerique
                 </tr>
                 </thead>
                 <tbody>
-                <?php
-                if (!empty($gerantSAE)) {
-                    $currentGroup = null;
-
-                    foreach ($gerantSAE as $row) {
-                        if ($currentGroup === null || $currentGroup['id_utilisateur'] !== $row['id_utilisateur']) {
-                            if ($currentGroup !== null) {
-                                echo "<tr>";
-                                echo "<td>{$currentGroup['nom_complet']}</td>";
-                                echo "<td>{$currentGroup['role_utilisateur']}</td>";
-                                echo "<td>";
-                                if ($currentGroup['role_utilisateur'] !== 'Responsable') {
-                                    echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}&idProjet=" . $idSae . "' class='btn btn-sm btn-secondary'>
-                                        <i class='fas fa-cog'></i>
-                                      </a>";
-                                }
-                                echo "</td>";
-                                echo "</tr>";
-                            }
-                            $currentGroup = [
-                                'nom_complet' => $row['nom_complet'],
-                                'id_utilisateur' => $row['id_utilisateur'],
-                                'role_utilisateur' => $row['role_utilisateur']
-                            ];
-                        }
-                    }
-
-                    if ($currentGroup !== null) {
-                        echo "<tr>";
-                        echo "<td>{$currentGroup['nom_complet']}</td>";
-                        echo "<td>{$currentGroup['role_utilisateur']}</td>";
-                        echo "<td>";
-                        if ($currentGroup['role_utilisateur'] !== 'Responsable') {
-                            echo "<a href='index.php?module=gerantprof&action=versModifierGerant&idGerant={$currentGroup['id_utilisateur']}' class='btn btn-sm btn-secondary'>
-                                <i class='fas fa-cog'></i>
-                              </a>";
-                        }
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>Aucun gérant trouvé pour cette SAE</td></tr>";
-                }
-                ?>
+                <?php if (!empty($gerantsData)): ?>
+                    <?php foreach ($gerantsData as $group): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($group['nom_complet']) ?></td>
+                            <td><?= htmlspecialchars($group['role_utilisateur']) ?></td>
+                            <td>
+                                <?php if ($group['role_utilisateur'] !== 'Responsable'): ?>
+                                    <a href="index.php?module=gerantprof&action=versModifierGerant&idGerant=<?= $group['id_utilisateur'] ?>&idProjet=<?= $idSae ?>" class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-cog"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="3">Aucun gérant trouvé pour cette SAE</td></tr>
+                <?php endif; ?>
                 </tbody>
             </table>
 
             <div class="text-center mt-4">
-                <a href="index.php?module=gerantprof&action=ajouterGerantFormulaire&idProjet=<?php echo $idSae; ?>" class="btn btn-primary btn-lg">
+                <a href="index.php?module=gerantprof&action=ajouterGerantFormulaire&idProjet=<?= $idSae ?>" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus"></i> Ajouter un Gérant
                 </a>
             </div>
         </div>
         <?php
     }
+
 
     public function formulaireModifierGerant($tabDetailsGerant, $idGerant, $idSae)
     {

@@ -9,7 +9,7 @@ class VueGroupeEtud extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherGroupeSAE($grpSAE, $nomGrp, $champARemplir, $idSae) {
+    public function afficherGroupeSAE($grpSAE, $nomGrp, $champsPrepares, $idSae) {
         ?>
         <div class="container mt-4">
             <h2 style="text-align: center"> Groupe : <?php echo htmlspecialchars($nomGrp); ?> </h2>
@@ -23,44 +23,41 @@ class VueGroupeEtud extends VueGenerique
                 </tr>
                 </thead>
                 <tbody>
-                <?php
-                foreach ($grpSAE as $row) {
-                    echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['nom']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['prenom']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-                    echo "</tr>";
-                }
-                ?>
+                <?php foreach ($grpSAE as $row): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['nom']); ?></td>
+                        <td><?php echo htmlspecialchars($row['prenom']); ?></td>
+                        <td><?php echo htmlspecialchars($row['email']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
                 </tbody>
             </table>
-            <?php if(!empty($champARemplir)) : ?>
-            <h3 style="text-align: center" class="mt-4">Champs à remplir :</h3>
-            <form method="POST" action="index.php?module=groupeetud&action=updateChamps&idProjet=<?php echo $idSae; ?>">
-                <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-3">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>Nom du Champ</th>
-                        <th>Valeur</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    foreach ($champARemplir as $champ) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($champ['champ_nom']) . "</td>";
-                        if ($champ['champ_valeur'] === NULL) {
-                            echo "<td><input type='text' name='champ_" . $champ['id_champ'] . "' class='form-control'></td>";
-                        } else {
-                            echo "<td><input type='text' name='champ_" . $champ['id_champ'] . "' class='form-control' value='" . htmlspecialchars($champ['champ_valeur']) . "'></td>";
-                        }
-                        echo "</tr>";
-                    }
-                    ?>
-                    </tbody>
-                </table>
-                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            </form>
+
+            <?php if (!empty($champsPrepares)): ?>
+                <h3 style="text-align: center" class="mt-4">Champs à remplir :</h3>
+                <form method="POST" action="index.php?module=groupeetud&action=updateChamps&idProjet=<?php echo $idSae; ?>">
+                    <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-3">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Nom du Champ</th>
+                            <th>Valeur</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($champsPrepares as $champ): ?>
+                            <tr>
+                                <td><?php echo $champ['nom']; ?></td>
+                                <td>
+                                    <input type="text" name="champ_<?php echo $champ['id']; ?>"
+                                           class="form-control"
+                                           value="<?php echo $champ['valeur']; ?>">
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                </form>
             <?php endif; ?>
         </div>
         <?php
