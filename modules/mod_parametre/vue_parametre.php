@@ -9,12 +9,10 @@ class VueParametre extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherCompte($compte)
+    public function afficherCompte($compte, $imagePath)
     {
-        // Vérifie si les données du compte sont présentes
         if (!empty($compte)) {
             ?>
-
             <div class="container mt-5">
                 <h2 class="text-center mb-4">Informations du compte</h2>
 
@@ -25,20 +23,16 @@ class VueParametre extends VueGenerique
                                 <form action="index.php?module=parametre&action=modifierCompte" method="POST" enctype="multipart/form-data">
                                     <div style="margin-bottom: 20px; text-align: center">
 
-                                        <?php
-                                        // Vérifie si le champ 'logo' est vide
-                                        if (!empty($compte[0]['logo'])):
-                                            ?>
-
+                                        <?php  if (!empty($compte[0]['profil_picture'])): ?>
                                             <label for="logoFile">
-                                                <img height="75" width="75" style="cursor: pointer;" src="<?php echo htmlspecialchars($compte[0]['logo']);?> ">
+                                                <img height="75" width="75" style="cursor: pointer;" src="<?php echo htmlspecialchars($imagePath[0]); ?>">
                                             </label>
-                                            <input type="file" id="logoFile" name="logo" accept="image/jpeg, image/jpg, image/png" style="display:none;">
+                                            <input type="file" id="logoFile" name="logoFile" accept="image/jpeg, image/jpg, image/png" style="display:none;">
                                         <?php else: ?>
                                             <label for="logoFile">
-                                                <img height="75" width="75" src="path/to/default_image.png" style="cursor: pointer;">
+                                                <img height="75" width="75" style="cursor: pointer;" src="<?php echo htmlspecialchars($imagePath[0]); ?>">
                                             </label>
-                                            <input type="file" id="logoFile" name="logo" accept="image/jpeg, image/jpg, image/png" style="display:none;">
+                                            <input type="file" id="logoFile" name="logoFile" accept="image/jpeg, image/jpg, image/png" style="display:none;">
                                         <?php endif; ?>
                                     </div>
 

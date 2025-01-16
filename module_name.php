@@ -35,13 +35,13 @@ class ModuleName
             // temps de session est toujours valide
             if (time() - $_SESSION['timestamp'] > 1800) { // 1800 secondes = 30 minutes
                 $this->deconnexion();
-                header("Location: index.php?action=connexion");
+                $this->redirigeVersConnexion();
             }
 
             // token de connexion est valide
             if ($_SESSION['token_connexion'] !== $_COOKIE['token_connexion'] ?? '') {
                 $this->deconnexion();
-                header("Location: index.php?action=connexion");
+                $this->redirigeVersConnexion();
             }
 
             //actualiser le time
@@ -49,12 +49,11 @@ class ModuleName
             return true;
         }
 
-        if (!isset($_GET['action']) || $_GET['action'] != 'connexion') {
-            $this->deconnexion();
-            header("Location: index.php?action=connexion");
-        }
-
         return false;
+    }
+
+    private function redirigeVersConnexion(){
+        header("Location: index.php?action=connexion");
     }
 
     public function deconnexion()

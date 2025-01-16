@@ -42,10 +42,12 @@ class ModeleConnexion extends Connexion {
 
     public function ajouterUtilisateur ($nom, $prenom, $email, $login, $password_hash) {
         if(!$this->utilisateurExiste($login)){
+            $defaultPathAvatar = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'profil_picture' . DIRECTORY_SEPARATOR . 'default_avatar.png';
             $bdd = $this->getBdd();
-            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur)
-                                    VALUES (DEFAULT, ?, ?, ?, 'etudiant', ?, ?)");
-            $stmt->execute([$nom,$prenom,$email,$login,$password_hash]);
+            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur, profil_picture)
+                       VALUES (DEFAULT, ?, ?, ?, 'etudiant', ?, ?, ?)");
+            $stmt->execute([$nom, $prenom, $email, $login, $password_hash, $defaultPathAvatar]);
+
         }
     }
 

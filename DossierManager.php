@@ -301,5 +301,42 @@ class DossierManager
         return $cheminFichierFinal;
     }
 
+    public static function uploadPhotoProfil($fichierSource, $idUtilisateur)
+    {
+        $tailleMax = 10 * 1024 * 1024; // 10 Mo
+
+        if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception("Erreur lors du téléchargement du fichier.");
+        }
+
+        $nomFichier = basename($fichierSource['name']);
+        $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
+        $tailleFichier = $fichierSource['size'];
+
+        if (!in_array($extensionFichier, ['jpg', 'jpeg', 'png'])) {
+            throw new Exception("Extension non autorisée : $extensionFichier");
+        }
+
+        if ($tailleFichier > $tailleMax) {
+            throw new Exception("Le fichier dépasse la taille maximale autorisée de " . ($tailleMax / 1024) . " Ko.");
+        }
+
+        $uploadDir = __DIR__ . '/photo_profil/';
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0777, true)) {
+                throw new Exception("Impossible de créer le dossier cible : $uploadDir");
+            }
+        }
+
+        $imageName = 'photo_de_profil_' . $idUtilisateur . '.' . $extensionFichier;
+        $uploadPath = $uploadDir . $imageName;
+
+        if (!move_uploaded_file($fichierSource['tmp_name'], $uploadPath)) {
+            throw new Exception("Erreur lors du déplacement du fichier vers $uploadPath");
+        }
+
+        return $uploadPath;
+    }
+
 
 }
