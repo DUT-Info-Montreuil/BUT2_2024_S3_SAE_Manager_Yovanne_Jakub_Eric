@@ -306,6 +306,7 @@ class ModeleEvaluationProf extends Connexion
     {
         $id_evaluation = $this->modeleRendu->creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur);
         $this->insererEvaluateur($id_evaluation, $evaluateur, true);
+        return $id_evaluation;
     }
     public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
     {
@@ -353,6 +354,38 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation)
+    {
+
+        $this->modeleRendu->ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation);
+    }
+
+    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance)
+    {
+        $this->modeleSoutenance->ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance);
+    }
+
+    public function getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation)
+    {
+       return $this->modeleRendu->getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation);
+    }
+
+    public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
+    {
+        $this->modeleRendu->sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire);
+    }
+
+    public function sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
+    {
+      $this->modeleSoutenance->sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire);
+    }
+
+    public function sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
+    {
+       $this->modeleRendu->sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur);
+    }
+
 
     public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
     {

@@ -29,6 +29,208 @@ class ModeleEvaluationRendu extends Connexion
         }
     }
 
+    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation)
+    {
+        $sql = "INSERT INTO Critere_Rendu (id_evaluation, id_rendu, nom_critere, description, coefficient, note_max)
+            VALUES (:id_evaluation, :id_rendu, :nom_critere, :description, :coefficient, :note_max)";
+
+        $stmt = $this->getBdd()->prepare($sql);
+
+        $stmt->bindParam(':id_evaluation', $idEvaluation);
+        $stmt->bindParam(':id_rendu', $id_rendu);
+        $stmt->bindParam(':nom_critere', $nom);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':coefficient', $coefficient);
+        $stmt->bindParam(':note_max', $note_max);
+        $stmt->execute();
+    }
+
+    public function getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation)
+    {
+        // Requête SQL pour récupérer les critères de notation selon le type d'évaluation
+        $sql = "SELECT * FROM Critere_Rendu WHERE id_rendu = :id_rendu"; // ou autre selon vos besoins
+        $stmt = $this->getBdd()->prepare($sql);
+        $stmt->bindParam(':id_rendu', $id_evaluation);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function calculerNoteGlobale($idRendu, $idGroupe)
+    {
+        $query = "
+        SELECT id_critere_rendu, coefficient, note_max
+        FROM Critere_Rendu
+        WHERE id_rendu = :idRendu
+    ";
+        $stmt = $this->getBdd()->prepare($query);
+        $stmt->bindParam(':idRendu', $idRendu);
+        $stmt->execute();
+
+        $totalNotes = 0;
+        $totalCoef = 0;
+        while ($row = $stmt->fetch()) {
+            $idCritere = $row['id_critere_rendu'];
+            $coef = $row['coefficient'];
+
+            $queryNote = "
+            SELECT note 
+            FROM Rendu_Critere_Notation
+            WHERE id_rendu = :idRendu
+            AND id_critere_rendu = :idCritere
+            AND id_groupe = :idGroupe
+        ";
+            $stmtNote = $this->getBdd()->prepare($queryNote);
+            $stmtNote->bindParam(':idRendu', $idRendu);
+            $stmtNote->bindParam(':idCritere', $idCritere);
+            $stmtNote->bindParam(':idGroupe', $idGroupe);
+            $stmtNote->execute();
+
+            $note = $stmtNote->fetchColumn();
+            if ($note !== false) {
+                $totalNotes += $note * $coef;
+                $totalCoef += $coef;
+            }
+        }
+
+        if ($totalCoef > 0) {
+            return $totalNotes / $totalCoef;
+        } else {
+            return 0;
+        }
+    }
+
+    public function sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
+    {
+        $noteGlobale = $this->calculerNoteGlobale($idRendu, $idGroupe);
+
+        $checkQuery = "
+        SELECT COUNT(*) 
+        FROM Rendu_Evaluation
+        WHERE id_rendu = :idRendu
+        AND id_groupe = :idGroupe
+        AND id_etudiant = :idEtudiant
+    ";
+        $stmtCheck = $this->getBdd()->prepare($checkQuery);
+        $stmtCheck->bindParam(':idRendu', $idRendu);
+        $stmtCheck->bindParam(':idGroupe', $idGroupe);
+        $stmtCheck->bindParam(':idEtudiant', $idEtudiant);
+        $stmtCheck->execute();
+        $count = $stmtCheck->fetchColumn();
+
+        if ($count > 0) {
+            // Mise à jour de l'évaluation existante
+            $updateQuery = "
+            UPDATE Rendu_Evaluation
+            SET note = :noteGlobale, id_evaluation = :idEvaluation, id_evaluateur = :idEvaluateur
+            WHERE id_rendu = :idRendu
+            AND id_groupe = :idGroupe
+            AND id_etudiant = :idEtudiant
+        ";
+            $stmtUpdate = $this->getBdd()->prepare($updateQuery);
+            $stmtUpdate->bindParam(':idRendu', $idRendu);
+            $stmtUpdate->bindParam(':idGroupe', $idGroupe);
+            $stmtUpdate->bindParam(':noteGlobale', $noteGlobale);
+            $stmtUpdate->bindParam(':idEvaluation', $idEvaluation);
+            $stmtUpdate->bindParam(':idEtudiant', $idEtudiant);
+            $stmtUpdate->bindParam(':idEvaluateur', $idEvaluateur);
+            $stmtUpdate->execute();
+        } else {
+            $insertQuery = "
+            INSERT INTO Rendu_Evaluation (id_rendu, id_groupe, note, id_evaluation, id_etudiant, id_evaluateur)
+            VALUES (:idRendu, :idGroupe, :noteGlobale, :idEvaluation, :idEtudiant, :idEvaluateur)
+        ";
+            $stmtInsert = $this->getBdd()->prepare($insertQuery);
+            $stmtInsert->bindParam(':idRendu', $idRendu);
+            $stmtInsert->bindParam(':idGroupe', $idGroupe);
+            $stmtInsert->bindParam(':noteGlobale', $noteGlobale);
+            $stmtInsert->bindParam(':idEvaluation', $idEvaluation);
+            $stmtInsert->bindParam(':idEtudiant', $idEtudiant);
+            $stmtInsert->bindParam(':idEvaluateur', $idEvaluateur);
+            $stmtInsert->execute();
+        }
+    }
+
+
+
+
+    public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
+    {
+        $checkQuery = "
+        SELECT COUNT(*) FROM Rendu_Critere_Notation 
+        WHERE id_rendu = :idRendu 
+        AND id_critere_rendu = :idCritere 
+        AND id_groupe = :idGroupe
+        AND id_etudiant = :idUtilisateur
+    ";
+        $stmtCheck = $this->getBdd()->prepare($checkQuery);
+        $stmtCheck->bindParam(':idRendu', $idRendu);
+        $stmtCheck->bindParam(':idCritere', $idCritere);
+        $stmtCheck->bindParam(':idGroupe', $idGroupe);
+        $stmtCheck->bindParam(':idUtilisateur', $idUtilisateur);
+        $stmtCheck->execute();
+        $count = $stmtCheck->fetchColumn();
+
+        if ($count > 0) {
+            // Mise à jour si l'entrée existe déjà
+            $updateQuery = "
+            UPDATE Rendu_Critere_Notation 
+            SET note = :note, coefficient = (SELECT coefficient FROM Critere_Rendu WHERE id_critere_rendu = :idCritere)
+            WHERE id_rendu = :idRendu 
+            AND id_critere_rendu = :idCritere 
+            AND id_groupe = :idGroupe 
+            AND id_etudiant = :idUtilisateur
+        ";
+            $stmtUpdate = $this->getBdd()->prepare($updateQuery);
+            $stmtUpdate->bindParam(':idRendu', $idRendu);
+            $stmtUpdate->bindParam(':idCritere', $idCritere);
+            $stmtUpdate->bindParam(':idGroupe', $idGroupe);
+            $stmtUpdate->bindParam(':note', $note);
+            $stmtUpdate->bindParam(':idUtilisateur', $idUtilisateur);
+            $stmtUpdate->execute();
+        } else {
+            // Insertion si l'entrée n'existe pas
+            $insertQuery = "
+            INSERT INTO Rendu_Critere_Notation (id_rendu, id_critere_rendu, id_groupe, id_etudiant, note, coefficient)
+            VALUES (:idRendu, :idCritere, :idGroupe, :idUtilisateur, :note, (SELECT coefficient FROM Critere_Rendu WHERE id_critere_rendu = :idCritere))
+        ";
+            $stmtInsert = $this->getBdd()->prepare($insertQuery);
+            $stmtInsert->bindParam(':idRendu', $idRendu);
+            $stmtInsert->bindParam(':idCritere', $idCritere);
+            $stmtInsert->bindParam(':idGroupe', $idGroupe);
+            $stmtInsert->bindParam(':idUtilisateur', $idUtilisateur);  // Ajout de l'id de l'étudiant
+            $stmtInsert->bindParam(':note', $note);
+            $stmtInsert->execute();
+        }
+
+        // Sauvegarder le commentaire si fourni
+        if ($commentaire) {
+            $this->sauvegarderCommentaireRendu($idUtilisateur, $idRendu, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation);
+        }
+    }
+
+
+
+    public function sauvegarderCommentaireRendu($idUtilisateur, $idRendu, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation)
+    {
+        $query = "
+        INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, commentaire, note)
+        VALUES (:idEvaluation, :idRendu, :idGroupe, :idUtilisateur, :idEvaluateur, :commentaire, :note)
+    ";
+        $stmt = $this->getBdd()->prepare($query);
+        $stmt->bindParam(':idEvaluation', $idEvaluation);
+        $stmt->bindParam(':idRendu', $idRendu);
+        $stmt->bindParam(':idGroupe', $idGroupe);
+        $stmt->bindParam(':idUtilisateur', $idUtilisateur);
+        $stmt->bindParam(':idEvaluateur', $idEvaluateur);
+        $stmt->bindParam(':commentaire', $commentaire);
+        $stmt->bindParam(':note', $note);
+        $stmt->execute();
+    }
+
+
+
+
     public function getEvaluationByIdRendu($id_rendu){
         $bdd = $this->getBdd();
         $query = "SELECT id_evaluation FROM Rendu WHERE id_rendu = ?";
