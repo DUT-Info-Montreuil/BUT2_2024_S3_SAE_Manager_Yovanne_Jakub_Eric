@@ -10,7 +10,7 @@ Class ModeleRessourceEtud extends Connexion
     public function getAllRessourceAccesible($idProjet){
         $bdd = $this->getBdd();
 
-        $query = "SELECT * FROM Ressource WHERE id_projet = ? AND mise_en_avant = 1";
+        $query = "SELECT * FROM Ressource WHERE id_projet = ? ";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idProjet]);

@@ -2,8 +2,6 @@
 
 class DossierManager
 {
-
-
     const EXTENSIONS_AUTORISEES = [
         'pdf',
         'docx',
@@ -278,7 +276,7 @@ class DossierManager
         $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
         $tailleFichier = $fichierSource['size'];
 
-        if (!in_array($extensionFichier, EXTENSIONS_AUTORISEES)) {
+        if (!in_array($extensionFichier, self::EXTENSIONS_AUTORISEES)) {
             throw new Exception("Extension non autorisée : $extensionFichier");
         }
 

@@ -31,7 +31,7 @@ Class ContRessourceEtud
     }
 
     public function afficherAllRessources(){
-        $idProjet = $_SESSION["id_projet"];
+        $idProjet = $_GET["idProjet"];
         $allRessources = $this->modele->getAllRessourceAccesible($idProjet);
         $this->vue->afficherAllSae($allRessources);
     }
