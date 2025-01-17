@@ -553,9 +553,9 @@ class ContEvaluationProf
 
     public function supprimerEvaluation()
     {
-//        if (!TokenManager::verifierToken()) {
-//            die("Token invalide ou expiré.");
-//        }
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_evaluation'])) {
             $id_evaluation = $_POST['id_evaluation'];
             $etudiants = $this->modele->getEtudiantsParEvaluation($id_evaluation);

@@ -25,7 +25,6 @@ class TokenManager
         return true;
     }
 
-
     public static function reinitialiserToken()
     {
         unset($_SESSION['token']);

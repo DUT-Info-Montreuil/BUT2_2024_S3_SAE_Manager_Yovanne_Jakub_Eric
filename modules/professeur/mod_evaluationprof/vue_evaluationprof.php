@@ -224,10 +224,10 @@ class VueEvaluationProf extends VueGenerique
             <div class="text-center mt-3">
                 <form method="POST"
                       action="index.php?module=evaluationprof&action=supprimerEvaluation&idProjet=<?php echo $idSae; ?>"
-                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>"
-                       onsubmit="return confirmationSupprimer();">
-                <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
-                <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
+                      onsubmit="return confirmationSupprimer();">
+                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
+                    <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
                 </form>
             </div>
         </div>
