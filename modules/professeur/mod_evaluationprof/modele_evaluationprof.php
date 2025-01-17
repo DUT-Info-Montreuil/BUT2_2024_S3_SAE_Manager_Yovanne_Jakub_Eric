@@ -319,7 +319,7 @@ class ModeleEvaluationProf extends Connexion
     }
     public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur)
     {
-        $id_evaluation = $this->modeleRendu->creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur);
+        $id_evaluation = $this->modeleRendu->creerEvaluationPourRendu($id_rendu, $coefficient, $note_max);
         $this->insererEvaluateur($id_evaluation, $evaluateur, true);
         return $id_evaluation;
     }
