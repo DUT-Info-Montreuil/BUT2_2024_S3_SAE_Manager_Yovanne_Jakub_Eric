@@ -558,8 +558,8 @@ class VueEvaluationProf extends VueGenerique
                                 <?php foreach ($criteres as $critere): ?>
                                     <td>
                                         <input type="number" class="form-control"
-                                               name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>][<?= htmlspecialchars($critere['id_critere_rendu']) ?>]"
-                                               step="0.01" placeholder="Note" required>
+                                               name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>][<?= htmlspecialchars($critere['id_critere']) ?>]"
+                                               step="0.01" placeholder="Note" required >
                                     </td>
                                 <?php endforeach; ?>
                             </tr>
@@ -626,7 +626,7 @@ class VueEvaluationProf extends VueGenerique
                                     <td><?= htmlspecialchars($critere['description']) ?></td>
                                     <td>
                                         <input type="number" class="form-control"
-                                               name="notes[<?= htmlspecialchars($critere['id_critere_rendu']) ?>]"
+                                               name="notes[<?= htmlspecialchars($critere['id_critere']) ?>]"
                                                step="0.01" placeholder="Note pour ce critère" required>
                                     </td>
                                 </tr>

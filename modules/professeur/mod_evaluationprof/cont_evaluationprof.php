@@ -299,15 +299,26 @@ class ContEvaluationProf
             $champsRemplis = $this->modele->getChampsRemplisParGroupe($id_groupe);
 
             $contenue = null;
-
+            $criteres = [];
             if ($type_evaluation === 'rendu') {
                 $id = $_POST['id_rendu'];
                 $contenue = $this->modele->getFichierRendu($id, $id_groupe);
-                $criteres = $this->modele->getCriteresNotationRendu($id_groupe, $type_evaluation, $id);
+                $criteres = $this->modele->getCriteresNotationRendu($id);
             } else {
                 $id = $_POST['id_soutenance'];
+                $criteres = $this->modele->getCriteresNotationSoutenance($id);
             }
 
+            foreach ($criteres as &$critere) {
+                if (isset($critere['id_critere_rendu'])) {
+                    $critere['id_critere'] = $critere['id_critere_rendu'];
+                    unset($critere['id_critere_rendu']);
+                }
+                if (isset($critere['id_critere_soutenance'])) {
+                    $critere['id_critere'] = $critere['id_critere_soutenance'];
+                    unset($critere['id_critere_soutenance']);
+                }
+            }
 
 
             if (!isset($_POST['id_evaluation'])) {
@@ -355,6 +366,7 @@ class ContEvaluationProf
 
     private function isValidNote($note, $noteMax)
     {
+        $note = (float)$note;
         return is_numeric($note) && $note >= 0 && $note <= $noteMax;
     }
 
@@ -374,6 +386,7 @@ class ContEvaluationProf
             $id_groupe = $_POST['id_groupe'];
             $type_evaluation = $_POST['type_evaluation'];
             $notes = $_POST['notes'];
+
             $id = $_POST['id'];
 
             $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
@@ -385,6 +398,7 @@ class ContEvaluationProf
                 foreach ($noteCriteria as $idCritere => $note) {
                     if ($this->isValidNote($note, $noteMax)) {
                         if ($type_evaluation === 'rendu') {
+                            // Si c'est un rendu
                             $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
                             if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                                 $this->modele->sauvegarderNoteRenduCritere(
@@ -398,11 +412,34 @@ class ContEvaluationProf
                                     $commentaire
                                 );
                             }
+                        } else {
+                            // Si c'est une soutenance
+                            $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
+                            var_dump($note);
+                            if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
+                                $this->modele->sauvegarderNoteSoutenanceCritere(
+                                    $idUtilisateur,
+                                    (float)$note,
+                                    $id,
+                                    $id_groupe,
+                                    $idCritere,
+                                    $id_evaluation,
+                                    $id_evaluateur,
+                                    $commentaire
+                                );
+
+                            }
                         }
                     }
                 }
-                $this->modele->sauvegarderNoteRenduEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+
+                if ($type_evaluation === 'rendu') {
+                    $this->modele->sauvegarderNoteRenduEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+                } else {
+                    $this->modele->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+                }
             }
+
             $this->gestionEvaluationsSAE();
         }
     }
@@ -410,38 +447,58 @@ class ContEvaluationProf
 
 
 
+
     public function traitementNotationGroupe()
     {
-        if (isset($_POST['note_groupe'], $_POST['id'], $_POST['id_groupe'], $_POST['type_evaluation'])) {
+        if (isset($_POST['notes'], $_POST['id'], $_POST['id_groupe'], $_POST['type_evaluation'])) {
             $id_groupe = $_POST['id_groupe'];
-            $note_groupe = $_POST['note_groupe'];
+
+            $notes = $_POST['notes'];
             $type_evaluation = $_POST['type_evaluation'];
             $id = $_POST['id'];
+
             $evaluationData = $this->getEvaluationAndMaxNote($id, $type_evaluation);
             $noteMax = $evaluationData['noteMax'];
             $id_evaluateur = $_SESSION['id_utilisateur'];
-            $commentaire = null;
-            if(isset($_POST['commentaire'])) {
-                $commentaire = $_POST['commentaire'];
-            }
-            if ($this->isValidNote($note_groupe, $noteMax)) {
-                $allMembres = $this->modele->getAllMembreSAE($id_groupe);
-                foreach ($allMembres as $membre) {
-                    if ($type_evaluation === 'rendu') {
-                        $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
-                        if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteRendu($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur, $commentaire);
-                        }
-                    } else {
-                        $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
-                        if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                            $this->modele->sauvegarderNoteSoutenance($membre['id_utilisateur'], $note_groupe, $id, $id_groupe, 0, $id_evaluation, $id_evaluateur, $commentaire);
+            $commentaire = isset($_POST['commentaire']) ? $_POST['commentaire'] : null;
+
+            foreach ($notes as $idUtilisateur => $note_groupe) {
+                if ($this->isValidNote($note_groupe, $noteMax)) {
+                    $allMembres = $this->modele->getAllMembreSAE($id_groupe);
+
+                    foreach ($allMembres as $membre) {
+                        if ($type_evaluation === 'rendu') {
+                            $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
+                            if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
+                                $this->modele->sauvegarderNoteRendu(
+                                    $membre['id_utilisateur'],
+                                    $note_groupe,
+                                    $id,
+                                    $id_groupe,
+                                    $id_evaluation,
+                                    $id_evaluateur,
+                                    $commentaire
+                                );
+                            }
+                        } else {
+                            $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
+                            if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
+                                $this->modele->sauvegarderNoteSoutenance(
+                                    $membre['id_utilisateur'],
+                                    $note_groupe,
+                                    $id,
+                                    $id_groupe,
+                                    $id_evaluation,
+                                    $id_evaluateur,
+                                    $commentaire
+                                );
+                            }
                         }
                     }
                 }
             }
         }
-        $this->gestionEvaluationsSAE();
+    $this->gestionEvaluationsSAE();
     }
 
 

@@ -31,30 +31,27 @@ class ModeleEvaluationRendu extends Connexion
 
     public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation)
     {
-        $sql = "INSERT INTO Critere_Rendu (id_evaluation, id_rendu, nom_critere, description, coefficient, note_max)
-            VALUES (:id_evaluation, :id_rendu, :nom_critere, :description, :coefficient, :note_max)";
-
-        $stmt = $this->getBdd()->prepare($sql);
-
-        $stmt->bindParam(':id_evaluation', $idEvaluation);
-        $stmt->bindParam(':id_rendu', $id_rendu);
-        $stmt->bindParam(':nom_critere', $nom);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':coefficient', $coefficient);
-        $stmt->bindParam(':note_max', $note_max);
-        $stmt->execute();
+        $bdd = $this->getBdd();
+        $sql = "INSERT INTO Critere_Rendu (nom_critere, description, coefficient, note_max, id_evaluation, id_rendu)
+            VALUES (?, ? , ?, ? , ?, ?)";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$nom, $description, $coefficient, $note_max, $idEvaluation, $id_rendu]);
     }
 
-    public function getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation)
+    public function getCriteresNotationRendu($idRendu)
     {
-        // Requête SQL pour récupérer les critères de notation selon le type d'évaluation
-        $sql = "SELECT * FROM Critere_Rendu WHERE id_rendu = :id_rendu"; // ou autre selon vos besoins
-        $stmt = $this->getBdd()->prepare($sql);
-        $stmt->bindParam(':id_rendu', $id_evaluation);
-        $stmt->execute();
+        $sql = "
+        SELECT c.id_critere_rendu, c.nom_critere, c.description, c.coefficient, c.note_max 
+        FROM Critere_Rendu c
+        WHERE c.id_rendu = ?
+    ";
 
+        $stmt = $this->getBdd()->prepare($sql);
+        $stmt->execute([$idRendu]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
 
     public function calculerNoteGlobale($idRendu, $idGroupe)
     {
@@ -75,13 +72,11 @@ class ModeleEvaluationRendu extends Connexion
 
             $queryNote = "
             SELECT note 
-            FROM Rendu_Critere_Notation
-            WHERE id_rendu = :idRendu
-            AND id_critere_rendu = :idCritere
+            FROM Critere_Notation_Rendu
+            WHERE id_critere_rendu = :idCritere
             AND id_groupe = :idGroupe
         ";
             $stmtNote = $this->getBdd()->prepare($queryNote);
-            $stmtNote->bindParam(':idRendu', $idRendu);
             $stmtNote->bindParam(':idCritere', $idCritere);
             $stmtNote->bindParam(':idGroupe', $idGroupe);
             $stmtNote->execute();
@@ -102,7 +97,33 @@ class ModeleEvaluationRendu extends Connexion
 
     public function sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
     {
-        $noteGlobale = $this->calculerNoteGlobale($idRendu, $idGroupe);
+        $queryCritere = "
+        SELECT cr.id_critere_rendu, cr.coefficient, cr.note_max, c.note AS note_critere
+        FROM Critere_Rendu cr
+        JOIN Critere_Notation_Rendu c ON cr.id_critere_rendu = c.id_critere_rendu
+        WHERE cr.id_rendu = :idRendu AND cr.id_evaluation = :idEvaluation AND c.id_groupe = :idGroupe AND c.id_etudiant = :idEtudiant
+    ";
+
+        $stmtCritere = $this->getBdd()->prepare($queryCritere);
+        $stmtCritere->bindParam(':idRendu', $idRendu);
+        $stmtCritere->bindParam(':idEvaluation', $idEvaluation);
+        $stmtCritere->bindParam(':idGroupe', $idGroupe);
+        $stmtCritere->bindParam(':idEtudiant', $idEtudiant);
+        $stmtCritere->execute();
+
+        $sommeNotes = 0;
+        $sommeCoefficients = 0;
+
+        while ($row = $stmtCritere->fetch(PDO::FETCH_ASSOC)) {
+            $noteCritere = $row['note_critere'];
+            $coefficient = $row['coefficient'];
+
+            // Ajout de la note pondérée à la somme
+            $sommeNotes += $noteCritere * $coefficient;
+            $sommeCoefficients += $coefficient;
+        }
+
+        $noteGlobale = $sommeCoefficients > 0 ? $sommeNotes / $sommeCoefficients : 0;
 
         $checkQuery = "
         SELECT COUNT(*) 
@@ -119,7 +140,6 @@ class ModeleEvaluationRendu extends Connexion
         $count = $stmtCheck->fetchColumn();
 
         if ($count > 0) {
-            // Mise à jour de l'évaluation existante
             $updateQuery = "
             UPDATE Rendu_Evaluation
             SET note = :noteGlobale, id_evaluation = :idEvaluation, id_evaluateur = :idEvaluateur
@@ -156,15 +176,14 @@ class ModeleEvaluationRendu extends Connexion
 
     public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
     {
+        // Vérification si la notation existe déjà
         $checkQuery = "
-        SELECT COUNT(*) FROM Rendu_Critere_Notation 
-        WHERE id_rendu = :idRendu 
-        AND id_critere_rendu = :idCritere 
-        AND id_groupe = :idGroupe
-        AND id_etudiant = :idUtilisateur
+    SELECT COUNT(*) FROM Critere_Notation_Rendu
+    WHERE id_critere_rendu = :idCritere 
+    AND id_groupe = :idGroupe
+    AND id_etudiant = :idUtilisateur
     ";
         $stmtCheck = $this->getBdd()->prepare($checkQuery);
-        $stmtCheck->bindParam(':idRendu', $idRendu);
         $stmtCheck->bindParam(':idCritere', $idCritere);
         $stmtCheck->bindParam(':idGroupe', $idGroupe);
         $stmtCheck->bindParam(':idUtilisateur', $idUtilisateur);
@@ -174,15 +193,13 @@ class ModeleEvaluationRendu extends Connexion
         if ($count > 0) {
             // Mise à jour si l'entrée existe déjà
             $updateQuery = "
-            UPDATE Rendu_Critere_Notation 
-            SET note = :note, coefficient = (SELECT coefficient FROM Critere_Rendu WHERE id_critere_rendu = :idCritere)
-            WHERE id_rendu = :idRendu 
-            AND id_critere_rendu = :idCritere 
-            AND id_groupe = :idGroupe 
-            AND id_etudiant = :idUtilisateur
+        UPDATE Critere_Notation_Rendu 
+        SET note = :note 
+        WHERE id_critere_rendu = :idCritere 
+        AND id_groupe = :idGroupe 
+        AND id_etudiant = :idUtilisateur
         ";
             $stmtUpdate = $this->getBdd()->prepare($updateQuery);
-            $stmtUpdate->bindParam(':idRendu', $idRendu);
             $stmtUpdate->bindParam(':idCritere', $idCritere);
             $stmtUpdate->bindParam(':idGroupe', $idGroupe);
             $stmtUpdate->bindParam(':note', $note);
@@ -191,11 +208,11 @@ class ModeleEvaluationRendu extends Connexion
         } else {
             // Insertion si l'entrée n'existe pas
             $insertQuery = "
-            INSERT INTO Rendu_Critere_Notation (id_rendu, id_critere_rendu, id_groupe, id_etudiant, note, coefficient)
-            VALUES (:idRendu, :idCritere, :idGroupe, :idUtilisateur, :note, (SELECT coefficient FROM Critere_Rendu WHERE id_critere_rendu = :idCritere))
-        ";
+    INSERT INTO Critere_Notation_Rendu (id_critere_rendu, id_groupe, id_etudiant, note)
+    VALUES (:idCritere, :idGroupe, :idUtilisateur, :note)
+";
+
             $stmtInsert = $this->getBdd()->prepare($insertQuery);
-            $stmtInsert->bindParam(':idRendu', $idRendu);
             $stmtInsert->bindParam(':idCritere', $idCritere);
             $stmtInsert->bindParam(':idGroupe', $idGroupe);
             $stmtInsert->bindParam(':idUtilisateur', $idUtilisateur);  // Ajout de l'id de l'étudiant
@@ -205,9 +222,11 @@ class ModeleEvaluationRendu extends Connexion
 
         // Sauvegarder le commentaire si fourni
         if ($commentaire) {
+            // Méthode pour sauvegarder les commentaires
             $this->sauvegarderCommentaireRendu($idUtilisateur, $idRendu, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation);
         }
     }
+
 
 
 
@@ -374,18 +393,15 @@ class ModeleEvaluationRendu extends Connexion
         return $id_evaluation;
     }
 
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
+    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
     {
         $bdd = $this->getBdd();
-
-        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, isIndividualEvaluation, note, commentaire)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                             ";
         $insertStmt = $bdd->prepare($insertQuery);
-        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $isIndividualEvaluation, $note, $commentaire]);
-
+        $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $note, $commentaire]);
         return true;
-
     }
 
     public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)

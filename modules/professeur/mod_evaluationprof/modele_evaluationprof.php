@@ -49,6 +49,7 @@ class ModeleEvaluationProf extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     public function estDejaEvaluateur($idEvaluateur, $idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -366,9 +367,14 @@ class ModeleEvaluationProf extends Connexion
         $this->modeleSoutenance->ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance);
     }
 
-    public function getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation)
+    public function getCriteresNotationRendu($idRendu)
     {
-       return $this->modeleRendu->getCriteresNotationRendu($id_groupe, $type_evaluation, $id_evaluation);
+       return $this->modeleRendu->getCriteresNotationRendu($idRendu);
+    }
+
+    public function getCriteresNotationSoutenance($idSoutenance){
+
+        return $this->modeleSoutenance->getCriteresNotationSoutenance($idSoutenance);
     }
 
     public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
@@ -385,16 +391,18 @@ class ModeleEvaluationProf extends Connexion
     {
        $this->modeleRendu->sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur);
     }
+    public function sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur){
+        $this->modeleSoutenance->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+    }
 
-
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
+    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
     {
-        $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
+        $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire);
         ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
     }
-    public function sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire)
+    public function sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
     {
-       $this->modeleSoutenance->sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $isIndividualEvaluation, $id_evaluation, $idEvaluateur, $commentaire);
+       $this->modeleSoutenance->sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire);
         ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
     }
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
@@ -407,6 +415,39 @@ class ModeleEvaluationProf extends Connexion
 
         return [];
     }
+
+    public function getNoteForStudentAndCriterion($idUtilisateur, $idCritere, $id_evaluation)
+    {
+        // Connexion à la base de données
+        $bdd = $this->getBdd();
+
+        // Requête pour récupérer la note d'un étudiant pour un critère spécifique dans un rendu
+        $queryRendu = "
+        SELECT c.note 
+        FROM Critere_Notation_Rendu c
+        JOIN Critere_Rendu cr ON c.id_critere_rendu = cr.id_critere_rendu
+        WHERE c.id_etudiant = :idUtilisateur 
+          AND cr.id_critere_rendu = :idCritere
+          AND cr.id_evaluation = :id_evaluation
+    ";
+
+        // Préparer et exécuter la requête
+        $stmt = $bdd->prepare($queryRendu);
+        $stmt->bindParam(':idUtilisateur', $idUtilisateur, PDO::PARAM_INT);
+        $stmt->bindParam(':idCritere', $idCritere, PDO::PARAM_INT);
+        $stmt->bindParam(':id_evaluation', $id_evaluation, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Vérifier si une note existe pour l'étudiant et le critère
+        if ($stmt->rowCount() > 0) {
+            // Retourner la note trouvée
+            return $stmt->fetch(PDO::FETCH_ASSOC)['note'];
+        }
+
+        // Si aucune note n'est trouvée, retourner null
+        return null;
+    }
+
     public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)
     {
         $this->modeleRendu->modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note);
