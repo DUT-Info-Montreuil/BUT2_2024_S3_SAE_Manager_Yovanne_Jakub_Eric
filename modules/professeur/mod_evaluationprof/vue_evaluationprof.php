@@ -299,7 +299,7 @@ class VueEvaluationProf extends VueGenerique
         <?php
     }
 
-    public function afficherTableauRenduGerer($rendueEvaluations, $evaluateurs, $idSAE, $iAmEvaluateurPrincipal)
+    public function afficherTableauRenduGerer($rendueEvaluations, $iAmEvaluateurPrincipal, $evaluateurs, $idSAE)
     {
         ?>
         <div class="container mt-4">
