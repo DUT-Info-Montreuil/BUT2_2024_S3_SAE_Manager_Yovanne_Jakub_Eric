@@ -528,7 +528,7 @@ class ContEvaluationProf
      * Sauvegarde la note d'un critère spécifique pour un utilisateur.
      *
      */
-    private function saveCriterionNote(int $idUtilisateur, $note, int $id, int $id_groupe, int $idCritere, string $type_evaluation, int $id_evaluateur, ?string $commentaire)
+    private function saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur, $commentaire)
     {
         if ($type_evaluation === 'rendu') {
             $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
@@ -562,7 +562,7 @@ class ContEvaluationProf
      * Traite les notes pour un groupe d'utilisateurs.
      *
      */
-    private function processGroupNotes(array $notes, array $criteres, string $type_evaluation, int $id_groupe, int $id, int $noteMax, int $id_evaluateur, ?string $commentaire, array $allMembres)
+    private function processGroupNotes($notes, $criteres, $type_evaluation, $id_groupe, $id, $noteMax, $id_evaluateur, $commentaire, $allMembres)
     {
         if (empty($criteres)) {
             $note = $_POST['notes']['default'];
