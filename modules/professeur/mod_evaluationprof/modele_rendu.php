@@ -29,14 +29,6 @@ class ModeleEvaluationRendu extends Connexion
         }
     }
 
-    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $idEvaluation)
-    {
-        $bdd = $this->getBdd();
-        $sql = "INSERT INTO Critere (nom_critere, description, coefficient, note_max, id_evaluation)
-            VALUES (?, ? , ? , ?, ?)";
-        $stmt = $bdd->prepare($sql);
-        $stmt->execute([$nom, $description, $coefficient, $note_max, $idEvaluation]);
-    }
 
     public function getCriteresNotationRendu($idRendu)
     {
