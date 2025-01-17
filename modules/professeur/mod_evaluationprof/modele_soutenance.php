@@ -363,5 +363,33 @@ class ModeleEvaluationSoutenance extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+    {
+        $bdd = $this->getBdd();
+    
+        $checkQuery = "SELECT COUNT(*) FROM Soutenance_Evaluation
+                       WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ? AND id_soutenance = ?";
+        $checkStmt = $bdd->prepare($checkQuery);
+        $checkStmt->execute([$id_evaluation, $id_groupe, $idEtudiant, $idSoutenance]);
+        $exists = $checkStmt->fetchColumn();
+    
+        if ($exists > 0) {
+            $updateQuery = "UPDATE Soutenance_Evaluation
+                            SET note = ?, commentaire = ?, id_evaluateur = ?
+                            WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ? AND id_soutenance = ?";
+            $updateStmt = $bdd->prepare($updateQuery);
+            $updateStmt->execute([$note, $commentaire, $idEvaluateur, $id_evaluation, $id_groupe, $idEtudiant, $idSoutenance]);
+        } else {
+            $insertQuery = "INSERT INTO Soutenance_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, id_soutenance, note, commentaire)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $insertStmt = $bdd->prepare($insertQuery);
+            $insertStmt->execute([$id_evaluation, $id_groupe, $idEtudiant, $idEvaluateur, $idSoutenance, $note, $commentaire]);
+        }
+    
+        return true;
+    }
+    
+    
+
 
 }

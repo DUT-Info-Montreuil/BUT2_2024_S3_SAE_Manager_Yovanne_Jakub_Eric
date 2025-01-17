@@ -393,15 +393,65 @@ class ModeleEvaluationRendu extends Connexion
     }
 
     public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
-    {
-        $bdd = $this->getBdd();
+{
+    $bdd = $this->getBdd();
+    
+    // Vérifiez si l'entrée existe déjà
+    $checkQuery = "SELECT COUNT(*) FROM Rendu_Evaluation
+                   WHERE id_evaluation = ? AND id_rendu = ? AND id_groupe = ? AND id_etudiant = ?";
+    $checkStmt = $bdd->prepare($checkQuery);
+    $checkStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant]);
+    $exists = $checkStmt->fetchColumn();
+    
+    if ($exists > 0) {
+        // Mise à jour si une entrée existe déjà
+        $updateQuery = "UPDATE Rendu_Evaluation
+                        SET note = ?, commentaire = ?, id_evaluateur = ?
+                        WHERE id_evaluation = ? AND id_rendu = ? AND id_groupe = ? AND id_etudiant = ?";
+        $updateStmt = $bdd->prepare($updateQuery);
+        $updateStmt->execute([$note, $commentaire, $idEvaluateur, $id_evaluation, $id_rendu, $id_groupe, $idEtudiant]);
+    } else {
+        // Insérer une nouvelle entrée si elle n'existe pas
         $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
-                            ";
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
         $insertStmt = $bdd->prepare($insertQuery);
         $insertStmt->execute([$id_evaluation, $id_rendu, $id_groupe, $idEtudiant, $idEvaluateur, $note, $commentaire]);
-        return true;
     }
+    
+    return true;
+}
+public function sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+{
+    $bdd = $this->getBdd();
+
+    // Vérifiez si une entrée existe déjà
+    $checkQuery = "SELECT COUNT(*) FROM Rendu_Evaluation
+                   WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?";
+    $checkStmt = $bdd->prepare($checkQuery);
+    $checkStmt->execute([$id_evaluation, $id_groupe, $idEtudiant]);
+    $exists = $checkStmt->fetchColumn();
+
+    if ($exists > 0) {
+        // Mise à jour si une entrée existe déjà
+        $updateQuery = "UPDATE Rendu_Evaluation
+                        SET note = ?, commentaire = ?, id_evaluateur = ?, id_rendu = ?
+                        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?";
+        $updateStmt = $bdd->prepare($updateQuery);
+        $updateStmt->execute([$note, $commentaire, $idEvaluateur, $idRendu, $id_evaluation, $id_groupe, $idEtudiant]);
+    } else {
+        // Insérer une nouvelle entrée si elle n'existe pas
+        $insertQuery = "INSERT INTO Rendu_Evaluation (id_rendu, id_evaluation, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $insertStmt = $bdd->prepare($insertQuery);
+        $insertStmt->execute([$idRendu, $id_evaluation, $id_groupe, $idEtudiant, $idEvaluateur, $note, $commentaire]);
+    }
+
+    return true;
+}
+
+
+
+
 
     public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)
     {

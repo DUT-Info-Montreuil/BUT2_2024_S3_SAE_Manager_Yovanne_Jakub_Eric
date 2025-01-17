@@ -451,210 +451,209 @@ class VueEvaluationProf extends VueGenerique
 
     public function afficherFormulaireNotation($allMembres, $id_groupe, $id, $type_evaluation, $contenue, $champsRemplis, $idSAE, $criteres)
     {
-        $mode = "individuel";
-        ?>
-        <div class="container mt-5">
-            <h2 class="mb-4 text-center fw-bold">Notation des Membres</h2>
+    $mode = "individuel";
+    ?>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center fw-bold">Notation des Membres</h2>
 
-            <?php if ($type_evaluation === 'rendu' && !empty($contenue)): ?>
-                <div class="mt-5">
-                    <h3>Fichiers Rendus :</h3>
-                    <ul>
-                        <?php foreach ($contenue as $fichier): ?>
-                            <li>
-                                <a href="<?= htmlspecialchars($fichier['chemin_fichier']) ?>" target="_blank">
-                                    <?= htmlspecialchars($fichier['nom_fichier']) ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($champsRemplis)): ?>
-                <div class="mt-4">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Champ</th>
-                            <th>Valeur</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($champsRemplis as $champ): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($champ['champ_nom']) ?></td>
-                                <td><?= htmlspecialchars($champ['champ_valeur']) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-
-            <!-- Affichage des critères de notation -->
-            <?php if (!empty($criteres)): ?>
-                <div class="mt-4">
-                    <h3>Critères de Notation</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Critère</th>
-                            <th>Description</th>
-                            <th>Coefficient</th>
-                            <th>Note Max</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($criteres as $critere): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($critere['nom_critere']) ?></td>
-                                <td><?= htmlspecialchars($critere['description']) ?></td>
-                                <td><?= htmlspecialchars($critere['coefficient']) ?></td>
-                                <td><?= htmlspecialchars($critere['note_max']) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-
-            <div class="d-flex justify-content-center mb-4">
-                <button class="btn btn-outline-primary me-2" id="btn-individuel">Noter Individuellement</button>
-                <button class="btn btn-outline-secondary" id="btn-groupe">Noter en Groupe</button>
+        <!-- Affichage des fichiers rendus -->
+        <?php if ($type_evaluation === 'rendu' && !empty($contenue)): ?>
+            <div class="mt-5">
+                <h3>Fichiers Rendus :</h3>
+                <ul>
+                    <?php foreach ($contenue as $fichier): ?>
+                        <li>
+                            <a href="<?= htmlspecialchars($fichier['chemin_fichier']) ?>" target="_blank">
+                                <?= htmlspecialchars($fichier['nom_fichier']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
+        <?php endif; ?>
 
-            <!-- Formulaire de notation individuelle -->
-            <form method="POST"
-                  action="index.php?module=evaluationprof&action=traitementNotationIndividuelle&idProjet=<?php echo $idSAE; ?>"
-                  id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
-
-                <input type="hidden" name="id" value="<?= $id ?>">
-                <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
-                <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle text-center">
-                        <thead class="table-dark">
+        <!-- Affichage des champs remplis -->
+        <?php if (!empty($champsRemplis)): ?>
+            <div class="mt-4">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Champ</th>
+                        <th>Valeur</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($champsRemplis as $champ): ?>
                         <tr>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Email</th>
+                            <td><?= htmlspecialchars($champ['champ_nom']) ?></td>
+                            <td><?= htmlspecialchars($champ['champ_valeur']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
 
-                            <!-- Afficher les critères -->
+        <!-- Boutons pour sélectionner le mode -->
+        <div class="d-flex justify-content-center mb-4">
+            <button class="btn btn-outline-primary me-2" id="btn-individuel">Noter Individuellement</button>
+            <button class="btn btn-outline-secondary" id="btn-groupe">Noter en Groupe</button>
+        </div>
+
+        <!-- Formulaire de notation individuelle -->
+        <form method="POST"
+              action="index.php?module=evaluationprof&action=traitementNotationIndividuelle&idProjet=<?php echo $idSAE; ?>"
+              id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
+
+            <input type="hidden" name="id" value="<?= $id ?>">
+            <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
+            <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+
+                        <!-- Afficher les critères si présents -->
+                        <?php if (!empty($criteres)): ?>
                             <?php foreach ($criteres as $critere): ?>
                                 <th><?= htmlspecialchars($critere['nom_critere']) ?></th>
                             <?php endforeach; ?>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($allMembres as $membre): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($membre['nom']) ?></td>
-                                <td><?= htmlspecialchars($membre['prenom']) ?></td>
-                                <td><?= htmlspecialchars($membre['email']) ?></td>
+                        <?php else: ?>
+                            <th>Note</th>
+                        <?php endif; ?> 
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($allMembres as $membre): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($membre['nom']) ?></td>
+                            <td><?= htmlspecialchars($membre['prenom']) ?></td>
+                            <td><?= htmlspecialchars($membre['email']) ?></td>
 
-                                <!-- Pour chaque critère, créer un champ de saisie de note -->
+                            <!-- Afficher les champs de saisie des critères -->
+                            <?php if (!empty($criteres)): ?>
                                 <?php foreach ($criteres as $critere): ?>
                                     <td>
                                         <input type="number" class="form-control"
                                                name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>][<?= htmlspecialchars($critere['id_critere']) ?>]"
-                                               step="0.01" placeholder="Note" required >
+                                               step="0.01" placeholder="Note" required>
                                     </td>
                                 <?php endforeach; ?>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                            <?php else: ?>
+                                <td>
+                                    <input type="number" class="form-control"
+                                           name="notes[<?= htmlspecialchars($membre['id_utilisateur']) ?>][default]"
+                                           step="0.01" placeholder="Note" required>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mt-4">
-                    <label for="commentaire_individuel" class="form-label fw-bold">Ajouter un commentaire (optionnel)</label>
-                    <textarea class="form-control" id="commentaire_individuel" name="commentaire" rows="4" placeholder="Votre commentaire"></textarea>
-                </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">Soumettre les Notes</button>
+            </div>
+        </form>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4">Soumettre les Notes</button>
-                </div>
-            </form>
+        <form method="POST"
+      action="index.php?module=evaluationprof&action=traitementNotationGroupe&idProjet=<?php echo $idSAE; ?>"
+      id="form-groupe" <?= $mode === "individuel" ? 'style="display:none;"' : '' ?>>
 
-
-            <form method="POST"
-                  action="index.php?module=evaluationprof&action=traitementNotationGroupe&idProjet=<?php echo $idSAE; ?>"
-                  id="form-groupe" <?= $mode === "individuel" ? 'style="display:none;"' : '' ?>>
-
-                <!-- Affichage des membres -->
-                <div class="mt-4">
-                    <h3>Membres du Groupe</h3>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle text-center">
-                            <thead class="table-dark">
-                            <tr>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Email</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($allMembres as $membre): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($membre['nom']) ?></td>
-                                    <td><?= htmlspecialchars($membre['prenom']) ?></td>
-                                    <td><?= htmlspecialchars($membre['email']) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <h3>Critères de Notation</h3>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle text-center">
-                            <thead class="table-dark">
-                            <tr>
-                                <th>Critère</th>
-                                <th>Description</th>
-                                <th>Note</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($criteres as $critere): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($critere['nom_critere']) ?></td>
-                                    <td><?= htmlspecialchars($critere['description']) ?></td>
-                                    <td>
-                                        <input type="number" class="form-control"
-                                               name="notes[<?= htmlspecialchars($critere['id_critere']) ?>]"
-                                               step="0.01" placeholder="Note pour ce critère" required>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire</label>
-                    <textarea class="form-control" id="commentaire_groupe" name="commentaire" rows="4"
-                              placeholder="Votre commentaire"></textarea>
-                </div>
-
-                <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
-                <input type="hidden" name="id" value="<?= $id ?>">
-                <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4">Soumettre la Note de Groupe</button>
-                </div>
-            </form>
-
-
+    <div class="mt-4">
+        <h3>Membres du Groupe</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($allMembres as $membre): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($membre['nom']) ?></td>
+                        <td><?= htmlspecialchars($membre['prenom']) ?></td>
+                        <td><?= htmlspecialchars($membre['email']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-        <?php
-    }
+    </div>
+
+    <div class="mt-4">
+        <h3>Notation</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-dark">
+                <tr>
+                    <!-- Si des critères sont présents, afficher leurs colonnes -->
+                    <?php if (!empty($criteres)): ?>
+                        <th>Critère</th>
+                        <th>Description</th>
+                        <th>Note</th>
+                    <?php else: ?>
+                        <!-- Sinon, une seule colonne pour la note générale -->
+                        <th>Note Générale du Groupe</th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($criteres)): ?>
+                    <!-- Si des critères sont définis, afficher une ligne pour chaque critère -->
+                    <?php foreach ($criteres as $critere): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($critere['nom_critere']) ?></td>
+                            <td><?= htmlspecialchars($critere['description']) ?></td>
+                            <td>
+                                <input type="number" class="form-control"
+                                       name="notes[<?= htmlspecialchars($critere['id_critere']) ?>]"
+                                       step="0.01" placeholder="Note pour ce critère" required>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <!-- Sinon, afficher une seule ligne pour la note générale -->
+                    <tr>
+                        <td>
+                            <input type="number" class="form-control" name="notes[default]" step="0.01"
+                                   placeholder="Note pour le groupe" required>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire (optionnel)</label>
+        <textarea class="form-control" id="commentaire_groupe" name="commentaire" rows="4"
+                  placeholder="Votre commentaire"></textarea>
+    </div>
+
+    <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
+    <input type="hidden" name="id" value="<?= $id ?>">
+    <input type="hidden" name="type_evaluation" value="<?= $type_evaluation ?>">
+
+    <!-- Bouton de soumission -->
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success px-4">Soumettre la Note de Groupe</button>
+    </div>
+</form>
+
+
+    </div>
+    <?php
+}
 
 
     public function afficherTableauRenduNonGerer($rendueEvaluations, $evaluateurs)

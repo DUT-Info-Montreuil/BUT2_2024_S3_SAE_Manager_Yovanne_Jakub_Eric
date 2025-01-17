@@ -28,6 +28,79 @@ class ModeleEvaluationProf extends Connexion
         return $this->modeleRendu->infNoteMaxRendu($id_evaluation);
     }
 
+    public function sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+{
+    return $this->modeleSoutenance->sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
+}
+
+
+public function sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+
+{
+    return $this->modeleRendu->sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
+}
+public function getCritereRenduById($id_rendu) {
+    $bdd = $this->getBdd();
+    $query = "
+        SELECT 
+            id_critere_rendu,
+            nom_critere,
+            description,
+            coefficient,
+            note_max,
+            id_evaluation
+        FROM Critere_Rendu
+        WHERE id_rendu = :id_rendu
+    ";
+
+    // Préparation de la requête
+    $stmt = $bdd->prepare($query);
+
+    // Lier l'id_rendu à la requête
+    $stmt->bindParam(':id_rendu', $id_rendu, PDO::PARAM_INT);
+
+    // Exécution de la requête
+    $stmt->execute();
+
+    // Récupération des résultats
+    $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Retourner les résultats (tableau des critères)
+    return $criteres;
+}
+
+public function getCritereSoutenanceById($idSoutenance){
+    $bdd = $this->getBdd();
+    $query = "
+        SELECT 
+            id_critere_soutenance,
+            nom_critere,
+            description,
+            coefficient,
+            note_max,
+            id_evaluation
+        FROM Critere_Soutenance
+        WHERE id_soutenance = :id_soutenance
+    ";
+
+    // Préparation de la requête
+    $stmt = $bdd->prepare($query);
+
+    // Lier l'id_rendu à la requête
+    $stmt->bindParam(':id_soutenance', $idSoutenance, PDO::PARAM_INT);
+
+    // Exécution de la requête
+    $stmt->execute();
+
+    // Récupération des résultats
+    $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Retourner les résultats (tableau des critères)
+    return $criteres;
+}
+
+
+
 
     public function getAllGerantNonEvaluateur($idSAE, $idEvaluation) {
         $bdd = $this->getBdd();
