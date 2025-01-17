@@ -234,21 +234,14 @@ class ContEvaluationProf
 
             if ($type_evaluation === 'rendu') {
                 $id_evaluation = $this->modele->creerEvaluationPourRendu($id, $coefficient, $note_max, $evaluateur);
-
-                if (isset($_POST['criteria'])) {
-                    $criteres = $_POST['criteria'];
-                    foreach ($criteres as $critere) {
-                        $this->modele->ajouterCritereRendu($critere['nom'], $critere['description'], $critere['coefficient'], $critere['note_max'], $id, $id_evaluation);
-                    }
-                }
             } elseif ($type_evaluation === 'soutenance') {
                 $id_evaluation = $this->modele->creerEvaluationPourSoutenance($id, $coefficient, $note_max, $evaluateur);
+            }
 
-                if (isset($_POST['criteria'])) {
-                    $criteres = $_POST['criteria'];
-                    foreach ($criteres as $critere) {
-                        $this->modele->ajouterCritereSoutenance($critere['nom'], $critere['description'], $critere['coefficient'], $critere['note_max'], $id, $id_evaluation);
-                    }
+            if (isset($_POST['criteria'])) {
+                $criteres = $_POST['criteria'];
+                foreach ($criteres as $critere) {
+                    $this->modele->ajouterCritere($critere['nom'], $critere['description'], $critere['coefficient'], $critere['note_max'], $id_evaluation);
                 }
             }
         }

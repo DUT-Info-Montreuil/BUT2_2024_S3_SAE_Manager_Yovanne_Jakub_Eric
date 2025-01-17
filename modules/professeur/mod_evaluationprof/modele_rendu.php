@@ -29,27 +29,30 @@ class ModeleEvaluationRendu extends Connexion
         }
     }
 
-    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation)
+    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $idEvaluation)
     {
         $bdd = $this->getBdd();
-        $sql = "INSERT INTO Critere_Rendu (nom_critere, description, coefficient, note_max, id_evaluation, id_rendu)
-            VALUES (?, ? , ?, ? , ?, ?)";
+        $sql = "INSERT INTO Critere (nom_critere, description, coefficient, note_max, id_evaluation)
+            VALUES (?, ? , ? , ?, ?)";
         $stmt = $bdd->prepare($sql);
-        $stmt->execute([$nom, $description, $coefficient, $note_max, $idEvaluation, $id_rendu]);
+        $stmt->execute([$nom, $description, $coefficient, $note_max, $idEvaluation]);
     }
 
     public function getCriteresNotationRendu($idRendu)
     {
         $sql = "
-        SELECT c.id_critere_rendu, c.nom_critere, c.description, c.coefficient, c.note_max 
-        FROM Critere_Rendu c
-        WHERE c.id_rendu = ?
+        SELECT c.id_critere, c.nom_critere, c.description, c.coefficient, c.note_max 
+        FROM Critere c
+        INNER JOIN Evaluation e ON c.id_evaluation = e.id_evaluation
+        INNER JOIN Rendu r ON e.id_evaluation = r.id_evaluation
+        WHERE r.id_rendu = ?
     ";
 
         $stmt = $this->getBdd()->prepare($sql);
         $stmt->execute([$idRendu]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
 
@@ -98,10 +101,10 @@ class ModeleEvaluationRendu extends Connexion
     public function sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
     {
         $queryCritere = "
-        SELECT cr.id_critere_rendu, cr.coefficient, cr.note_max, c.note AS note_critere
-        FROM Critere_Rendu cr
-        JOIN Critere_Notation_Rendu c ON cr.id_critere_rendu = c.id_critere_rendu
-        WHERE cr.id_rendu = :idRendu AND cr.id_evaluation = :idEvaluation AND c.id_groupe = :idGroupe AND c.id_etudiant = :idEtudiant
+        SELECT cr.id_critere, cr.coefficient, cr.note_max, c.note AS note_critere
+        FROM Critere_Notation_Rendu c
+        JOIN Critere cr ON c.id_critere = cr.id_critere
+        WHERE c.id_rendu = :idRendu AND cr.id_evaluation = :idEvaluation AND c.id_groupe = :idGroupe AND c.id_etudiant = :idEtudiant
     ";
 
         $stmtCritere = $this->getBdd()->prepare($queryCritere);
@@ -117,8 +120,6 @@ class ModeleEvaluationRendu extends Connexion
         while ($row = $stmtCritere->fetch(PDO::FETCH_ASSOC)) {
             $noteCritere = $row['note_critere'];
             $coefficient = $row['coefficient'];
-
-            // Ajout de la note pondérée à la somme
             $sommeNotes += $noteCritere * $coefficient;
             $sommeCoefficients += $coefficient;
         }
@@ -174,11 +175,12 @@ class ModeleEvaluationRendu extends Connexion
 
 
 
+
     public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
     {
         $checkQuery = "
     SELECT COUNT(*) FROM Critere_Notation_Rendu
-    WHERE id_critere_rendu = :idCritere 
+    WHERE id_critere = :idCritere 
     AND id_groupe = :idGroupe
     AND id_etudiant = :idUtilisateur
     ";
@@ -194,7 +196,7 @@ class ModeleEvaluationRendu extends Connexion
             $updateQuery = "
         UPDATE Critere_Notation_Rendu 
         SET note = :note 
-        WHERE id_critere_rendu = :idCritere 
+        WHERE id_critere = :idCritere 
         AND id_groupe = :idGroupe 
         AND id_etudiant = :idUtilisateur
         ";
@@ -207,16 +209,11 @@ class ModeleEvaluationRendu extends Connexion
         } else {
             // Insertion si l'entrée n'existe pas
             $insertQuery = "
-    INSERT INTO Critere_Notation_Rendu (id_critere_rendu, id_groupe, id_etudiant, note)
-    VALUES (:idCritere, :idGroupe, :idUtilisateur, :note)
+    INSERT INTO Critere_Notation_Rendu (id_critere, id_rendu, id_groupe, id_etudiant, note)
+    VALUES (?, ? , ?, ? ,?)
 ";
-
             $stmtInsert = $this->getBdd()->prepare($insertQuery);
-            $stmtInsert->bindParam(':idCritere', $idCritere);
-            $stmtInsert->bindParam(':idGroupe', $idGroupe);
-            $stmtInsert->bindParam(':idUtilisateur', $idUtilisateur);  // Ajout de l'id de l'étudiant
-            $stmtInsert->bindParam(':note', $note);
-            $stmtInsert->execute();
+            $stmtInsert->execute([$idCritere, $idRendu, $idGroupe, $idUtilisateur, $note]);
         }
 
         // Sauvegarder le commentaire si fourni
@@ -487,8 +484,5 @@ public function sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
-
 
 }

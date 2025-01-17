@@ -8,6 +8,7 @@ class ModeleEvaluationProf extends Connexion
 
     private $modeleRendu;
     private $modeleSoutenance;
+
     public function __construct()
     {
         $this->modeleRendu = new ModeleEvaluationRendu();
@@ -23,86 +24,74 @@ class ModeleEvaluationProf extends Connexion
         return $statement->fetchAll();
 
     }
+
     public function infNoteMaxRendu($id_evaluation)
     {
         return $this->modeleRendu->infNoteMaxRendu($id_evaluation);
     }
 
     public function sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
-{
-    return $this->modeleSoutenance->sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
-}
+    {
+        return $this->modeleSoutenance->sauvegarderNoteGlobaleSoutenance($id_groupe, $idSoutenance, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
+    }
 
 
-public function sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+    public function sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
 
-{
-    return $this->modeleRendu->sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
-}
-public function getCritereRenduById($id_rendu) {
-    $bdd = $this->getBdd();
-    $query = "
+    {
+        return $this->modeleRendu->sauvegarderNoteGlobaleRendu($id_groupe, $idRendu, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire);
+    }
+
+    public function getCritereRenduById($id_rendu)
+    {
+        $bdd = $this->getBdd();
+
+        // Requête pour récupérer les critères associés au rendu en fonction de l'id_rendu
+        $query = "
         SELECT 
-            id_critere_rendu,
-            nom_critere,
-            description,
-            coefficient,
-            note_max,
-            id_evaluation
-        FROM Critere_Rendu
-        WHERE id_rendu = :id_rendu
+            c.id_critere,
+            c.nom_critere,
+            c.description,
+            c.coefficient,
+            c.note_max,
+            c.id_evaluation
+        FROM Critere c
+        INNER JOIN Rendu r ON c.id_evaluation = r.id_evaluation
+        WHERE r.id_rendu = ?
     ";
+        $stmt = $bdd->prepare($query);
+        $stmt->bindParam(':id_rendu', $id_rendu, PDO::PARAM_INT);
+        $stmt->execute();
+        $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $criteres;
+    }
 
-    // Préparation de la requête
-    $stmt = $bdd->prepare($query);
 
-    // Lier l'id_rendu à la requête
-    $stmt->bindParam(':id_rendu', $id_rendu, PDO::PARAM_INT);
-
-    // Exécution de la requête
-    $stmt->execute();
-
-    // Récupération des résultats
-    $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Retourner les résultats (tableau des critères)
-    return $criteres;
-}
-
-public function getCritereSoutenanceById($idSoutenance){
-    $bdd = $this->getBdd();
-    $query = "
+    public function getCritereSoutenanceById($id_soutenance)
+    {
+        $bdd = $this->getBdd();
+        $query = "
         SELECT 
-            id_critere_soutenance,
-            nom_critere,
-            description,
-            coefficient,
-            note_max,
-            id_evaluation
-        FROM Critere_Soutenance
-        WHERE id_soutenance = :id_soutenance
+            c.id_critere,
+            c.nom_critere,
+            c.description,
+            c.coefficient,
+            c.note_max,
+            c.id_evaluation
+        FROM Critere c
+        INNER JOIN Soutenance s ON c.id_evaluation = s.id_evaluation
+        WHERE s.id_soutenance = ?
     ";
-
-    // Préparation de la requête
-    $stmt = $bdd->prepare($query);
-
-    // Lier l'id_rendu à la requête
-    $stmt->bindParam(':id_soutenance', $idSoutenance, PDO::PARAM_INT);
-
-    // Exécution de la requête
-    $stmt->execute();
-
-    // Récupération des résultats
-    $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Retourner les résultats (tableau des critères)
-    return $criteres;
-}
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$id_soutenance]);
+        $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $criteres;
+    }
 
 
 
-
-    public function getAllGerantNonEvaluateur($idSAE, $idEvaluation) {
+    public function getAllGerantNonEvaluateur($idSAE, $idEvaluation)
+    {
         $bdd = $this->getBdd();
 
         $query = "
@@ -155,7 +144,8 @@ public function getCritereSoutenanceById($idSoutenance){
         return $req->fetchAll();
     }
 
-    public function getAllEvaluateur($idEvaluation) {
+    public function getAllEvaluateur($idEvaluation)
+    {
         $bdd = $this->getBdd();
 
         $query = "
@@ -203,8 +193,8 @@ public function getCritereSoutenanceById($idSoutenance){
     }
 
 
-
-    public function getEvaluationById($id){
+    public function getEvaluationById($id)
+    {
         $bdd = $this->getBdd();
         $query = "SELECT * FROM Evaluation WHERE id_evaluation = ?";
         $stmt = $bdd->prepare($query);
@@ -212,15 +202,18 @@ public function getCritereSoutenanceById($idSoutenance){
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getEvaluationByIdRendu($id_rendu){
+    public function getEvaluationByIdRendu($id_rendu)
+    {
         return $this->modeleRendu->getEvaluationByIdRendu($id_rendu);
     }
 
-    public function getEvaluationByIdSoutenance($id_soutenance){
+    public function getEvaluationByIdSoutenance($id_soutenance)
+    {
         return $this->modeleSoutenance->getEvaluationByIdSoutenance($id_soutenance);
     }
 
-    public function getAllGerantSae($idSAE) {
+    public function getAllGerantSae($idSAE)
+    {
         $bdd = $this->getBdd();
         $sql = "SELECT U.id_utilisateur, U.nom, U.prenom, U.email, G.role_utilisateur 
             FROM Gerant G
@@ -232,6 +225,7 @@ public function getCritereSoutenanceById($idSoutenance){
         $gerants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $gerants;
     }
+
     public function iAmEvaluateurPrincipal($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
@@ -266,12 +260,16 @@ public function getCritereSoutenanceById($idSoutenance){
         return $result && $result['count'] > 0;
     }
 
-    public function getIdEvaluationByRendu($id_rendu){
+    public function getIdEvaluationByRendu($id_rendu)
+    {
         return $this->modeleRendu->getIdEvaluationByRendu($id_rendu);
     }
-    public function getIdEvaluationBySoutenance($id_soutenance){
+
+    public function getIdEvaluationBySoutenance($id_soutenance)
+    {
         return $this->modeleSoutenance->getIdEvaluationBySoutenance($id_soutenance);
     }
+
     public function modifierEvaluation($idEvaluation, $note_max, $coefficient)
     {
         $bdd = $this->getBdd();
@@ -279,7 +277,9 @@ public function getCritereSoutenanceById($idSoutenance){
         $stmt = $bdd->prepare($query);
         $stmt->execute([$note_max, $coefficient, $idEvaluation]);
     }
-    public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation, $delegation_action) {
+
+    public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation, $delegation_action)
+    {
         $bdd = $this->getBdd();
         $bdd->beginTransaction();
 
@@ -327,12 +327,12 @@ public function getCritereSoutenanceById($idSoutenance){
     }
 
 
-
     public function infNoteMaxSoutenance($id_evaluation)
     {
 
         return $this->modeleSoutenance->infNoteMaxSoutenance($id_evaluation);
     }
+
     public function getRenduEvaluationGerer($idSae, $id_rendu, $idEvaluateur)
     {
         return $this->modeleRendu->getRenduEvaluationGerer($idSae, $id_rendu, $idEvaluateur);
@@ -343,11 +343,13 @@ public function getCritereSoutenanceById($idSoutenance){
     {
         return $this->modeleRendu->getRenduEvaluation($idSae, $id_rendu);
     }
+
     public function getSoutenanceEvaluation($idSae, $id_soutenance)
     {
 
         return $this->modeleSoutenance->getSoutenanceEvaluation($idSae, $id_soutenance);
     }
+
     public function getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur)
     {
         return $this->modeleSoutenance->getSoutenanceEvaluationGerer($idSae, $id_soutenance, $idEvaluateur);
@@ -365,6 +367,7 @@ public function getCritereSoutenanceById($idSoutenance){
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getAllRenduSAE($idSae)
     {
         return $this->modeleRendu->getAllRenduSAE($idSae);
@@ -382,6 +385,7 @@ public function getCritereSoutenanceById($idSoutenance){
         $this->insererEvaluateur($id_evaluation, $evaluateur, true);
         return $id_evaluation;
     }
+
     public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
     {
         $id_evaluation = $this->modeleSoutenance->creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur);
@@ -418,7 +422,7 @@ public function getCritereSoutenanceById($idSoutenance){
 
     public function getChampsRemplisParGroupe($id_groupe)
     {
-        $bdd =$this->getBdd();
+        $bdd = $this->getBdd();
         $query = "
         SELECT c.champ_nom, cg.champ_valeur
         FROM Champ c
@@ -430,23 +434,17 @@ public function getCritereSoutenanceById($idSoutenance){
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation)
+    public function ajouterCritere($nom, $description, $coefficient, $note_max, $idEvaluation)
     {
-
-        $this->modeleRendu->ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation);
+        $this->modeleRendu->ajouterCritereRendu($nom, $description, $coefficient, $note_max, $idEvaluation);
     }
-
-    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance, $id_evaluation)
-    {
-        $this->modeleSoutenance->ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance, $id_evaluation);
-    }
-
     public function getCriteresNotationRendu($idRendu)
     {
-       return $this->modeleRendu->getCriteresNotationRendu($idRendu);
+        return $this->modeleRendu->getCriteresNotationRendu($idRendu);
     }
 
-    public function getCriteresNotationSoutenance($idSoutenance){
+    public function getCriteresNotationSoutenance($idSoutenance)
+    {
 
         return $this->modeleSoutenance->getCriteresNotationSoutenance($idSoutenance);
     }
@@ -458,26 +456,17 @@ public function getCritereSoutenanceById($idSoutenance){
 
     public function sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
     {
-      $this->modeleSoutenance->sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire);
+        $this->modeleSoutenance->sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire);
     }
 
     public function sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
     {
-       $this->modeleRendu->sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur);
-    }
-    public function sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur){
-        $this->modeleSoutenance->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+        $this->modeleRendu->sauvegarderNoteRenduEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur);
     }
 
-    public function sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
+    public function sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur)
     {
-        $this->modeleRendu->sauvegarderNoteRendu($idEtudiant, $note, $id_rendu, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire);
-        ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
-    }
-    public function sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire)
-    {
-       $this->modeleSoutenance->sauvegarderNoteSoutenance($idEtudiant, $note, $id_soutenance, $id_groupe, $id_evaluation, $idEvaluateur, $commentaire);
-        ModeleCommun::mettreAJourNoteFinale($idEtudiant, $id_groupe);
+        $this->modeleSoutenance->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
     }
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
     {
@@ -490,46 +479,16 @@ public function getCritereSoutenanceById($idSoutenance){
         return [];
     }
 
-    public function getNoteForStudentAndCriterion($idUtilisateur, $idCritere, $id_evaluation)
-    {
-        // Connexion à la base de données
-        $bdd = $this->getBdd();
-
-        // Requête pour récupérer la note d'un étudiant pour un critère spécifique dans un rendu
-        $queryRendu = "
-        SELECT c.note 
-        FROM Critere_Notation_Rendu c
-        JOIN Critere_Rendu cr ON c.id_critere_rendu = cr.id_critere_rendu
-        WHERE c.id_etudiant = :idUtilisateur 
-          AND cr.id_critere_rendu = :idCritere
-          AND cr.id_evaluation = :id_evaluation
-    ";
-
-        // Préparer et exécuter la requête
-        $stmt = $bdd->prepare($queryRendu);
-        $stmt->bindParam(':idUtilisateur', $idUtilisateur, PDO::PARAM_INT);
-        $stmt->bindParam(':idCritere', $idCritere, PDO::PARAM_INT);
-        $stmt->bindParam(':id_evaluation', $id_evaluation, PDO::PARAM_INT);
-        $stmt->execute();
-
-        // Vérifier si une note existe pour l'étudiant et le critère
-        if ($stmt->rowCount() > 0) {
-            // Retourner la note trouvée
-            return $stmt->fetch(PDO::FETCH_ASSOC)['note'];
-        }
-
-        // Si aucune note n'est trouvée, retourner null
-        return null;
-    }
-
     public function modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note)
     {
         $this->modeleRendu->modifierEvaluationRendu($id_evaluation, $id_groupe, $id_etudiant, $note);
     }
+
     public function modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note)
     {
         $this->modeleSoutenance->modifierEvaluationSoutenance($id_evaluation, $id_groupe, $id_etudiant, $note);
     }
+
     public function supprimerEvaluation($id_evaluation)
     {
         $bdd = $this->getBdd();

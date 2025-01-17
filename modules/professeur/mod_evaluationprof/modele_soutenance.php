@@ -33,27 +33,50 @@ class ModeleEvaluationSoutenance extends Connexion
 
     public function sauvegarderNoteSoutenanceCritere($idEtudiant, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
     {
-        $bdd = $this->getBdd();
-        $queryCheck = "
-            SELECT COUNT(*) 
-            FROM Critere_Notation_Soutennace 
-            WHERE id_critere_soutenance = ? 
-            AND id_groupe = ? 
-            AND id_etudiant = ?
+        $checkQuery = "
+        SELECT COUNT(*) FROM Critere_Notation_Soutenance
+        WHERE id_critere = :idCritere 
+        AND id_groupe = :idGroupe
+        AND id_etudiant = :idEtudiant
+    ";
+        $stmtCheck = $this->getBdd()->prepare($checkQuery);
+        $stmtCheck->bindParam(':idCritere', $idCritere);
+        $stmtCheck->bindParam(':idGroupe', $idGroupe);
+        $stmtCheck->bindParam(':idEtudiant', $idEtudiant);
+        $stmtCheck->execute();
+        $count = $stmtCheck->fetchColumn();
+
+        if ($count > 0) {
+            // Mise à jour si l'entrée existe déjà
+            $updateQuery = "
+            UPDATE Critere_Notation_Soutenance 
+            SET note = :note 
+            WHERE id_critere = :idCritere 
+            AND id_groupe = :idGroupe 
+            AND id_etudiant = :idEtudiant
         ";
+            $stmtUpdate = $this->getBdd()->prepare($updateQuery);
+            $stmtUpdate->bindParam(':idCritere', $idCritere);
+            $stmtUpdate->bindParam(':idGroupe', $idGroupe);
+            $stmtUpdate->bindParam(':note', $note);
+            $stmtUpdate->bindParam(':idEtudiant', $idEtudiant);
+            $stmtUpdate->execute();
+        } else {
+            // Insertion si l'entrée n'existe pas
+            $insertQuery = "
+            INSERT INTO Critere_Notation_Soutenance (id_critere, id_soutenance, id_groupe, id_etudiant, note)
+            VALUES (?, ?, ?, ?, ?)
+        ";
+            $stmtInsert = $this->getBdd()->prepare($insertQuery);
+            $stmtInsert->execute([$idCritere, $idSoutenance, $idGroupe, $idEtudiant, $note]);
+        }
 
-        $stmtCheck = $bdd->prepare($queryCheck);
-        $stmtCheck->execute([$idCritere, $idGroupe, $idEtudiant]);
-        if ($stmtCheck->fetchColumn() == 0) {
-        $queryInsert = "
-                INSERT INTO Critere_Notation_Soutennace (id_critere_soutenance, id_groupe, id_etudiant, note)
-                VALUES (?, ?, ?, ?)
-            ";
-        $stmtInsert = $bdd->prepare($queryInsert);
-        $stmtInsert->execute([$idCritere, $idGroupe, $idEtudiant, $note]);
+        // Sauvegarder le commentaire si fourni
+        if ($commentaire) {
+            $this->sauvegarderCommentaireSoutenance($idEtudiant, $idSoutenance, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation);
+        }
     }
 
-    }
 
     public function sauvegarderCommentaireSoutenance($idUtilisateur, $idSoutenance, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation)
     {
@@ -235,11 +258,14 @@ class ModeleEvaluationSoutenance extends Connexion
         $insertStmt->execute([$id_evaluation, $id_soutenance, $id_groupe, $idUtilisateur, $idEvaluateur, $note, $commentaire]);
     }
 
-    public function getCriteresNotationSoutenance($idSoutenance) {
+    public function getCriteresNotationSoutenance($idSoutenance)
+    {
         $sql = "
-        SELECT c.id_critere_soutenance, c.nom_critere, c.description, c.coefficient, c.note_max 
-        FROM Critere_Soutenance c
-        WHERE c.id_soutenance = ?
+        SELECT c.id_critere, c.nom_critere, c.description, c.coefficient, c.note_max 
+        FROM Critere c
+        INNER JOIN Evaluation e ON c.id_evaluation = e.id_evaluation
+        INNER JOIN Soutenance s ON e.id_evaluation = s.id_evaluation
+        WHERE s.id_soutenance = ?
     ";
 
         $stmt = $this->getBdd()->prepare($sql);
@@ -264,14 +290,15 @@ class ModeleEvaluationSoutenance extends Connexion
     public function sauvegarderNoteSoutenanceEvaluation($idSoutenance, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
     {
         $queryCritere = "
-    SELECT cs.id_critere_soutenance, cs.coefficient, cs.note_max, c.note AS note_critere
-    FROM Critere_Soutenance cs
-    JOIN Critere_Notation_Soutennace c ON cs.id_critere_soutenance = c.id_critere_soutenance
-    WHERE cs.id_soutenance = :idSoutenance AND c.id_groupe = :idGroupe AND c.id_etudiant = :idEtudiant
+    SELECT cs.id_critere, cs.coefficient, cs.note_max, c.note AS note_critere
+    FROM Critere_Notation_Soutenance c
+    JOIN Critere cs ON c.id_critere = cs.id_critere
+    WHERE c.id_soutenance = :idSoutenance AND cs.id_evaluation = :idEvaluation AND c.id_groupe = :idGroupe AND c.id_etudiant = :idEtudiant
     ";
 
         $stmtCritere = $this->getBdd()->prepare($queryCritere);
         $stmtCritere->bindParam(':idSoutenance', $idSoutenance);
+        $stmtCritere->bindParam(':idEvaluation', $idEvaluation);
         $stmtCritere->bindParam(':idGroupe', $idGroupe);
         $stmtCritere->bindParam(':idEtudiant', $idEtudiant);
         $stmtCritere->execute();
@@ -282,7 +309,6 @@ class ModeleEvaluationSoutenance extends Connexion
         while ($row = $stmtCritere->fetch(PDO::FETCH_ASSOC)) {
             $noteCritere = $row['note_critere'];
             $coefficient = $row['coefficient'];
-
             $sommeNotes += $noteCritere * $coefficient;
             $sommeCoefficients += $coefficient;
         }
@@ -336,6 +362,8 @@ class ModeleEvaluationSoutenance extends Connexion
     }
 
 
+
+
     public function getNotesParEvaluationSoutenance($id_groupe, $id_evaluation)
     {
         $bdd = $this->getBdd();
@@ -384,8 +412,5 @@ class ModeleEvaluationSoutenance extends Connexion
     
         return true;
     }
-    
-    
-
 
 }
