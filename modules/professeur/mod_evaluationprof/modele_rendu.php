@@ -176,7 +176,6 @@ class ModeleEvaluationRendu extends Connexion
 
     public function sauvegarderNoteRenduCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
     {
-        // Vérification si la notation existe déjà
         $checkQuery = "
     SELECT COUNT(*) FROM Critere_Notation_Rendu
     WHERE id_critere_rendu = :idCritere 
