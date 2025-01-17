@@ -240,12 +240,12 @@ class ContEvaluationProf
                     }
                 }
             } elseif ($type_evaluation === 'soutenance') {
-                $this->modele->creerEvaluationPourSoutenance($id, $coefficient, $note_max, $evaluateur);
+                $id_evaluation =$this->modele->creerEvaluationPourSoutenance($id, $coefficient, $note_max, $evaluateur);
 
                 if (isset($_POST['criteria'])) {
                     $criteres = $_POST['criteria'];
                     foreach ($criteres as $critere) {
-                        $this->modele->ajouterCritereSoutenance($critere['nom'], $critere['description'], $critere['coefficient'], $critere['note_max'], $id);
+                        $this->modele->ajouterCritereSoutenance($critere['nom'], $critere['description'], $critere['coefficient'], $critere['note_max'], $id, $id_evaluation);
                     }
                 }
             }

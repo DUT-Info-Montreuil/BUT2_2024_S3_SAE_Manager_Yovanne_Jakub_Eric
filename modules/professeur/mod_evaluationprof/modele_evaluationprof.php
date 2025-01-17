@@ -386,6 +386,7 @@ public function getCritereSoutenanceById($idSoutenance){
     {
         $id_evaluation = $this->modeleSoutenance->creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur);
         $this->insererEvaluateur($id_evaluation, $evaluateur, true);
+        return $id_evaluation;
 
     }
 
@@ -435,9 +436,9 @@ public function getCritereSoutenanceById($idSoutenance){
         $this->modeleRendu->ajouterCritereRendu($nom, $description, $coefficient, $note_max, $id_rendu, $idEvaluation);
     }
 
-    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance)
+    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance, $id_evaluation)
     {
-        $this->modeleSoutenance->ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance);
+        $this->modeleSoutenance->ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance, $id_evaluation);
     }
 
     public function getCriteresNotationRendu($idRendu)

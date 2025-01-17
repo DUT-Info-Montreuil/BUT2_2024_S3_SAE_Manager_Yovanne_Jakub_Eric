@@ -20,19 +20,15 @@ class ModeleEvaluationSoutenance extends Connexion
         return null;
     }
 
-    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance)
+    public function ajouterCritereSoutenance($nom, $description, $coefficient, $note_max, $id_soutenance, $id_evaluation)
     {
-        $sql = "INSERT INTO Critere_Soutenance (id_soutenance, nom_critere, description, coefficient, note_max)
-            VALUES (:id_soutenance, :nom_critere, :description, :coefficient, :note_max)";
-
         $bdd = $this->getBdd();
+        $sql = "INSERT INTO Critere_Soutenance (id_soutenance, nom_critere, description, coefficient, note_max, id_evaluation)
+            VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $bdd->prepare($sql);
-        $stmt->bindParam(':id_soutenance', $id_soutenance);
-        $stmt->bindParam(':nom_critere', $nom);
-        $stmt->bindParam(':description', $description);
-        $stmt->bindParam(':coefficient', $coefficient);
-        $stmt->bindParam(':note_max', $note_max);
-        $stmt->execute();
+        $stmt->execute([$id_soutenance, $nom, $description,$coefficient, $note_max, $id_evaluation]);
+
+        
     }
 
     public function sauvegarderNoteSoutenanceCritere($idEtudiant, $note, $idSoutenance, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
