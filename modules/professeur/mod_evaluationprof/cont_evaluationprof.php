@@ -415,7 +415,6 @@ class ContEvaluationProf
                         } else {
                             // Si c'est une soutenance
                             $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
-                            var_dump($note);
                             if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                                 $this->modele->sauvegarderNoteSoutenanceCritere(
                                     $idUtilisateur,

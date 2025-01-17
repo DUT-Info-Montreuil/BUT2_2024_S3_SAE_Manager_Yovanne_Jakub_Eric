@@ -10,11 +10,10 @@ class VueCompMenu extends VueCompGenerique
 
     }
 
-    public function afficherMenu($imagePath, $login) {
+    public function afficherMenu($login) {
         $this->affichage = '
     <div class="dropdown">
         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="' . $imagePath . '" alt="Logo Profil" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
             <span style="color: white; font-size: 1.2rem;">' . $login . '</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

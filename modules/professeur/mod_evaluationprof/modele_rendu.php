@@ -280,39 +280,38 @@ class ModeleEvaluationRendu extends Connexion
         $bdd = $this->getBdd();
 
         $query = "
-    SELECT 
-        g.nom AS groupe_nom,
-        r.titre AS rendu_titre,
-        r.date_limite AS rendu_date_limite,
-        rg.statut AS rendu_statut,
-        re.note AS rendu_note,
-        GROUP_CONCAT(
-            CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté'))
-            SEPARATOR '\n'
-        ) AS notes_individuelles,
-        e.note_max AS note_max,
-        e.coefficient AS note_coef,
-        rg.id_rendu,
-        rg.id_groupe,
-        r.id_evaluation
-    FROM Rendu r
-    INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
-    INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
-    INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
-    INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
-    LEFT JOIN Rendu_Evaluation re 
-        ON rg.id_rendu = re.id_rendu 
-        AND rg.id_groupe = re.id_groupe 
-        AND re.id_etudiant = u.id_utilisateur
-    LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
-    LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
-    WHERE r.id_projet = ? 
-        AND r.id_rendu = ? 
-        AND r.id_evaluation IS NOT NULL 
-        AND ee.id_utilisateur = ?  -- Vérification que l'évaluateur est bien assigné à l'évaluation
-    GROUP BY rg.id_rendu, rg.id_groupe, r.id_evaluation
-    ORDER BY g.nom, r.date_limite;
-    ";
+            SELECT 
+            g.nom AS groupe_nom,
+            r.titre AS rendu_titre,
+            r.date_limite AS rendu_date_limite,
+            rg.statut AS rendu_statut,
+            MAX(re.note) AS rendu_note, -- Aggregate this column
+            GROUP_CONCAT(
+                CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(re.note, 'Non noté'))
+                SEPARATOR '\n'
+            ) AS notes_individuelles,
+            e.note_max AS note_max,
+            e.coefficient AS note_coef,
+            rg.id_rendu,
+            rg.id_groupe,
+            r.id_evaluation
+        FROM Rendu r
+        INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
+        INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe
+        INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
+        INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
+        LEFT JOIN Rendu_Evaluation re 
+            ON rg.id_rendu = re.id_rendu 
+            AND rg.id_groupe = re.id_groupe 
+            AND re.id_etudiant = u.id_utilisateur
+        LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
+        LEFT JOIN Evaluation_Evaluateur ee ON e.id_evaluation = ee.id_evaluation
+        WHERE r.id_projet = ? 
+            AND r.id_rendu = ? 
+            AND r.id_evaluation IS NOT NULL 
+            AND ee.id_utilisateur = ?
+        GROUP BY rg.id_rendu, rg.id_groupe, r.id_evaluation, g.nom, r.titre, r.date_limite, rg.statut, e.note_max, e.coefficient
+        ORDER BY g.nom, r.date_limite";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae, $id_rendu, $idEvaluateur]);

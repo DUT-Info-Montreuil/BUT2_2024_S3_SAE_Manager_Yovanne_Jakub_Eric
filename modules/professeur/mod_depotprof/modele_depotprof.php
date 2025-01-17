@@ -21,7 +21,7 @@ Class ModeleDepotProf extends Connexion {
 
     public function getNomDepot($idRendue){
         $bdd = $this->getBdd();
-        $sql = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $sql = "SELECT titre FROM Rendu WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$idRendue]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

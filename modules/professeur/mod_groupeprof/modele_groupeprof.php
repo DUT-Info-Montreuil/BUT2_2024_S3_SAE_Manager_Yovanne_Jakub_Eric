@@ -165,7 +165,7 @@ class ModeleGroupeProf extends Connexion
     public function lieeProjetGrp($idGroupe, $idSae)
     {
         $bdd = $this->getBdd();
-        $projetgrp = "INSERT INTO projet_groupe (id_groupe, id_projet) VALUES (?, ?)";
+        $projetgrp = "INSERT INTO Projet_Groupe (id_groupe, id_projet) VALUES (?, ?)";
         $stmt2 = $bdd->prepare($projetgrp);
         $stmt2->execute([$idGroupe, $idSae]);
     }
@@ -173,7 +173,7 @@ class ModeleGroupeProf extends Connexion
     public function ajouterEtudiantAuGroupe($idGroupe, $idEtudiant)
     {
         $bdd = $this->getBdd();
-        $query = "INSERT INTO groupe_etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
+        $query = "INSERT INTO Groupe_Etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idEtudiant, $idGroupe]);
     }
