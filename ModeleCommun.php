@@ -57,8 +57,8 @@ class ModeleCommun extends Connexion
     {
         $bdd = static::getBdd();
 
-        // Récupérer les évaluations de type 'Rendu' et 'Soutenance' pour l'étudiant dans le groupe
-        $queryEvaluations = "
+        try {
+            $queryEvaluations = "
         SELECT 
             AE.id_evaluation, 
             AE.note, 
@@ -70,38 +70,40 @@ class ModeleCommun extends Connexion
             Evaluation E ON AE.id_evaluation = E.id_evaluation
         WHERE 
             AE.id_etudiant = ? AND AE.id_groupe = ?
-    ";
-        $stmtEvaluations = $bdd->prepare($queryEvaluations);
-        $stmtEvaluations->execute([$idEtudiant, $idGroupe]);
-        $evaluations = $stmtEvaluations->fetchAll(PDO::FETCH_ASSOC);
+        ";
+            $stmtEvaluations = $bdd->prepare($queryEvaluations);
+            $stmtEvaluations->execute([$idEtudiant, $idGroupe]);
+            $evaluations = $stmtEvaluations->fetchAll(PDO::FETCH_ASSOC);
 
-        $totalNotePonderee = 0;
-        $totalCoef = 0;
+            $totalNotePonderee = 0;
+            $totalCoef = 0;
 
-        // Calcul des notes pondérées
-        foreach ($evaluations as $evaluation) {
-            $noteSur20 = ($evaluation['note'] / $evaluation['note_max']) * 20;
-            $totalNotePonderee += $noteSur20 * $evaluation['coefficient'];
-            $totalCoef += $evaluation['coefficient'];
-        }
+            foreach ($evaluations as $evaluation) {
+                $noteSur20 = ($evaluation['note'] / $evaluation['note_max']) * 20;
+                $totalNotePonderee += $noteSur20 * $evaluation['coefficient'];
+                $totalCoef += $evaluation['coefficient'];
+            }
 
-        // Calcul de la note finale
-        if ($totalCoef > 0) {
-            $noteFinale = $totalNotePonderee / $totalCoef;
-        } else {
-            $noteFinale = 0;
-        }
+            if ($totalCoef > 0) {
+                $noteFinale = $totalNotePonderee / $totalCoef;
+            } else {
+                $noteFinale = 0;
+            }
 
-        // Mise à jour de la note finale dans la table `Groupe_Etudiant`
-        $updateQuery = "
+            $updateQuery = "
         UPDATE Groupe_Etudiant
         SET note_finale = ?
         WHERE id_utilisateur = ? AND id_groupe = ?
-    ";
-        $updateStmt = $bdd->prepare($updateQuery);
-        $updateStmt->execute([$noteFinale, $idEtudiant, $idGroupe]);
+        ";
+            $updateStmt = $bdd->prepare($updateQuery);
+            $updateStmt->execute([$noteFinale, $idEtudiant, $idGroupe]);
 
-        return true;
+            return true;
+
+        } catch (PDOException $e) {
+            error_log('Erreur SQL : ' . $e->getMessage());
+            return false;
+        }
     }
 
 

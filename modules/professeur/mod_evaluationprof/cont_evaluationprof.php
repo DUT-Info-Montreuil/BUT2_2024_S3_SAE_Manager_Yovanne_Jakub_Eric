@@ -161,18 +161,18 @@ class ContEvaluationProf
             $this->gestionEvaluationsSAE();
             return;
         }
-        $id = $_POST['id'];
+        $idEvaluation = $_POST['id'];
         $note_max = $_POST['note_max'] ?? null;
         $coefficient = $_POST['coefficient'] ?? null;
         if ($note_max === null || $coefficient === null) {
-            $evaluation = $this->modele->getEvaluationById($id);
+            $evaluation = $this->modele->getEvaluationById($idEvaluation);
             $note_max = $note_max ?? $evaluation['note_max'];
             $coefficient = $coefficient ?? $evaluation['coefficient'];
         }
-        $this->modele->modifierEvaluation($id, $note_max, $coefficient);
-        $this->mettreAJourNotesFinales($id);
-        $this->gererDelegationEvaluateurs($id);
-        $this->gererEvaluateurs($id);
+        $this->modele->modifierEvaluation($idEvaluation, $note_max, $coefficient);
+        $this->mettreAJourNotesFinales($idEvaluation);
+        $this->gererDelegationEvaluateurs($idEvaluation);
+        $this->gererEvaluateurs($idEvaluation);
         $this->gestionEvaluationsSAE();
     }
 
@@ -397,6 +397,7 @@ class ContEvaluationProf
                     $this->updateNote($id_etudiant, $note, $id_evaluation, $id_groupe);
                 }
             }
+            $this->mettreAJourNotesFinales($id_evaluation);
         }
         $this->gestionEvaluationsSAE();
     }
@@ -443,7 +444,6 @@ class ContEvaluationProf
             $criteres = $this->getEvaluationCriteres($id, $type_evaluation);
 
             $this->processNotes($notes, $criteres, $type_evaluation, $id_groupe, $id, $noteMax, $id_evaluateur, $commentaire);
-
             $this->gestionEvaluationsSAE();
         }
     }
@@ -517,6 +517,7 @@ class ContEvaluationProf
             $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
             $this->modele->sauvegarderNoteGlobale($id_groupe, $idUtilisateur, $id_evaluation, $id_evaluateur, $note, $commentaire);
         }
+        $this->mettreAJourNotesFinales($id_evaluation);
     }
 
     /**
@@ -552,6 +553,7 @@ class ContEvaluationProf
             $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
             $this->modele->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
         }
+        $this->mettreAJourNotesFinales($id_evaluation);
     }
 
     /**
