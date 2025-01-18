@@ -26,11 +26,13 @@ class ModeleNotesEtud extends Connexion
     LEFT JOIN 
         Projet_Groupe pg ON ge.id_groupe = pg.id_groupe AND pg.id_projet = ?
     LEFT JOIN 
-        Rendu_Evaluation re ON ge.id_groupe = re.id_groupe AND u.id_utilisateur = re.id_etudiant
+        Rendu_Groupe rg ON ge.id_groupe = rg.id_groupe
     LEFT JOIN 
-        Rendu r ON re.id_rendu = r.id_rendu
+        Rendu r ON rg.id_rendu = r.id_rendu
     LEFT JOIN 
         Evaluation e ON r.id_evaluation = e.id_evaluation
+    LEFT JOIN 
+        Activite_Evaluation re ON e.id_evaluation = re.id_evaluation AND ge.id_utilisateur = re.id_etudiant
     WHERE 
         u.id_utilisateur = ? AND pg.id_projet = ?
     ";
@@ -41,6 +43,7 @@ class ModeleNotesEtud extends Connexion
 
         return $result;
     }
+
 
     public function getAllSoutenances($idUtilisateur, $idProjet)
     {
@@ -60,11 +63,13 @@ class ModeleNotesEtud extends Connexion
     LEFT JOIN 
         Projet_Groupe pg ON ge.id_groupe = pg.id_groupe AND pg.id_projet = ?
     LEFT JOIN 
-        Soutenance_Evaluation se ON ge.id_groupe = se.id_groupe AND u.id_utilisateur = se.id_etudiant
+        Soutenance_Groupe sg ON ge.id_groupe = sg.id_groupe
     LEFT JOIN 
-        Soutenance s ON se.id_soutenance = s.id_soutenance
+        Soutenance s ON sg.id_soutenance = s.id_soutenance
     LEFT JOIN 
         Evaluation e ON s.id_evaluation = e.id_evaluation
+    LEFT JOIN 
+        Activite_Evaluation se ON e.id_evaluation = se.id_evaluation AND ge.id_utilisateur = se.id_etudiant
     WHERE 
         u.id_utilisateur = ? AND pg.id_projet = ?
     ";
@@ -75,6 +80,8 @@ class ModeleNotesEtud extends Connexion
 
         return $result;
     }
+
+
 
 
     public function getAllNotesSAE($idUtilisateur, $idProjet)
@@ -119,10 +126,10 @@ class ModeleNotesEtud extends Connexion
         $bdd = $this->getBdd();
 
         $query = "
-        SELECT note_finale
-        FROM Groupe_Etudiant ge
-        LEFT JOIN Projet_Groupe pg ON ge.id_groupe = pg.id_groupe
-        WHERE ge.id_utilisateur = ? AND pg.id_projet = ?
+    SELECT note_finale
+    FROM Groupe_Etudiant ge
+    LEFT JOIN Projet_Groupe pg ON ge.id_groupe = pg.id_groupe
+    WHERE ge.id_utilisateur = ? AND pg.id_projet = ?
     ";
 
         $stmt = $bdd->prepare($query);
@@ -135,4 +142,5 @@ class ModeleNotesEtud extends Connexion
             return null;
         }
     }
+
 }
