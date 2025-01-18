@@ -25,8 +25,7 @@ class ModeleEvaluationProf extends Connexion
             'getAllRenduSAE',
             'getCriteresNotationRendu',
             'sauvegarderNoteRenduCritere',
-            'sauvegarderNoteRenduEvaluation',
-            'modifierEvaluationRendu'
+            'sauvegarderNoteRenduEvaluation'
         ];
 
         $soutenanceMethods = [
@@ -41,8 +40,7 @@ class ModeleEvaluationProf extends Connexion
             'getAllSoutenanceSAE',
             'getCriteresNotationSoutenance',
             'sauvegarderNoteSoutenanceCritere',
-            'sauvegarderNoteSoutenanceEvaluation',
-            'modifierEvaluationSoutenance'
+            'sauvegarderNoteSoutenanceEvaluation'
         ];
         if (in_array($method, $renduMethods)) {
             if (method_exists($this->modeleRendu, $method)) {
@@ -190,15 +188,34 @@ class ModeleEvaluationProf extends Connexion
     {
         $bdd = static::getBdd();
         $query = "
-        SELECT GE.id_utilisateur, GE.id_groupe
-        FROM Groupe_Etudiant GE
-        JOIN Rendu_Evaluation RE ON GE.id_utilisateur = RE.id_etudiant
-        WHERE RE.id_evaluation = ?
+        SELECT 
+            GE.id_utilisateur, 
+            GE.id_groupe
+        FROM 
+            Groupe_Etudiant GE
+        JOIN 
+            Activite_Evaluation AE ON GE.id_utilisateur = AE.id_etudiant AND GE.id_groupe = AE.id_groupe
+        WHERE 
+            AE.id_evaluation = ?
     ";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idEvaluation]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function modifierEvaluationNote($id_evaluation, $id_groupe, $id_etudiant, $note)
+    {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Activite_Evaluation
+              SET note = ?
+              WHERE id_evaluation = ?
+              AND id_groupe = ?
+              AND id_etudiant = ?";
+
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$note, $id_evaluation, $id_groupe, $id_etudiant]);
+    }
+
     public function getEvaluationById($id)
     {
         $bdd = $this->getBdd();
@@ -317,18 +334,30 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function creerEvaluationPourRendu($id_rendu, $coefficient, $note_max, $evaluateur)
+    public function creerEvaluation($id_rendu, $coefficient, $note_max, $evaluateur, $typeEvaluation)
     {
-        $id_evaluation = $this->modeleRendu->creerEvaluationPourRendu($id_rendu, $coefficient, $note_max);
-        $this->insererEvaluateur($id_evaluation, $evaluateur, true);
-        return $id_evaluation;
-    }
-    public function creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur)
-    {
-        $id_evaluation = $this->modeleSoutenance->creerEvaluationPourSoutenance($id_soutenance, $coefficient, $note_max, $evaluateur);
-        $this->insererEvaluateur($id_evaluation, $evaluateur, true);
-        return $id_evaluation;
+        $bdd = self::getBdd();
 
+        $query = "
+    INSERT INTO Evaluation (coefficient, note_max, type_evaluation)
+    VALUES (?, ?, ?)
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$coefficient, $note_max, $typeEvaluation]);
+
+        $id_evaluation = $bdd->lastInsertId();
+
+        if ($typeEvaluation === 'Rendu') {
+            $queryLink = "UPDATE Rendu SET id_evaluation = ? WHERE id_rendu = ?";
+            $stmtLink = $bdd->prepare($queryLink);
+            $stmtLink->execute([$id_evaluation, $id_rendu]);
+        } elseif ($typeEvaluation === 'Soutenance') {
+            $queryLink = "UPDATE Soutenance SET id_evaluation = ? WHERE id_soutenance = ?";
+            $stmtLink = $bdd->prepare($queryLink);
+            $stmtLink->execute([$id_evaluation, $id_rendu]);
+        }
+        $this->insererEvaluateur($id_evaluation, $evaluateur, true);
+        return $id_evaluation;
     }
     public function insererEvaluateur($id_evaluation, $id_utilisateur, $is_principal = false)
     {
@@ -415,5 +444,29 @@ class ModeleEvaluationProf extends Connexion
             VALUES (?, ? , ? , ?, ?)";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$nom, $description, $coefficient, $note_max, $idEvaluation]);
+    }
+
+    public function sauvegarderNoteGlobale($id_groupe, $idEtudiant, $id_evaluation, $idEvaluateur, $note, $commentaire)
+    {
+        $bdd = $this->getBdd();
+
+        $checkQuery = "SELECT COUNT(*) FROM Activite_Evaluation
+                   WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?";
+        $checkStmt = $bdd->prepare($checkQuery);
+        $checkStmt->execute([$id_evaluation, $id_groupe, $idEtudiant]);
+        $exists = $checkStmt->fetchColumn();
+
+        if ($exists > 0) {
+            $updateQuery = "UPDATE Activite_Evaluation
+                        SET note = ?, commentaire = ?, id_evaluateur = ?
+                        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?";
+            $updateStmt = $bdd->prepare($updateQuery);
+            $updateStmt->execute([$note, $commentaire, $idEvaluateur, $id_evaluation, $id_groupe, $idEtudiant]);
+        } else {
+            $insertQuery = "INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
+                        VALUES (?, ?, ?, ?, ?, ?)";
+            $insertStmt = $bdd->prepare($insertQuery);
+            $insertStmt->execute([$id_evaluation, $id_groupe, $idEtudiant, $idEvaluateur, $note, $commentaire]);
+        }
     }
 }
