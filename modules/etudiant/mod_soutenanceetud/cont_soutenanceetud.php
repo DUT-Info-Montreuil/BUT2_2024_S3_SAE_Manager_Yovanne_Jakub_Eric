@@ -41,14 +41,16 @@ Class ContSoutenanceEtud {
     {
         $idSae = $_GET['idProjet'];
         $id_groupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
-        $allSoutenance = $this->modele->getAllSoutenances($idSae);
+        $allSoutenance = $this->modele->getAllSoutenances($idSae, $id_groupe);
 
         foreach ($allSoutenance as &$soutenance) {
             $evaluation = $this->modele->getNoteEtCommentaire($soutenance['id_soutenance'], $id_groupe);
             $soutenance['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
             $soutenance['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : "Aucun commentaire";
+            $soutenance['heure_passage'] = isset($soutenance['heure_passage']) ? $soutenance['heure_passage'] : null;
             $soutenance['date_soutenance'] = $this->formatDate($soutenance['date_soutenance']);
         }
+
         if (!empty($allSoutenance)) {
             $this->vue->afficherAllSoutenances($allSoutenance);
         } else {

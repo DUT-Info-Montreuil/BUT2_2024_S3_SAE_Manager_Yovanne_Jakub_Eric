@@ -131,14 +131,19 @@ class ModeleDepotEtud extends Connexion
     public function getNoteEtCommentaire($idRendu, $idGroupe)
     {
         $bdd = $this->getBdd();
-        $sql = "SELECT note, commentaire 
-            FROM Rendu_Evaluation 
-            WHERE id_rendu = ? AND id_groupe = ?
+
+        $sql = "SELECT ae.note, ae.commentaire 
+            FROM Activite_Evaluation ae
+            INNER JOIN Rendu_Groupe rg ON rg.id_groupe = ? AND rg.id_rendu = ?
+            WHERE ae.id_evaluation = (SELECT id_evaluation FROM Rendu WHERE id_rendu = ?)
             LIMIT 1";
+
         $stmt = $bdd->prepare($sql);
-        $stmt->execute([$idRendu, $idGroupe]);
+        $stmt->execute([$idGroupe, $idRendu, $idRendu]);
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
 
     public function getNomGroupe($idGroupe)
     {
