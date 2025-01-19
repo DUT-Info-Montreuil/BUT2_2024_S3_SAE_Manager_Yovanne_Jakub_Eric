@@ -174,21 +174,30 @@ class VueGroupeProf extends VueGenerique
             <h2>Ajouter un Nouveau Groupe</h2>
             <form method="post" action="index.php?module=groupeprof&action=creerGroupe&idProjet=<?php echo $idSae; ?>">
                 <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+
                 <div class="form-group mt-4">
                     <label for="nom_groupe">Nom du Groupe</label>
                     <input type="text" class="form-control" id="nom_groupe" name="nom_groupe"
                            placeholder="Entrez le nom du groupe" required>
                 </div>
+
+                <div class="form-group mt-3">
+                    <label for="recherche_etudiant">Filtrer les Étudiants par Nom</label>
+                    <input type="text" id="recherche_etudiant" class="form-control"
+                           placeholder="Rechercher un étudiant par nom" onkeyup="filtrerEtudiants()" />
+                </div>
+
                 <div class="form-group mt-3">
                     <label for="etudiants">Sélectionner des Étudiants</label>
-                    <select multiple class="form-control" id="etudiants" name="etudiants[]">
+                    <select multiple class="form-control" id="etudiants" name="etudiants[]" size="20">  <!-- Augmenter la taille de la sélection -->
                         <?php foreach ($etudiants as $etudiant): ?>
-                            <option value="<?php echo $etudiant['id_utilisateur']; ?>">
+                            <option value="<?php echo $etudiant['id_utilisateur']; ?>" class="etudiant">
                                 <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
+
                 <button type="submit" class="btn btn-success mt-4">Créer le Groupe</button>
                 <a href="index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=<?php echo $idSae; ?>"
                    class="btn btn-secondary mt-4">Retour</a>
@@ -196,4 +205,5 @@ class VueGroupeProf extends VueGenerique
         </div>
         <?php
     }
+
 }
