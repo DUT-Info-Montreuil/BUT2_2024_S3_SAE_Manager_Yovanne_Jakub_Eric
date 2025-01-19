@@ -102,13 +102,13 @@ class ContEvaluationProf
     {
         $idSAE = $_GET['idProjet'];
         if (isset($_POST['id_soutenance'])) {
-            $this->handleEvaluationForm('soutenance', $_POST['id_soutenance'], $idSAE);
+            $this->gererEvaluationForm('soutenance', $_POST['id_soutenance'], $idSAE);
         } elseif (isset($_POST['id_rendu'])) {
-            $this->handleEvaluationForm('rendu', $_POST['id_rendu'], $idSAE);
+            $this->gererEvaluationForm('rendu', $_POST['id_rendu'], $idSAE);
         }
     }
 
-    private function handleEvaluationForm($type, $id_evaluation, $idSAE)
+    private function gererEvaluationForm($type, $id_evaluation, $idSAE)
     {
         if (isset($_POST['type_demande'])) {
             $type_demande = $_POST['type_demande'];
@@ -496,7 +496,7 @@ class ContEvaluationProf
             foreach ($notes as $idUtilisateur => $noteCriteria) {
                 foreach ($noteCriteria as $idCritere => $note) {
                     if ($this->isValidNote($note, $noteMax)) {
-                        $this->saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur, $commentaire);
+                        $this->saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur);
                     }
                 }
                 $this->saveEvaluationNote($id, $id_groupe, $idUtilisateur, $type_evaluation, $id_evaluateur);
@@ -524,18 +524,17 @@ class ContEvaluationProf
      * Sauvegarde la note d'un critère spécifique pour un utilisateur.
      *
      */
-    private function saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur, $commentaire)
+    private function saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur)
     {
         if ($type_evaluation === 'rendu') {
             $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
             if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                $this->modele->sauvegarderNoteRenduCritere($idUtilisateur, $note, $id, $id_groupe, $idCritere, $id_evaluation, $id_evaluateur, $commentaire);
+                $this->modele->sauvegarderNoteCritere($idUtilisateur, $note, $id_groupe, $idCritere);
             }
         } else {
             $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
             if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
-                $this->modele->sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $id, $id_groupe, $idCritere, $id_evaluation, $id_evaluateur, $commentaire);
-                //sauvegarderNoteSoutenanceCritere
+                $this->modele->sauvegarderNoteCritere($idUtilisateur, $note, $id_groupe, $idCritere);
             }
         }
     }
@@ -544,14 +543,14 @@ class ContEvaluationProf
      * Sauvegarde la note de l'évaluation (rendu ou soutenance) pour un utilisateur.
      *
      */
-    private function saveEvaluationNote(int $id, int $id_groupe, int $idUtilisateur, string $type_evaluation, int $id_evaluateur)
+    private function saveEvaluationNote($id, $id_groupe, $idUtilisateur, $type_evaluation, $id_evaluateur, $commentaire)
     {
         if ($type_evaluation === 'rendu') {
             $id_evaluation = $this->modele->getIdEvaluationByRendu($id);
-            $this->modele->sauvegarderNoteRenduEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+            $this->modele->sauvegarderNoteEvaluation($id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur, $commentaire);
         } else {
             $id_evaluation = $this->modele->getIdEvaluationBySoutenance($id);
-            $this->modele->sauvegarderNoteSoutenanceEvaluation($id, $id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur);
+            $this->modele->sauvegarderNoteEvaluation($id_groupe, $id_evaluation, $idUtilisateur, $id_evaluateur, $commentaire);
         }
         $this->mettreAJourNotesFinales($id_evaluation);
     }
@@ -572,10 +571,10 @@ class ContEvaluationProf
             foreach ($allMembres as $membre) {
                 foreach ($notes as $idCritere => $noteCriteria) {
                     if ($this->isValidNote($noteCriteria, $noteMax)) {
-                        $this->saveCriterionNote($membre['id_utilisateur'], $noteCriteria, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur, $commentaire);
+                        $this->saveCriterionNote($membre['id_utilisateur'], $noteCriteria, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur);
                     }
                 }
-                $this->saveEvaluationNote($id, $id_groupe, $membre['id_utilisateur'], $type_evaluation, $id_evaluateur);
+                $this->saveEvaluationNote($id, $id_groupe, $membre['id_utilisateur'], $type_evaluation, $id_evaluateur, $commentaire);
             }
         }
     }

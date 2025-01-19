@@ -18,29 +18,23 @@ class ModeleEvaluationProf extends Connexion
             'getEvaluationByIdRendu',
             'getCriteresNotationRendu',
             'infNoteMaxRendu',
-            'sauvegarderNoteGlobaleRendu',
             'getIdEvaluationByRendu',
             'getRenduEvaluationGerer',
             'getRenduEvaluation',
             'getAllRenduSAE',
-            'getCriteresNotationRendu',
-            'sauvegarderNoteRenduCritere',
-            'sauvegarderNoteRenduEvaluation'
+            'getCriteresNotationRendu'
         ];
 
         $soutenanceMethods = [
             'getCriteresNotationSoutenance',
             'getEvaluationByIdSoutenance',
-            'sauvegarderNoteGlobaleSoutenance',
             'getIdEvaluationBySoutenance',
             'infNoteMaxSoutenance',
             'getSoutenanceEvaluation',
             'getEvaluationByIdSoutenance',
             'getSoutenanceEvaluationGerer',
             'getAllSoutenanceSAE',
-            'getCriteresNotationSoutenance',
-            'sauvegarderNoteSoutenanceCritere',
-            'sauvegarderNoteSoutenanceEvaluation'
+            'getCriteresNotationSoutenance'
         ];
         if (in_array($method, $renduMethods)) {
             if (method_exists($this->modeleRendu, $method)) {
@@ -467,6 +461,88 @@ class ModeleEvaluationProf extends Connexion
                         VALUES (?, ?, ?, ?, ?, ?)";
             $insertStmt = $bdd->prepare($insertQuery);
             $insertStmt->execute([$id_evaluation, $id_groupe, $idEtudiant, $idEvaluateur, $note, $commentaire]);
+        }
+    }
+
+    public function sauvegarderNoteCritere($idUtilisateur, $note, $idGroupe, $idCritere)
+    {
+        $checkQuery = "
+        SELECT COUNT(*) FROM Critere_Notation
+        WHERE id_critere = ?
+        AND id_groupe = ?
+        AND id_etudiant = ?
+    ";
+        $stmtCheck = $this->getBdd()->prepare($checkQuery);
+        $stmtCheck->execute([$idCritere, $idGroupe, $idUtilisateur]);
+        $count = $stmtCheck->fetchColumn();
+
+        if ($count > 0) {
+            $updateQuery = "
+            UPDATE Critere_Notation 
+            SET note = ?
+            WHERE id_critere = ?
+            AND id_groupe = ?
+            AND id_etudiant = ?
+        ";
+            $stmtUpdate = $this->getBdd()->prepare($updateQuery);
+            $stmtUpdate->execute([$note, $idCritere, $idGroupe, $idUtilisateur]);
+        } else {
+            $insertQuery = "
+            INSERT INTO Critere_Notation (id_critere, id_groupe, id_etudiant, note)
+            VALUES (?, ?, ?, ?)
+        ";
+            $stmtInsert = $this->getBdd()->prepare($insertQuery);
+            $stmtInsert->execute([$idCritere, $idGroupe, $idUtilisateur, $note]);
+        }
+    }
+    public function sauvegarderNoteEvaluation($idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur, $commentaire)
+    {
+        $queryCritere = "
+        SELECT cr.id_critere, cr.coefficient, cr.note_max, c.note AS note_critere
+        FROM Critere_Notation c
+        JOIN Critere cr ON c.id_critere = cr.id_critere
+        WHERE cr.id_evaluation = ? AND c.id_groupe = ? AND c.id_etudiant = ?
+    ";
+
+        $stmtCritere = $this->getBdd()->prepare($queryCritere);
+        $stmtCritere->execute([$idEvaluation, $idGroupe, $idEtudiant]);
+
+        $sommeNotes = 0;
+        $sommeCoefficients = 0;
+
+        while ($row = $stmtCritere->fetch(PDO::FETCH_ASSOC)) {
+            $noteCritere = $row['note_critere'];
+            $coefficient = $row['coefficient'];
+            $sommeNotes += $noteCritere * $coefficient;
+            $sommeCoefficients += $coefficient;
+        }
+
+        $noteGlobale = $sommeCoefficients > 0 ? $sommeNotes / $sommeCoefficients : 0;
+
+        $checkQuery = "
+        SELECT COUNT(*) 
+        FROM Activite_Evaluation
+        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
+    ";
+        $stmtCheck = $this->getBdd()->prepare($checkQuery);
+        $stmtCheck->execute([$idEvaluation, $idGroupe, $idEtudiant]);
+        $count = $stmtCheck->fetchColumn();
+
+        if ($count > 0) {
+            $updateQuery = "
+            UPDATE Activite_Evaluation
+            SET note = ?, id_evaluateur = ?, commentaire = ?
+            WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
+        ";
+            $stmtUpdate = $this->getBdd()->prepare($updateQuery);
+            $stmtUpdate->execute([$noteGlobale, $idEvaluateur, $commentaire, $idEvaluation, $idGroupe, $idEtudiant]);
+        } else {
+            $insertQuery = "
+            INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ";
+            $stmtInsert = $this->getBdd()->prepare($insertQuery);
+            $stmtInsert->execute([$idEvaluation, $idGroupe, $idEtudiant, $idEvaluateur, $noteGlobale]);
         }
     }
 }

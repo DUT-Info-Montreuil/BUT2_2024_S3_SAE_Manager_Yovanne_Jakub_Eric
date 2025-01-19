@@ -2,9 +2,6 @@
 include_once 'Connexion.php';
 
 Class ModeleDepotProf extends Connexion {
-    public function __construct()
-    {
-    }
 
     public function getAllDepotSAE($idSae) {
         $bdd = $this->getBdd();

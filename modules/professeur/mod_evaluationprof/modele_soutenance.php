@@ -27,59 +27,6 @@ class ModeleEvaluationSoutenance extends Connexion
 
     }
 
-    public function sauvegarderNoteSoutenanceCritere($idUtilisateur, $note, $idRendu, $idGroupe, $idCritere, $idEvaluation, $idEvaluateur, $commentaire)
-    {
-        try {
-            $checkQuery = "
-        SELECT COUNT(*) FROM Critere_Notation
-        WHERE id_critere = ? 
-        AND id_groupe = ? 
-        AND id_etudiant = ?
-        ";
-            $stmtCheck = $this->getBdd()->prepare($checkQuery);
-            $stmtCheck->execute([$idCritere, $idGroupe, $idUtilisateur]);
-            $count = $stmtCheck->fetchColumn();
-
-            if ($count > 0) {
-                $updateQuery = "
-            UPDATE Critere_Notation 
-            SET note = ?
-            WHERE id_critere = ? 
-            AND id_groupe = ? 
-            AND id_etudiant = ?
-            ";
-                $stmtUpdate = $this->getBdd()->prepare($updateQuery);
-                $stmtUpdate->execute([$note, $idCritere, $idGroupe, $idUtilisateur]);
-            } else {
-                $insertQuery = "
-            INSERT INTO Critere_Notation (id_critere, id_groupe, id_etudiant, note)
-            VALUES (?, ?, ?, ?)
-            ";
-                $stmtInsert = $this->getBdd()->prepare($insertQuery);
-                $stmtInsert->execute([$idCritere, $idGroupe, $idUtilisateur, $note]);
-            }
-
-            if (!empty($commentaire)) {
-                $this->sauvegarderCommentaireSoutenance($idUtilisateur, $idEvaluation, $idGroupe, $idEvaluateur, $commentaire, $note);
-            }
-
-        } catch (PDOException $e) {
-            error_log('Erreur SQL : ' . $e->getMessage());
-            throw new Exception("Une erreur est survenue lors de la sauvegarde de la note.");
-        }
-    }
-
-
-    public function sauvegarderCommentaireSoutenance($idUtilisateur, $idGroupe, $idEvaluateur, $commentaire, $note, $idEvaluation)
-    {
-        $query = "
-        INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, commentaire, note)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ";
-        $stmt = $this->getBdd()->prepare($query);
-        $stmt->execute([$idEvaluation, $idGroupe, $idUtilisateur, $idEvaluateur, $commentaire, $note]);
-    }
-
     public function getIdEvaluationBySoutenance($id_soutenance)
     {
         $bdd = $this->getBdd();
@@ -162,7 +109,8 @@ class ModeleEvaluationSoutenance extends Connexion
         g.nom AS groupe_nom,
         s.titre AS soutenance_titre,
         s.date_soutenance AS soutenance_date,
-        MAX(ae.note) AS soutenance_note,  -- Récupère la meilleure note (ou NULL)
+        sg.heure_passage AS heure_passage,
+        MAX(ae.note) AS soutenance_note,
         GROUP_CONCAT(
             CONCAT(u.nom, ' ', u.prenom, ' : ', COALESCE(ae.note, 'Non noté'))
             SEPARATOR '\n'
@@ -187,13 +135,14 @@ class ModeleEvaluationSoutenance extends Connexion
         AND s.id_soutenance = ? 
         AND s.id_evaluation IS NOT NULL 
         AND ee.id_utilisateur = ?
-    GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation, g.nom, s.titre, s.date_soutenance, e.note_max, e.coefficient
+    GROUP BY sg.id_soutenance, sg.id_groupe, s.id_evaluation, g.nom, s.titre, s.date_soutenance, sg.heure_passage, e.note_max, e.coefficient
     ORDER BY g.nom, s.date_soutenance";
 
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae, $id_soutenance, $idEvaluateur]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function getAllSoutenanceSAE($idSae)
     {
@@ -237,62 +186,6 @@ class ModeleEvaluationSoutenance extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function sauvegarderNoteSoutenanceEvaluation($idRendu, $idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur)
-    {
-        try {
-            $queryCritere = "
-        SELECT cr.id_critere, cr.coefficient, cr.note_max, c.note AS note_critere
-        FROM Critere_Notation c
-        JOIN Critere cr ON c.id_critere = cr.id_critere
-        WHERE cr.id_evaluation = ? AND c.id_groupe = ? AND c.id_etudiant = ?
-        ";
-
-            $stmtCritere = $this->getBdd()->prepare($queryCritere);
-            $stmtCritere->execute([$idEvaluation, $idGroupe, $idEtudiant]);
-
-            $sommeNotes = 0;
-            $sommeCoefficients = 0;
-
-            while ($row = $stmtCritere->fetch(PDO::FETCH_ASSOC)) {
-                $noteCritere = $row['note_critere'];
-                $coefficient = $row['coefficient'];
-                $sommeNotes += $noteCritere * $coefficient;
-                $sommeCoefficients += $coefficient;
-            }
-
-            $noteGlobale = $sommeCoefficients > 0 ? $sommeNotes / $sommeCoefficients : 0;
-
-            $checkQuery = "
-        SELECT COUNT(*) 
-        FROM Activite_Evaluation
-        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
-        ";
-
-            $stmtCheck = $this->getBdd()->prepare($checkQuery);
-            $stmtCheck->execute([$idEvaluation, $idGroupe, $idEtudiant]);
-            $count = $stmtCheck->fetchColumn();
-
-            if ($count > 0) {
-                $updateQuery = "
-            UPDATE Activite_Evaluation
-            SET note = ?, id_evaluateur = ?
-            WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
-            ";
-                $stmtUpdate = $this->getBdd()->prepare($updateQuery);
-                $stmtUpdate->execute([$noteGlobale, $idEvaluateur, $idEvaluation, $idGroupe, $idEtudiant]);
-            } else {
-                $insertQuery = "
-            INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, note)
-            VALUES (?, ?, ?, ?, ?)
-            ";
-                $stmtInsert = $this->getBdd()->prepare($insertQuery);
-                $stmtInsert->execute([$idEvaluation, $idGroupe, $idEtudiant, $idEvaluateur, $noteGlobale]);
-            }
-        } catch (PDOException $e) {
-            error_log('Erreur SQL : ' . $e->getMessage());
-            throw new Exception("Une erreur est survenue lors de la sauvegarde de la note.");
-        }
-    }
 
     public function getNotesParEvaluationSoutenance($id_groupe, $id_evaluation)
     {
