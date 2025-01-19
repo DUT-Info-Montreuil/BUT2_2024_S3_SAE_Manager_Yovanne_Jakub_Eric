@@ -36,11 +36,20 @@ class ContDashboard
         $idProjet = $_GET['idProjet'];
         $projectData = $this->modele->getProjectData($idProjet);
         $groups = $this->modele->getGroupsForProject($idProjet);
+
+        foreach ($groups as &$group) {
+            $group['membres'] = $this->modele->getMembersForGroup($group['id_groupe']);
+            $group['notes'] = $this->modele->getNotesForGroup($group['id_groupe']);
+        }
+
         $evaluations = $this->modele->getEvaluationsForProject($idProjet);
         $resources = $this->modele->getResourcesForProject($idProjet);
-        $defenses = $this->modele->getDefensesForProject($idProjet);
-        $this->vue->renderDashboard($projectData, $groups, $evaluations, $resources, $defenses);
+        $soutenance = $this->modele->getSoutenanceProjet($idProjet);
+        $rendu = $this->modele->getRenduProjet($idProjet);
+
+        $this->vue->renderDashboard($projectData, $groups, $evaluations, $resources, $soutenance, $rendu);
     }
+
 }
 
 

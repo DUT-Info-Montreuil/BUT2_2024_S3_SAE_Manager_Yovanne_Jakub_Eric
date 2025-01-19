@@ -499,7 +499,7 @@ class ContEvaluationProf
                         $this->saveCriterionNote($idUtilisateur, $note, $id, $id_groupe, $idCritere, $type_evaluation, $id_evaluateur);
                     }
                 }
-                $this->saveEvaluationNote($id, $id_groupe, $idUtilisateur, $type_evaluation, $id_evaluateur);
+                $this->saveEvaluationNote($id, $id_groupe, $idUtilisateur, $type_evaluation, $id_evaluateur, $commentaire);
             }
         }
     }

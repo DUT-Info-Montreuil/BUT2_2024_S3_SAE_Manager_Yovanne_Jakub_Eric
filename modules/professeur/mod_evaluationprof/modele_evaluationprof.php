@@ -498,10 +498,10 @@ class ModeleEvaluationProf extends Connexion
     public function sauvegarderNoteEvaluation($idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur, $commentaire)
     {
         $queryCritere = "
-        SELECT cr.id_critere, cr.coefficient, cr.note_max, c.note AS note_critere
-        FROM Critere_Notation c
-        JOIN Critere cr ON c.id_critere = cr.id_critere
-        WHERE cr.id_evaluation = ? AND c.id_groupe = ? AND c.id_etudiant = ?
+    SELECT cr.id_critere, cr.coefficient, cr.note_max, c.note AS note_critere
+    FROM Critere_Notation c
+    JOIN Critere cr ON c.id_critere = cr.id_critere
+    WHERE cr.id_evaluation = ? AND c.id_groupe = ? AND c.id_etudiant = ?
     ";
 
         $stmtCritere = $this->getBdd()->prepare($queryCritere);
@@ -520,9 +520,9 @@ class ModeleEvaluationProf extends Connexion
         $noteGlobale = $sommeCoefficients > 0 ? $sommeNotes / $sommeCoefficients : 0;
 
         $checkQuery = "
-        SELECT COUNT(*) 
-        FROM Activite_Evaluation
-        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
+    SELECT COUNT(*) 
+    FROM Activite_Evaluation
+    WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
     ";
         $stmtCheck = $this->getBdd()->prepare($checkQuery);
         $stmtCheck->execute([$idEvaluation, $idGroupe, $idEtudiant]);
@@ -530,19 +530,20 @@ class ModeleEvaluationProf extends Connexion
 
         if ($count > 0) {
             $updateQuery = "
-            UPDATE Activite_Evaluation
-            SET note = ?, id_evaluateur = ?, commentaire = ?
-            WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
+        UPDATE Activite_Evaluation
+        SET note = ?, id_evaluateur = ?, commentaire = ?
+        WHERE id_evaluation = ? AND id_groupe = ? AND id_etudiant = ?
         ";
             $stmtUpdate = $this->getBdd()->prepare($updateQuery);
             $stmtUpdate->execute([$noteGlobale, $idEvaluateur, $commentaire, $idEvaluation, $idGroupe, $idEtudiant]);
         } else {
             $insertQuery = "
-            INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
-            VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO Activite_Evaluation (id_evaluation, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
+        VALUES (?, ?, ?, ?, ?, ?)
         ";
             $stmtInsert = $this->getBdd()->prepare($insertQuery);
-            $stmtInsert->execute([$idEvaluation, $idGroupe, $idEtudiant, $idEvaluateur, $noteGlobale]);
+            $stmtInsert->execute([$idEvaluation, $idGroupe, $idEtudiant, $idEvaluateur, $noteGlobale, $commentaire]);
         }
     }
+
 }
