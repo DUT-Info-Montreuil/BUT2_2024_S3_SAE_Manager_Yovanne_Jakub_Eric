@@ -84,7 +84,8 @@ class ContSoutenanceProf
     private function creerSoutenance()
     {
         $idSae = $_GET['idProjet'];
-        $this->vue->formulaireCreerSoutenance($idSae);
+        $allGroupe = $this->modele->getAllGroupeByIdSae($idSae);
+        $this->vue->formulaireCreerSoutenance($idSae, $allGroupe);
     }
 
     private function submitSoutenance()
@@ -92,13 +93,29 @@ class ContSoutenanceProf
         if (!TokenManager::verifierToken()) {
             die("Token invalide ou expiré.");
         }
+
         $idSae = $_GET['idProjet'];
-        if (isset($_POST['titre']) && !empty($_POST['titre']) && isset($_POST['date_soutenance'])) {
-            $titre = $_POST['titre'];
-            $date_soutenance = $_POST['date_soutenance'];
-            $this->modele->ajouterSoutenance($idSae, $titre, $date_soutenance);
+
+        if (!isset($_POST['titre']) || empty($_POST['titre'])) {
+            die("Titre manquant.");
+        }
+        $titre = trim($_POST['titre']);
+
+        if (!isset($_POST['date_soutenance']) || empty($_POST['date_soutenance'])) {
+            die("Date de soutenance manquante.");
+        }
+        $dateSoutenanceGenerale = $_POST['date_soutenance'];
+
+        $idSoutenance = $this->modele->ajouterSoutenance($idSae, $titre, $dateSoutenanceGenerale);
+
+        if (isset($_POST['heure_passage'])) {
+            $heuresPassage = $_POST['heure_passage'];
+            foreach ($heuresPassage as $idGroupe => $heure) {
+                if (!empty($heure)) {
+                    $this->modele->ajouterSoutenanceGroupe($idSoutenance, $idGroupe, $heure);
+                }
+            }
         }
         $this->gestionSoutenancesSAE();
     }
-
 }

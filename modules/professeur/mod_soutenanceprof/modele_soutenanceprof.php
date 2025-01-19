@@ -15,13 +15,19 @@ Class ModeleSoutenanceProf extends Connexion
         return $req->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllGroupeByIdSae($idSae){
+    public function getAllGroupeByIdSae($idSae) {
         $bdd = $this->getBdd();
-        $grpSql = "SELECT id_groupe FROM Projet_Groupe WHERE id_projet = ?";
+        $grpSql = "
+        SELECT g.id_groupe, g.nom 
+        FROM Projet_Groupe pg
+        JOIN Groupe g ON pg.id_groupe = g.id_groupe
+        WHERE pg.id_projet = ?
+    ";
         $grpReq = $bdd->prepare($grpSql);
         $grpReq->execute([$idSae]);
-        return $grpReq->fetchAll(PDO::FETCH_COLUMN);
+        return $grpReq->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public function getEtudiantsParSoutenance($idSoutenance)
     {
@@ -38,7 +44,7 @@ Class ModeleSoutenanceProf extends Connexion
     }
 
 
-    public function ajouterSoutenance($idSae, $titre, $date_soutenance){
+    public function ajouterSoutenance($idSae, $titre, $dateSoutenanceGenerale){
         $bdd = $this->getBdd();
 
         try {
@@ -46,19 +52,11 @@ Class ModeleSoutenanceProf extends Connexion
 
             $sql = "INSERT INTO Soutenance (id_soutenance, id_projet, titre, date_soutenance) VALUES (DEFAULT, ?, ?, ?)";
             $req = $bdd->prepare($sql);
-            $req->execute([$idSae, $titre, $date_soutenance]);
+            $req->execute([$idSae, $titre, $dateSoutenanceGenerale]);
 
             $lastId = $bdd->lastInsertId();
-            $groupes = $this->getAllGroupeByIdSae($idSae);
-
-            $grpSoutenanceSql = "INSERT INTO Soutenance_Groupe (id_soutenance, id_groupe) VALUES (?, ?)";
-            $grpSoutenanceReq = $bdd->prepare($grpSoutenanceSql);
-
-            foreach ($groupes as $idGroupe) {
-                $grpSoutenanceReq->execute([$lastId, $idGroupe]);
-            }
-
             $bdd->commit();
+            return $lastId;
         } catch (Exception $e) {
             $bdd->rollBack();
             throw new Exception("erreur ajout soutenance " . $e->getMessage());
@@ -83,5 +81,11 @@ Class ModeleSoutenanceProf extends Connexion
         $req->execute([$idSoutenance]);
     }
 
+    public function ajouterSoutenanceGroupe($idSoutenance, $idGroupe, $heure) {
+        $bdd = $this->getBdd();
+        $sql = "INSERT INTO Soutenance_Groupe (id_soutenance, id_groupe, heure_passage) VALUES (?, ?, ?)";
+        $req = $bdd->prepare($sql);
+        $req->execute([$idSoutenance, $idGroupe, $heure]);
+    }
 
 }

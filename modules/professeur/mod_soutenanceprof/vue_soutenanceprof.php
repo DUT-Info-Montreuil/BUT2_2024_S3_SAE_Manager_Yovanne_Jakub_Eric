@@ -84,25 +84,71 @@ class VueSoutenanceProf extends VueGenerique
         </div>
         <?php
     }
-    public function formulaireCreerSoutenance($idSae)
+    public function formulaireCreerSoutenance($idSae, $allGroupe)
     {
         ?>
         <div class="container mt-4">
             <h1 class="mb-4">Créer une Nouvelle Soutenance</h1>
             <form action="index.php?module=soutenanceprof&action=submitSoutenance&idProjet=<?php echo $idSae; ?>" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+
                 <div class="mb-3">
                     <label for="titre" class="form-label">Titre de la Soutenance</label>
-                    <input type="text" class="form-control" id="titre" name="titre" placeholder="Titre de la soutenance" required>
+                    <input
+                            type="text"
+                            class="form-control"
+                            id="titre"
+                            name="titre"
+                            placeholder="Titre de la soutenance"
+                            required>
                 </div>
+
                 <div class="mb-3">
-                    <label for="date_soutenance" class="form-label">Date de la Soutenance</label>
-                    <input type="date" class="form-control" id="date_soutenance" name="date_soutenance" required>
+                    <label for="date_soutenance" class="form-label">Date Générale de la Soutenance</label>
+                    <input
+                            type="date"
+                            class="form-control"
+                            id="date_soutenance"
+                            name="date_soutenance"
+                            required>
                 </div>
-                <button type="submit" class="btn btn-primary">Créer</button>
-                <a href="index.php?module=soutenanceprof&action=gestionSoutenancesSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary">Annuler</a>
+
+                <h3 class="mt-4">Planification des Groupes</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Nom du Groupe</th>
+                            <th>Heure de Passage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($allGroupe as $groupe): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($groupe['nom']); ?></td>
+
+                                <td>
+                                    <input
+                                            type="time"
+                                            class="form-control"
+                                            name="heure_passage[<?php echo $groupe['id_groupe']; ?>]"
+                                            required>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Créer</button>
+                    <a href="index.php?module=soutenanceprof&action=gestionSoutenancesSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary">Annuler</a>
+                </div>
             </form>
         </div>
         <?php
     }
+
+
+
 }
