@@ -78,5 +78,32 @@ Class ModeleGestUser extends Connexion
     }
 
 
+    public function updateUsers($csvFilePath) {
+        $bdd = $this->getBdd();
+        $handle = fopen($csvFilePath, 'r');
+        if ($handle) {
+            // Lire le fichier ligne par ligne
+            while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                // Supposons que le fichier CSV ait les colonnes suivantes :
+                // [login, nom, prenom, email, type_utilisateur]
+                $login = $data[0];
+                $nom = $data[1];
+                $prenom = $data[2];
+                $email = $data[3];
+                $type_utilisateur = $data[4];
+
+                // Mettre à jour l'utilisateur correspondant
+                $query = $bdd->prepare(
+                    "UPDATE Utilisateur 
+                 SET nom = ?, prenom = ?, email = ?, type_utilisateur = ? 
+                 WHERE login_utilisateur = ?"
+                );
+                $query->execute([$nom, $prenom, $email, $type_utilisateur, $login]);
+            }
+            fclose($handle);
+        }
+    }
+
+
 
 }

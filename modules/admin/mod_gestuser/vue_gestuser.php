@@ -46,7 +46,20 @@ Class VueGestUser extends VueGenerique
     public function afficherTableauAllUser($tabUser) {
         ?>
         <div class="container mt-5">
+
+
+                <h2 class="text-center">Mise à jour des Utilisateurs via un Fichier CSV</h2>
+                <form method="post" action="index.php?module=gestuser&action=traiterCSV" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                        <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Executer</button>
+                </form>
+
+
             <h2 class="text-center">Liste des Utilisateurs</h2>
+
             <form method="post" action="index.php?module=gestuser&action=modifierUser">
                 <table class="table table-striped table-hover mt-4">
                     <thead class="thead-dark">
@@ -128,6 +141,16 @@ Class VueGestUser extends VueGenerique
     public function formulaireAjoutUser(){
         ?>
         <div class="container mt-5">
+
+            <h2 class="text-center">Ajouter des Utilisateurs via un Fichier CSV</h2>
+            <form method="post" action="index.php?module=gestuser&action=traiterCSV" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                    <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Executer</button>
+            </form>
+
             <h2 class="text-center">Ajouter un Nouvel Utilisateur</h2>
             <form method="post" action="index.php?module=gestuser&action=ajouterUser">
                 <div class="mb-3">

@@ -90,7 +90,7 @@ class ModeleParametre extends Connexion
         WHERE id_utilisateur = ?";
 
         $stmt = $bdd->prepare($query);
-        $success = $stmt->execute([$logo, $id_utilisateur]);
+        $stmt->execute([$logo, $id_utilisateur]);
     }
 
     public function modifierCheminProfilPicture($idUtilisateur, $uploadPath)
@@ -131,4 +131,7 @@ class ModeleParametre extends Connexion
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+
 }

@@ -33,7 +33,7 @@ class ModuleName
         if (isset($_SESSION['id_utilisateur'], $_SESSION['timestamp'], $_SESSION['token_connexion'])) {
 
             // temps de session est toujours valide
-            if (time() - $_SESSION['timestamp'] > 1800) { // 1800 secondes = 30 minutes
+            if (time() - $_SESSION['timestamp'] > 3600) { // 1800 secondes = 30 minutes
                 $this->deconnexion();
                 $this->redirigeVersConnexion();
             }

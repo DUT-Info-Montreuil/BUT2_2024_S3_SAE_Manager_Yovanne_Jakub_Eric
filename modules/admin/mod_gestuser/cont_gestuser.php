@@ -39,6 +39,9 @@ class ContGestUser
                 case "ajouterUser" :
                     $this->ajouterUser();
                     break;
+                case "traiterCSV" :
+                    $this->traiterCSV();
+                    break;
             }
         }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
@@ -77,7 +80,6 @@ class ContGestUser
 //            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
             $password = htmlspecialchars($_POST['password']);
             $type = htmlspecialchars($_POST['type']);
-
             $this->modele->updateUser($id_utilisateur, $nom, $prenom, $email, $login, $password, $type);
         }
         $this->versModifierDesUsers();
@@ -103,5 +105,25 @@ class ContGestUser
         $this->menuGestUser();
     }
 
+    public function traiterCSV() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'&& isset($_FILES['csv_file'])) {
+            $csvFile = $_FILES['csv_file'];
+
+            if ($csvFile['error'] === UPLOAD_ERR_OK) {
+                $filePath = $csvFile['tmp_name'];
+
+                // Appeler la méthode du modèle pour traiter le fichier CSV
+                $this->modele->updateUsers($filePath);
+
+                // Retourner à la liste des utilisateurs avec un message de succès
+                echo "Mise à jour réussie depuis le fichier CSV.";
+                $this->versModifierDesUsers();
+            } else {
+                echo "Erreur lors du téléchargement du fichier CSV.";
+            }
+        } else {
+            echo "Aucun fichier CSV fourni.";
+        }
+    }
 
 }
