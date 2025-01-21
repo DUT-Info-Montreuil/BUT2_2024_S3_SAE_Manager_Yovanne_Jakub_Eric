@@ -111,7 +111,7 @@ class VueGerantProf extends VueGenerique
             <form method="post" action="index.php?module=gerantprof&action=ajouterGerants&idProjet=<?php echo $idSae; ?>">
                 <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="form-group">
-                    <label>Choisissez un rôle pour les gérant :</label>
+                    <label>Choisissez un rôle pour les gérants :</label>
                     <div class="btn-group btn-group-toggle d-flex mt-2" data-toggle="buttons">
                         <label class="btn btn-outline-primary flex-fill">
                             <input
@@ -136,8 +136,17 @@ class VueGerantProf extends VueGenerique
                     </div>
                 </div>
                 <div class="form-group mt-3">
+                    <label for="searchGerants">Rechercher des Professeurs</label>
+                    <input type="text"
+                           id="searchGerants"
+                           class="form-control mb-2"
+                           placeholder="Tapez pour rechercher...">
                     <label for="gerants">Sélectionner des Professeurs</label>
-                    <select multiple class="form-control" id="gerants" name="gerants[]">
+                    <select multiple
+                            class="form-control"
+                            id="gerants"
+                            name="gerants[]"
+                            style="height: 60vh;">
                         <?php foreach ($tabGerant as $gerant): ?>
                             <option value="<?php echo htmlspecialchars($gerant['id_utilisateur']); ?>">
                                 <?php echo htmlspecialchars($gerant['nom_complet']); ?>
@@ -145,10 +154,12 @@ class VueGerantProf extends VueGenerique
                         <?php endforeach; ?>
                     </select>
                 </div>
+
                 <button type="submit" class="btn btn-success mt-4">Ajouter les Gérants</button>
                 <a href="index.php?module=gerantprof&action=gestionGerantSAE&idProjet=<?php echo $idSae; ?>" class="btn btn-secondary mt-4">Retour</a>
             </form>
         </div>
         <?php
     }
+
 }

@@ -1,26 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let criterionCount = 0; // Initialiser le compteur de critères
+    let criterionCount = 0;
     console.log("DOMContentLoaded déclenché");
-
-    // Sélectionner le bouton "Ajouter un critère" une seule fois
     const addButton = document.getElementById('add-criterion-btn');
     console.log("addButton trouvé :", addButton);
 
-    // Vérification si l'événement est déjà attaché
     if (addButton) {
-        addButton.removeEventListener('click', addCriterion); // On le retire s'il existe déjà
-        addButton.addEventListener('click', addCriterion); // Attache l'événement
+        addButton.removeEventListener('click', addCriterion);
+        addButton.addEventListener('click', addCriterion);
     }
 
-    // Fonction pour ajouter un critère
     function addCriterion() {
         console.log("Bouton cliqué - Ajout d'un critère");
 
         const criteriaContainer = document.getElementById('criteria-container');
         const newCriterion = document.createElement('div');
-        newCriterion.classList.add('card', 'mb-3'); // Utilisation de classes Bootstrap pour la mise en forme
+        newCriterion.classList.add('card', 'mb-3');
 
-        // Construire le contenu du nouveau critère
         newCriterion.innerHTML = `
             <div class="card-body">
                 <h4 class="card-title">Critère ${criterionCount + 1}</h4>
@@ -47,12 +42,11 @@ document.addEventListener('DOMContentLoaded', function () {
         criteriaContainer.appendChild(newCriterion);
         criterionCount++;
 
-        console.log(criteriaContainer); // Vérifier la structure
-
-        // Ajouter un événement de suppression pour chaque critère ajouté
+        console.log(criteriaContainer);
         const deleteButton = newCriterion.querySelector('.delete-criterion-btn');
         deleteButton.addEventListener('click', function() {
             newCriterion.remove();
+            criterionCount--;
         });
     }
 });
