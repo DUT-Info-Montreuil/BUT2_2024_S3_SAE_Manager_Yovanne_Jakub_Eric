@@ -37,6 +37,7 @@ class ContParametre
 
     public function afficherCompte()
     {
+        TokenManager::genererToken();
         $idUtilisateur = $_SESSION['id_utilisateur'];
         $compte = $this->modele->getCompteById($idUtilisateur);
         $pictureName = $this->modele->getProfilPictureById($idUtilisateur);
@@ -54,6 +55,9 @@ class ContParametre
 
     public function modifierCompte()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['nom'], $_POST['prenom'], $_POST['email'], $_POST['login_utilisateur'], $_POST['annee_debut'], $_POST['annee_fin'], $_POST['semestre'])) {
             $idUtilisateur = $_SESSION['id_utilisateur'];
             $nom = isset($_POST['nom']) ? $_POST['nom'] : null;
@@ -79,9 +83,4 @@ class ContParametre
             $this->afficherCompte();
         }
     }
-
-
-    /*
-     * TOKEN A FAIRE
-     */
 }

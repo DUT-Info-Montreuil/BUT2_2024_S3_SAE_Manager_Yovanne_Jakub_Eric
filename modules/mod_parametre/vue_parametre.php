@@ -22,6 +22,7 @@ class VueParametre extends VueGenerique
                             <div class="card-body">
                                 <form action="index.php?module=parametre&action=modifierCompte" method="POST"
                                       enctype="multipart/form-data">
+                                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                     <div style="margin-bottom: 20px; text-align: center">
 
                                         <?php if (!empty($compte[0]['profil_picture'])): ?>

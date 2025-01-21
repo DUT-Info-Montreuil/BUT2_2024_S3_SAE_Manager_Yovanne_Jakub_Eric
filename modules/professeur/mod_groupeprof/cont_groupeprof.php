@@ -60,8 +60,7 @@ Class ContGroupeProf {
         $idSae = $_GET['idProjet'];
         if($idSae) {
             $etudiants = $this->modele->getEtudiantsSansGroupe($idSae);
-            $semestres = ['1', '2', '3', '4', '5', '6'];
-            $this->vue->afficherFormulaireAjoutGroupe($etudiants, $idSae, $semestres);
+            $this->vue->afficherFormulaireAjoutGroupe($etudiants, $idSae);
         }
     }
 

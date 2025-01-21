@@ -167,7 +167,7 @@ class VueGroupeProf extends VueGenerique
         <?php
     }
 
-    public function afficherFormulaireAjoutGroupe($etudiants, $idSae, $semestres)
+    public function afficherFormulaireAjoutGroupe($etudiants, $idSae)
     {
         ?>
         <div class="container mt-5">
