@@ -15,17 +15,18 @@ class VueAccueilProf extends VueGenerique
             <div class="row justify-content-center g-4">
                 <?php foreach ($saeGerer as $sae): ?>
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>"
+                           style="color: #495057;">
                         <div class="card shadow border-0"
                              style="width: 250px; height: 250px; border-radius: 15px;
                          background-color: #f8f9fa; display: flex; flex-direction: column;
                          justify-content: center; align-items: center; text-align: center;">
-                            <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>"
-                               style="color: #495057;">
+
                                 <h3 style="font-weight: 600; font-size: 1.2rem;">
                                     <?php echo htmlspecialchars($sae['titre']); ?>
                                 </h3>
-                            </a>
                         </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
 

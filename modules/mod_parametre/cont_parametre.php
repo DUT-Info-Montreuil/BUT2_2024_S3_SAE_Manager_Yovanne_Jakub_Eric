@@ -42,11 +42,9 @@ class ContParametre
         $compte = $this->modele->getCompteById($idUtilisateur);
         $pictureName = $this->modele->getProfilPictureById($idUtilisateur);
         $imagePath = null;
-
         if ($pictureName) {
             $imagePath = glob("photo_profil/" . $pictureName);
         }
-
         $anneeScolaire = $this->modele->getAnneeScolaireByEtudiant($idUtilisateur);
 
         $this->vue->afficherCompte($compte, $imagePath, $anneeScolaire);

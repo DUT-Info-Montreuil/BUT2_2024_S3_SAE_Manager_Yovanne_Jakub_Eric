@@ -688,6 +688,4 @@ class ContEvaluationProf
         }
         $this->versModifierCritere();
     }
-
-
 }

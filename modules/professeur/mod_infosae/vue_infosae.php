@@ -12,27 +12,23 @@ class VueInfoSae extends VueGenerique
     {
         ?>
         <div class="container mt-5">
-            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Gestion SAE</h2>
+            <h2 class="text-center mb-5" style="font-weight: bold; color: #000000;">Gestion SAE</h2>
             <div class="row justify-content-center g-4">
                 <?php foreach ($choix as $option): ?>
-                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
-                        <div class="card border-0"
-                             style="width: 250px; height: 250px; border-radius: 10px;
-                         background-color: #f5f5f5; display: flex; justify-content: center;
-                         align-items: center; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                            <a class="text-decoration-none" href="<?php echo htmlspecialchars($option['link']); ?>"
-                               style="color: #495057; text-align: center;">
-                                <h3 style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">
-                                    <?php echo htmlspecialchars($option['title']); ?>
-                                </h3>
-                            </a>
-                        </div>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center mb-4">
+                        <a href="<?php echo htmlspecialchars($option['link']); ?>"
+                           class="btn btn-outline-secondary w-100 text-center p-4 rounded-3 shadow-sm">
+                            <h3 style="font-weight: bold; color: #000000;"><?php echo htmlspecialchars($option['title']); ?></h3>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
         <?php
     }
+
+
+
 
     public function afficherFormAddChamp($idSae)
     {

@@ -23,7 +23,7 @@ class VueCompMenu extends VueCompGenerique
                 </a>
             </li>
             <li>
-                <a class="dropdown-item d-flex align-items-center" href="index.php?module=parametre">
+                <a class="dropdown-item d-flex align-items-center" href="index.php?module=parametre&action=afficherCompte">
                     <i class="bi bi-gear me-2"></i> Paramètre
                 </a>
             </li>

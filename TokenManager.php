@@ -13,6 +13,7 @@ class TokenManager
         $token = static::genererToken();
         $_SESSION['token'] = $token;
         $_SESSION['token_expiration'] = time() + 900;
+
     }
 
     public static function verifierToken()

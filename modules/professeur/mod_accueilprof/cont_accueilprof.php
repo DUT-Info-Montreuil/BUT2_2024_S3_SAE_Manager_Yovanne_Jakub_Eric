@@ -81,13 +81,13 @@ class ContAccueilProf
             $sections = [
                 "Responsable" => [
                     ["href" => "index.php?module=infosae&idProjet=$idProjet", "title" => "Gestion de la SAE"],
+                    ["href" => "index.php?module=dashboard&idProjet=$idProjet", "title" => "Dashboard"],
                     ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],
                     ["href" => "index.php?module=gerantprof&idProjet=$idProjet", "title" => "Gérant"],
                     ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
                     ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
                     ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
-                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"],
-                    ["href" => "index.php?module=dashboard&idProjet=$idProjet", "title" => "Dashboard"]
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
                 ],
                 "Co-Responsable" => [
                     ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],

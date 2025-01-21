@@ -31,7 +31,7 @@ class VueSoutenanceProf extends VueGenerique
                                     </div>
                                     <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
                                             data-bs-target="#editModal-<?= $index ?>">
-                                        <img src="assets/edit-icon.png" alt="Modifier" width="24" height="24" style="cursor: pointer;">
+                                        <img src="../../../assets/modif.png" alt="Modifier le groupe" class="img-fluid" style="max-width: 30px; height: auto;" />
                                     </button>
                                 </div>
                             </div>
@@ -59,21 +59,23 @@ class VueSoutenanceProf extends VueGenerique
                                             <input type="date" class="form-control" id="date_soutenance-<?= $index ?>" name="date_soutenance"
                                                    value="<?= htmlspecialchars($soutenance['date_soutenance']) ?>" required>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+                                        <div class="d-flex justify-content-center">
+                                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Fermer</button>
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
                                         </div>
                                     </form>
 
-                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance&idProjet=<?php echo $idSae; ?>" method="post" class="d-inline" onsubmit="return confirmationSupprimer();">
+                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance&idProjet=<?php echo $idSae; ?>" method="post" class="mt-3 d-flex justify-content-center" onsubmit="return confirmationSupprimer();">
                                         <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                        <button type="submit" class="btn btn-danger">Supprimer la Soutenance</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 <?php endforeach; ?>
             </div>
             <div class="d-flex justify-content-end mt-4">

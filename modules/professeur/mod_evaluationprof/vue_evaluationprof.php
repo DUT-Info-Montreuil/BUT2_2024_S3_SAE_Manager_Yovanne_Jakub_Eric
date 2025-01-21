@@ -130,134 +130,159 @@ class VueEvaluationProf extends VueGenerique
         <?php
     }
 
-    public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSae, $infoEval)
-    {
-        ?>
-        <div class="container mt-4">
-            <h1 class="mb-4 text-center">Modifier l'Évaluation</h1>
+  public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSae, $infoEval)
+{
+    ?>
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Modifier l'Évaluation</h1>
 
-            <!-- Alerte de mise en garde -->
-            <div class="alert alert-warning text-center" role="alert">
-                <strong>Attention :</strong> La suppression d'une évaluation est irréversible.
-            </div>
-
-            <!-- Formulaire de modification -->
-            <form id="modificationForm" method="POST"
-                  action="index.php?module=evaluationprof&action=modifierEvaluation&idProjet=<?php echo $idSae; ?>">
-                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
-                <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
-                <input type="hidden" id="delegation_choice" name="delegation_choice" value="">
-
-                <!-- Coefficient et Note Maximale -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="coefficient" class="form-label">Coefficient</label>
-                        <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
-                               placeholder="Entrez le coefficient"
-                               value="<?= htmlspecialchars($infoEval['coefficient']) ?>">
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="note_max" class="form-label">Note Maximale</label>
-                        <input type="number" step="0.01" class="form-control" id="note_max" name="note_max"
-                               placeholder="Entrez la note maximale" value="<?= htmlspecialchars($infoEval['note_max']) ?>">
-                    </div>
-                </div>
-
-                <!-- Déléguer l'Évaluation -->
-                <div class="mb-3">
-                    <label for="deleguer_evaluation" class="form-label">Déléguer l'Évaluation</label>
-                    <select class="form-control" id="deleguer_evaluation" name="deleguer_evaluation">
-                        <option value="">Sélectionner une personne</option>
-                        <?php foreach ($tabAllGerant as $gerant): ?>
-                            <option value="<?= htmlspecialchars($gerant['id_utilisateur']) ?>">
-                                <?= htmlspecialchars($gerant['nom']) ?> <?= htmlspecialchars($gerant['prenom']) ?>
-                                (<?= htmlspecialchars($gerant['role_utilisateur']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <!-- Options de délégation -->
-                <div id="delegationRadioButtons" class="mt-3" style="display: none;">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="delegation_action" id="stayEvaluateur" value="stay">
-                        <label class="form-check-label" for="stayEvaluateur">
-                            Rester Évaluateur et Déléguer
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="delegation_action" id="removeEvaluateur" value="remove">
-                        <label class="form-check-label" for="removeEvaluateur">
-                            Déléguer et Ne Plus Être Évaluateur
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Ajouter des Évaluateurs -->
-                <div class="mb-3">
-                    <label for="ajouter_evaluateurs" class="form-label">Ajouter des évaluateurs :</label>
-                    <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]" multiple="multiple">
-                        <?php foreach ($tabAllGerantNonEvaluateur as $gerant): ?>
-                            <option value="<?= htmlspecialchars($gerant['id_utilisateur']) ?>">
-                                <?= htmlspecialchars($gerant['nom']) ?> <?= htmlspecialchars($gerant['prenom']) ?>
-                                (<?= htmlspecialchars($gerant['role_utilisateur']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <!-- Supprimer des Évaluateurs -->
-                <?php if (!empty($tabAllEvaluateur)): ?>
-                    <div class="mb-3">
-                        <label for="supprimer_evaluateurs" class="form-label">Supprimer des évaluateurs :</label>
-                        <?php foreach ($tabAllEvaluateur as $evaluateur): ?>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                       id="supprimer_evaluateur_<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>"
-                                       name="supprimer_evaluateurs[]"
-                                       value="<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>">
-                                <label class="form-check-label"
-                                       for="supprimer_evaluateur_<?= htmlspecialchars($evaluateur['id_utilisateur']) ?>">
-                                    <?= htmlspecialchars($evaluateur['nom']) ?> <?= htmlspecialchars($evaluateur['prenom']) ?>
-                                </label>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Bouton Modifier -->
-                <div class="text-center">
-                    <button type="submit" id="modifierButton" class="btn btn-primary">
-                        <i class="bi bi-pencil-square"></i> Modifier l'Évaluation
-                    </button>
-                </div>
-            </form>
-
-            <div class="text-center mt-4">
-                <form method="POST"
-                      action="index.php?module=evaluationprof&action=versModifierCritere&idProjet=<?php echo $idSae; ?>"
-                      class="d-inline">
-                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-gear"></i> Modifier les Critères
-                    </button>
-                </form>
-                <form method="POST"
-                      action="index.php?module=evaluationprof&action=supprimerEvaluation&idProjet=<?php echo $idSae; ?>"
-                      onsubmit="return confirmationSupprimer();" class="d-inline">
-                    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
-                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Supprimer l'Évaluation
-                    </button>
-                </form>
-            </div>
+        <div class="alert alert-warning text-center" role="alert">
+            <strong>Attention :</strong> La suppression d'une évaluation est irréversible.
         </div>
 
+        <form id="modificationForm" method="POST"
+              action="index.php?module=evaluationprof&action=modifierEvaluation&idProjet=<?= $idSae; ?>">
+            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+            <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
+            <input type="hidden" id="delegation_choice" name="delegation_choice" value="">
 
-        <?php
+            <div class="row">
+                <?= $this->afficherChampCoefficient($infoEval['coefficient']); ?>
+                <?= $this->afficherChampNoteMax($infoEval['note_max']); ?>
+            </div>
+
+            <div class="mb-3">
+                <label for="deleguer_evaluation" class="form-label">Déléguer l'Évaluation</label>
+                <select class="form-control" id="deleguer_evaluation" name="deleguer_evaluation">
+                    <option value="">Sélectionner une personne</option>
+                    <?= $this->genererOptionsGerant($tabAllGerant); ?>
+                </select>
+            </div>
+
+            <?= $this->afficherRadioDelegation(); ?>
+
+            <div class="mb-3">
+                <label for="ajouter_evaluateurs" class="form-label">Ajouter des évaluateurs :</label>
+                <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]" multiple="multiple">
+                    <?= $this->genererOptionsGerant($tabAllGerantNonEvaluateur); ?>
+                </select>
+            </div>
+
+            <?php if (!empty($tabAllEvaluateur)): ?>
+                <div class="mb-3">
+                    <label for="supprimer_evaluateurs" class="form-label">Supprimer des évaluateurs :</label>
+                    <?= $this->genererCheckboxEvaluateur($tabAllEvaluateur); ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="text-center">
+                <button type="submit" id="modifierButton" class="btn btn-primary">
+                    <i class="bi bi-pencil-square"></i> Modifier l'Évaluation
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <?= $this->afficherFormulaireModifierCritere($idSae, $id); ?>
+            <?= $this->afficherFormulaireSupprimerEvaluation($idSae, $id); ?>
+        </div>
+    </div>
+    <?php
+}
+
+private function afficherChampCoefficient($coefficient)
+{
+    return '
+    <div class="col-md-6 mb-3">
+        <label for="coefficient" class="form-label">Coefficient</label>
+        <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
+               placeholder="Entrez le coefficient" value="' . htmlspecialchars($coefficient) . '">
+    </div>';
+}
+
+private function afficherChampNoteMax($note_max)
+{
+    return '
+    <div class="col-md-6 mb-3">
+        <label for="note_max" class="form-label">Note Maximale</label>
+        <input type="number" step="0.01" class="form-control" id="note_max" name="note_max"
+               placeholder="Entrez la note maximale" value="' . htmlspecialchars($note_max) . '">
+    </div>';
+}
+
+private function genererOptionsGerant($gerants)
+{
+    $options = '';
+    foreach ($gerants as $gerant) {
+        $options .= '<option value="' . htmlspecialchars($gerant['id_utilisateur']) . '">
+                        ' . htmlspecialchars($gerant['nom']) . ' ' . htmlspecialchars($gerant['prenom']) .
+                        ' (' . htmlspecialchars($gerant['role_utilisateur']) . ')
+                    </option>';
     }
+    return $options;
+}
+
+private function afficherRadioDelegation()
+{
+    return '
+    <div id="delegationRadioButtons" class="mt-3" style="display: none;">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="delegation_action" id="stayEvaluateur" value="stay">
+            <label class="form-check-label" for="stayEvaluateur">
+                Rester Évaluateur et Déléguer
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="delegation_action" id="removeEvaluateur" value="remove">
+            <label class="form-check-label" for="removeEvaluateur">
+                Déléguer et Ne Plus Être Évaluateur
+            </label>
+        </div>
+    </div>';
+}
+
+private function genererCheckboxEvaluateur($evaluateurs)
+{
+    $checkboxes = '';
+    foreach ($evaluateurs as $evaluateur) {
+        $checkboxes .= '<div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   id="supprimer_evaluateur_' . htmlspecialchars($evaluateur['id_utilisateur']) . '"
+                                   name="supprimer_evaluateurs[]"
+                                   value="' . htmlspecialchars($evaluateur['id_utilisateur']) . '">
+                            <label class="form-check-label"
+                                   for="supprimer_evaluateur_' . htmlspecialchars($evaluateur['id_utilisateur']) . '">
+                                ' . htmlspecialchars($evaluateur['nom']) . ' ' . htmlspecialchars($evaluateur['prenom']) . '
+                            </label>
+                        </div>';
+    }
+    return $checkboxes;
+}
+
+private function afficherFormulaireModifierCritere($idSae, $id)
+{
+    return '
+    <form method="POST" action="index.php?module=evaluationprof&action=versModifierCritere&idProjet=' . $idSae . '" class="d-inline">
+        <input type="hidden" name="id_evaluation" value="' . htmlspecialchars($id) . '">
+        <button type="submit" class="btn btn-warning">
+            <i class="bi bi-gear"></i> Modifier les Critères
+        </button>
+    </form>';
+}
+
+private function afficherFormulaireSupprimerEvaluation($idSae, $id)
+{
+    return '
+    <form method="POST" action="index.php?module=evaluationprof&action=supprimerEvaluation&idProjet=' . $idSae . '" 
+          onsubmit="return confirmationSupprimer();" class="d-inline">
+        <input type="hidden" name="token" value="' . $_SESSION['token'] . '">
+        <input type="hidden" name="id_evaluation" value="' . htmlspecialchars($id) . '">
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Supprimer l\'Évaluation
+        </button>
+    </form>';
+}
+
 
     public function modifierCritereEval($id_evaluation, $criteres, $idSae)
     {
