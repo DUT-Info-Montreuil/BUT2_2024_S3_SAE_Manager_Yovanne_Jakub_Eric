@@ -29,8 +29,7 @@ class VueDepotProf extends VueGenerique
                                 <strong>Date limite :</strong> <?= htmlspecialchars($depot['date_limite']) ?>
                                 <button type="button" class="btn btn-link float-end p-0" data-bs-toggle="modal"
                                         data-bs-target="#editModal-<?= $index ?>">
-                                    <img src="assets/edit-icon.png" alt="Modifier" width="24" height="24"
-                                         style="cursor: pointer;">
+                                    <img src="../../../assets/modif.png" alt="Modifier le groupe" class="img-fluid" style="max-width: 30px; height: auto;" />
                                 </button>
                             </div>
                         </div>
