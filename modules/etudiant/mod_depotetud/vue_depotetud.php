@@ -28,8 +28,14 @@ class VueDepotEtud extends VueGenerique
     public function afficherMessageAucunDepot()
     {
         ?>
-        <div class="text-center">
-            <p style="font-style: italic">Aucun dépôt disponible pour ce projet</p>
+        <div class="container mt-5">
+            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Dépôts</h2>
+
+            <div class="accordion" id="soutenanceAccordion">
+                <div class="text-center">
+                    <p style="font-style: italic">Aucun dépôt disponible pour ce projet</p>
+                </div>
+            </div>
         </div>
         <?php
     }
