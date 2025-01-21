@@ -167,7 +167,7 @@ class VueGroupeProf extends VueGenerique
         <?php
     }
 
-    public function afficherFormulaireAjoutGroupe($etudiants, $idSae)
+    public function afficherFormulaireAjoutGroupe($etudiants, $idSae, $semestres)
     {
         ?>
         <div class="container mt-5">
@@ -189,9 +189,10 @@ class VueGroupeProf extends VueGenerique
 
                 <div class="form-group mt-3">
                     <label for="etudiants">Sélectionner des Étudiants</label>
-                    <select multiple class="form-control" id="etudiants" name="etudiants[]" size="20">  <!-- Augmenter la taille de la sélection -->
+                    <select multiple class="form-control" id="etudiants" name="etudiants[]" size="20">
                         <?php foreach ($etudiants as $etudiant): ?>
-                            <option value="<?php echo $etudiant['id_utilisateur']; ?>" class="etudiant">
+                            <option value="<?php echo $etudiant['id_utilisateur']; ?>"
+                                    data-semestre="<?php echo htmlspecialchars($etudiant['semestre']); ?>">
                                 <?php echo htmlspecialchars($etudiant['nom_complet']); ?>
                             </option>
                         <?php endforeach; ?>
