@@ -226,7 +226,7 @@ class ModeleEvaluationRendu extends Connexion
         $bdd = $this->getBdd();
         $query = "
     SELECT 
-        r.titre, u.nom, u.prenom, u.email, ae.note, u.id_utilisateur
+        r.titre, u.nom, u.prenom, u.email, ae.note, u.id_utilisateur, ae.commentaire
     FROM Rendu_Groupe rg
     INNER JOIN Rendu r ON rg.id_rendu = r.id_rendu
     INNER JOIN Groupe g ON rg.id_groupe = g.id_groupe

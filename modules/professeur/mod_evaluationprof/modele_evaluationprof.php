@@ -401,6 +401,18 @@ class ModeleEvaluationProf extends Connexion
 
         return [];
     }
+
+    public function updateCommentaire($id_evaluation, $id_groupe, $commentaire)
+    {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Activite_Evaluation
+              SET commentaire = ?
+              WHERE id_evaluation = ? AND id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$commentaire, $id_evaluation, $id_groupe]);
+
+    }
+
     public function supprimerEvaluation($id_evaluation)
     {
         $bdd = $this->getBdd();

@@ -192,16 +192,16 @@ class ModeleEvaluationSoutenance extends Connexion
         $bdd = $this->getBdd();
         $query = "
     SELECT 
-        s.titre, u.nom, u.prenom, u.email, ae.note, u.id_utilisateur
+        s.titre, u.nom, u.prenom, u.email, ae.note, u.id_utilisateur, ae.commentaire
     FROM Soutenance_Groupe sg
     INNER JOIN Soutenance s ON sg.id_soutenance = s.id_soutenance
     INNER JOIN Groupe g ON sg.id_groupe = g.id_groupe
     INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
     INNER JOIN Utilisateur u ON ge.id_utilisateur = u.id_utilisateur
-    LEFT JOIN Activite_Evaluation ae ON s.id_evaluation = ae.id_evaluation  -- Correction ici
+    LEFT JOIN Activite_Evaluation ae ON s.id_evaluation = ae.id_evaluation
         AND sg.id_groupe = ae.id_groupe
         AND ae.id_etudiant = u.id_utilisateur
-    LEFT JOIN Evaluation_Evaluateur ee ON s.id_evaluation = ee.id_evaluation  -- Jointure sur les évaluateurs
+    LEFT JOIN Evaluation_Evaluateur ee ON s.id_evaluation = ee.id_evaluation
     LEFT JOIN Evaluation e ON s.id_evaluation = e.id_evaluation
     WHERE sg.id_groupe = ? AND s.id_evaluation = ?
     ";

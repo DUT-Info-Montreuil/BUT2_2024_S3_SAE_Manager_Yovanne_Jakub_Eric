@@ -90,6 +90,11 @@ class VueEvaluationProf extends VueGenerique
                     </table>
                 </div>
 
+                <div class="mt-4">
+                    <label for="commentaire" class="form-label fw-bold">Ajouter un commentaire</label>
+                    <textarea class="form-control" id="commentaire" name="commentaire" rows="4" placeholder="<?= htmlspecialchars($notes[0]['commentaire']) ?>"></textarea>
+                </div>
+
                 <div class="text-center mt-3">
                     <button type="submit" class="btn btn-success">Soumettre les Modifications</button>
                 </div>

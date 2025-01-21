@@ -385,22 +385,29 @@ class ContEvaluationProf
 
     public function traitementModificationNote()
     {
-        if (isset($_POST['id_groupe'], $_POST['id_evaluation'], $_POST['type_evaluation'], $_POST['notes'])) {
+        if (isset($_POST['id_groupe'], $_POST['id_evaluation'], $_POST['type_evaluation'], $_POST['notes'], $_POST['commentaire'])) {
             $id_groupe = $_POST['id_groupe'];
             $id_evaluation = $_POST['id_evaluation'];
             $type_evaluation = $_POST['type_evaluation'];
             $notes = $_POST['notes'];
+            $commentaire = trim($_POST['commentaire']); // Récupération du commentaire
             $noteMax = $this->getNoteMaxByType($type_evaluation, $id_evaluation);
             $id_evaluateur = $_SESSION['id_utilisateur'];
+
             foreach ($notes as $id_etudiant => $note) {
                 if ($this->isValidNote($note, $noteMax) && $this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
                     $this->updateNote($id_etudiant, $note, $id_evaluation, $id_groupe);
                 }
             }
+            if ($this->iAmEvaluateur($id_evaluation, $id_evaluateur)) {
+                $this->modele->updateCommentaire($id_evaluation, $id_groupe, $commentaire);
+            }
+
             $this->mettreAJourNotesFinales($id_evaluation);
         }
         $this->gestionEvaluationsSAE();
     }
+
 
     private function getNoteMaxByType($type_evaluation, $id_evaluation)
     {
