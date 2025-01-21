@@ -2,8 +2,8 @@
 include_once "modules/mod_parametre/modele_parametre.php";
 include_once "modules/mod_parametre/vue_parametre.php";
 require_once "ModeleCommun.php";
-require_once "TokenManager.php";
 require_once "DossierManager.php";
+require_once "TokenManager.php";
 
 class ContParametre
 {
@@ -37,7 +37,7 @@ class ContParametre
 
     public function afficherCompte()
     {
-        TokenManager::genererToken();
+        TokenManager::stockerAndGenerateToken();
         $idUtilisateur = $_SESSION['id_utilisateur'];
         $compte = $this->modele->getCompteById($idUtilisateur);
         $pictureName = $this->modele->getProfilPictureById($idUtilisateur);
@@ -45,7 +45,11 @@ class ContParametre
         if ($pictureName) {
             $imagePath = glob("photo_profil/" . $pictureName);
         }
-        $anneeScolaire = $this->modele->getAnneeScolaireByEtudiant($idUtilisateur);
+        $anneeScolaire = null;
+        if(ModeleCommun::getTypeUtilisateur($idUtilisateur)==='Etudiant'){
+            $anneeScolaire = $this->modele->getAnneeScolaireByEtudiant($idUtilisateur);
+        }
+
 
         $this->vue->afficherCompte($compte, $imagePath, $anneeScolaire);
     }

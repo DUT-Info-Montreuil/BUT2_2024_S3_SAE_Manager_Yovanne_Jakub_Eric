@@ -20,7 +20,8 @@ class VueParametre extends VueGenerique
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <form action="index.php?module=parametre&action=modifierCompte" method="POST" enctype="multipart/form-data">
+                                <form action="index.php?module=parametre&action=modifierCompte" method="POST"
+                                      enctype="multipart/form-data">
                                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                     <div style="margin-bottom: 20px; text-align: center">
                                         <?php if (!empty($compte[0]['profil_picture'])): ?>
@@ -69,31 +70,37 @@ class VueParametre extends VueGenerique
                                                placeholder="Nouveau mot de passe">
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="annee_scolaire" class="form-label">Année scolaire</label>
-                                        <div class="d-flex">
-                                            <div class="me-3">
-                                                <label for="annee_debut" class="form-label">Année de début</label>
-                                                <input type="number" class="form-control" id="annee_debut" name="annee_debut"
-                                                       value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['annee_debut']) : ''; ?>"
-                                                       required>
-                                            </div>
+                                    <?php if (!empty($anneesScolaires)) : ?>
+                                        <div class="mb-3">
+                                            <label for="annee_scolaire" class="form-label">Année scolaire</label>
+                                            <div class="d-flex">
+                                                <div class="me-3">
+                                                    <label for="annee_debut" class="form-label">Année de début</label>
+                                                    <input type="number" class="form-control" id="annee_debut"
+                                                           name="annee_debut"
+                                                           value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['annee_debut']) : ''; ?>"
+                                                           required>
+                                                </div>
 
-                                            <div class="me-3">
-                                                <label for="annee_fin" class="form-label">Année de fin</label>
-                                                <input type="number" class="form-control" id="annee_fin" name="annee_fin"
-                                                       value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['annee_fin']) : ''; ?>"
-                                                       required>
-                                            </div>
+                                                <div class="me-3">
+                                                    <label for="annee_fin" class="form-label">Année de fin</label>
+                                                    <input type="number" class="form-control" id="annee_fin"
+                                                           name="annee_fin"
+                                                           value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['annee_fin']) : ''; ?>"
+                                                           required>
+                                                </div>
 
-                                            <div>
-                                                <label for="semestre" class="form-label">Semestre</label>
-                                                <input type="number" class="form-control" id="semestre" name="semestre"
-                                                       value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['semestre']) : ''; ?>"
-                                                       required>
+                                                <div>
+                                                    <label for="semestre" class="form-label">Semestre</label>
+                                                    <input type="number" class="form-control" id="semestre"
+                                                           name="semestre"
+                                                           value="<?php echo !empty($anneesScolaires[0]) ? htmlspecialchars($anneesScolaires[0]['semestre']) : ''; ?>"
+                                                           required>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    <?php endif; ?>
+
 
 
                                     <div class="d-grid gap-2">
