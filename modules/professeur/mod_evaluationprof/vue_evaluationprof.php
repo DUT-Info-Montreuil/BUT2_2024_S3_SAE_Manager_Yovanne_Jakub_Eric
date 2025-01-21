@@ -92,7 +92,8 @@ class VueEvaluationProf extends VueGenerique
 
                 <div class="mt-4">
                     <label for="commentaire" class="form-label fw-bold">Ajouter un commentaire</label>
-                    <textarea class="form-control" id="commentaire" name="commentaire" rows="4" placeholder="<?= htmlspecialchars($notes[0]['commentaire']) ?>"></textarea>
+                    <textarea class="form-control" id="commentaire" name="commentaire" rows="4"
+                              placeholder="<?= htmlspecialchars($notes[0]['commentaire']) ?>"></textarea>
                 </div>
 
                 <div class="text-center mt-3">
@@ -129,37 +130,41 @@ class VueEvaluationProf extends VueGenerique
         <?php
     }
 
-    public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSae)
+    public function formulaireModificationEvaluation($id, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSae, $infoEval)
     {
-        $coefficient = null;
-        $noteMax = null;
         ?>
         <div class="container mt-4">
             <h1 class="mb-4 text-center">Modifier l'Évaluation</h1>
+
+            <!-- Alerte de mise en garde -->
             <div class="alert alert-warning text-center" role="alert">
                 <strong>Attention :</strong> La suppression d'une évaluation est irréversible.
             </div>
 
+            <!-- Formulaire de modification -->
             <form id="modificationForm" method="POST"
                   action="index.php?module=evaluationprof&action=modifierEvaluation&idProjet=<?php echo $idSae; ?>">
                 <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
                 <input type="hidden" id="delegation_choice" name="delegation_choice" value="">
 
+                <!-- Coefficient et Note Maximale -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="coefficient" class="form-label">Coefficient</label>
                         <input type="number" step="0.01" class="form-control" id="coefficient" name="coefficient"
-                               placeholder="Entrez le coefficient" value="<?= htmlspecialchars($coefficient) ?>">
+                               placeholder="Entrez le coefficient"
+                               value="<?= htmlspecialchars($infoEval['coefficient']) ?>">
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="note_max" class="form-label">Note Maximale</label>
                         <input type="number" step="0.01" class="form-control" id="note_max" name="note_max"
-                               placeholder="Entrez la note maximale" value="<?= htmlspecialchars($noteMax) ?>">
+                               placeholder="Entrez la note maximale" value="<?= htmlspecialchars($infoEval['note_max']) ?>">
                     </div>
                 </div>
 
+                <!-- Déléguer l'Évaluation -->
                 <div class="mb-3">
                     <label for="deleguer_evaluation" class="form-label">Déléguer l'Évaluation</label>
                     <select class="form-control" id="deleguer_evaluation" name="deleguer_evaluation">
@@ -173,27 +178,26 @@ class VueEvaluationProf extends VueGenerique
                     </select>
                 </div>
 
+                <!-- Options de délégation -->
                 <div id="delegationRadioButtons" class="mt-3" style="display: none;">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="delegation_action" id="stayEvaluateur"
-                               value="stay">
+                        <input class="form-check-input" type="radio" name="delegation_action" id="stayEvaluateur" value="stay">
                         <label class="form-check-label" for="stayEvaluateur">
                             Rester Évaluateur et Déléguer
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="delegation_action" id="removeEvaluateur"
-                               value="remove">
+                        <input class="form-check-input" type="radio" name="delegation_action" id="removeEvaluateur" value="remove">
                         <label class="form-check-label" for="removeEvaluateur">
                             Déléguer et Ne Plus Être Évaluateur
                         </label>
                     </div>
                 </div>
 
+                <!-- Ajouter des Évaluateurs -->
                 <div class="mb-3">
                     <label for="ajouter_evaluateurs" class="form-label">Ajouter des évaluateurs :</label>
-                    <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]"
-                            multiple="multiple">
+                    <select class="form-control" id="ajouter_evaluateurs" name="ajouter_evaluateurs[]" multiple="multiple">
                         <?php foreach ($tabAllGerantNonEvaluateur as $gerant): ?>
                             <option value="<?= htmlspecialchars($gerant['id_utilisateur']) ?>">
                                 <?= htmlspecialchars($gerant['nom']) ?> <?= htmlspecialchars($gerant['prenom']) ?>
@@ -203,6 +207,7 @@ class VueEvaluationProf extends VueGenerique
                     </select>
                 </div>
 
+                <!-- Supprimer des Évaluateurs -->
                 <?php if (!empty($tabAllEvaluateur)): ?>
                     <div class="mb-3">
                         <label for="supprimer_evaluateurs" class="form-label">Supprimer des évaluateurs :</label>
@@ -221,25 +226,171 @@ class VueEvaluationProf extends VueGenerique
                     </div>
                 <?php endif; ?>
 
+                <!-- Bouton Modifier -->
                 <div class="text-center">
-                    <button type="submit" id="modifierButton" class="btn btn-primary">Modifier l'Évaluation</button>
+                    <button type="submit" id="modifierButton" class="btn btn-primary">
+                        <i class="bi bi-pencil-square"></i> Modifier l'Évaluation
+                    </button>
                 </div>
             </form>
 
-            <div class="text-center mt-3">
+            <div class="text-center mt-4">
+                <form method="POST"
+                      action="index.php?module=evaluationprof&action=versModifierCritere&idProjet=<?php echo $idSae; ?>"
+                      class="d-inline">
+                    <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-gear"></i> Modifier les Critères
+                    </button>
+                </form>
                 <form method="POST"
                       action="index.php?module=evaluationprof&action=supprimerEvaluation&idProjet=<?php echo $idSae; ?>"
-                      onsubmit="return confirmationSupprimer();">
+                      onsubmit="return confirmationSupprimer();" class="d-inline">
                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                     <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id) ?>">
-                    <button type="submit" class="btn btn-danger">Supprimer l'Évaluation</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Supprimer l'Évaluation
+                    </button>
                 </form>
             </div>
         </div>
 
+
         <?php
     }
 
+    public function modifierCritereEval($id_evaluation, $criteres, $idSae)
+    {
+        ?>
+        <div class="container mt-4">
+            <h1 class="mb-4 text-center">Modifier les Critères</h1>
+
+            <div class="text-center mb-4">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAjouterCritere">
+                    <i class="bi bi-plus-circle"></i> Ajouter un Critère
+                </button>
+            </div>
+
+            <div class="container mt-4">
+                <div class="list-group">
+                    <?php foreach ($criteres as $critere): ?>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><?= htmlspecialchars($critere['nom_critere']); ?></span>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modalModifierCritere<?= htmlspecialchars($critere['id_critere']); ?>">
+                                <i class="bi bi-pencil-square"></i> Modifier
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="modalModifierCritere<?= htmlspecialchars($critere['id_critere']); ?>"
+                             tabindex="-1" aria-labelledby="modalModifierCritereLabel<?= htmlspecialchars($critere['id_critere']); ?>"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="index.php?module=evaluationprof&action=appliquerModifCritere&idProjet=<?php echo $idSae; ?>">
+                                        <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id_evaluation); ?>">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalModifierCritereLabel<?= htmlspecialchars($critere['id_critere']); ?>">
+                                                Modifier le Critère
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id_critere" value="<?= htmlspecialchars($critere['id_critere']); ?>">
+                                            <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id_evaluation); ?>">
+
+                                            <div class="mb-3">
+                                                <label for="titre_critere_<?= htmlspecialchars($critere['id_critere']); ?>" class="form-label">Titre</label>
+                                                <input type="text" class="form-control" id="titre_critere_<?= htmlspecialchars($critere['id_critere']); ?>"
+                                                       name="titre" value="<?= htmlspecialchars($critere['nom_critere']); ?>" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="coefficient_critere_<?= htmlspecialchars($critere['id_critere']); ?>" class="form-label">Coefficient</label>
+                                                <input type="number" step="0.01" class="form-control" id="coefficient_critere_<?= htmlspecialchars($critere['id_critere']); ?>"
+                                                       name="coefficient" value="<?= htmlspecialchars($critere['coefficient']); ?>" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="note_max_critere_<?= htmlspecialchars($critere['id_critere']); ?>" class="form-label">Note Maximale</label>
+                                                <input type="number" step="0.01" class="form-control" id="note_max_critere_<?= htmlspecialchars($critere['id_critere']); ?>"
+                                                       name="note_max" value="<?= htmlspecialchars($critere['note_max']); ?>" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="description_critere_<?= htmlspecialchars($critere['id_critere']); ?>" class="form-label">Description</label>
+                                                <textarea class="form-control" id="description_critere_<?= htmlspecialchars($critere['id_critere']); ?>"
+                                                          name="description" rows="3"><?= htmlspecialchars($critere['description']); ?></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        </div>
+                                    </form>
+
+                                    <div class="modal-footer">
+                                        <form method="POST" action="index.php?module=evaluationprof&action=supprimerCritere&idProjet=<?php echo $idSae; ?>" class="d-inline">
+                                            <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id_evaluation); ?>">
+                                            <input type="hidden" name="id_critere" value="<?= htmlspecialchars($critere['id_critere']); ?>">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirmationSupprimer();">
+                                                Supprimer le Critère
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+
+
+            <div class="modal fade" id="modalAjouterCritere" tabindex="-1" aria-labelledby="modalAjouterCritereLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="index.php?module=evaluationprof&action=ajouterCritere&idProjet=<?php echo $idSae; ?>">
+                        <input type="hidden" name="id_evaluation" value="<?= htmlspecialchars($id_evaluation); ?>">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAjouterCritereLabel">Ajouter un Nouveau Critère</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="mb-3">
+                                <label for="titre_critere" class="form-label">Titre</label>
+                                <input type="text" class="form-control" id="titre_critere" name="titre" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="coefficient_critere" class="form-label">Coefficient</label>
+                                <input type="number" step="0.01" class="form-control" id="coefficient_critere" name="coefficient" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="note_max_critere" class="form-label">Note Maximale</label>
+                                <input type="number" step="0.01" class="form-control" id="note_max_critere" name="note_max" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description_critere" class="form-label">Description</label>
+                                <textarea class="form-control" id="description_critere" name="description" rows="3"></textarea>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-success">Ajouter le Critère</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <?php
+    }
 
     public function afficherTableauAllEvaluation($allRendue, $allSoutenance, $idSae)
     {
@@ -399,9 +550,12 @@ class VueEvaluationProf extends VueGenerique
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Informations Générales</h5>
-                    <p class="card-text"><strong>Date :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['soutenance_date']) ?></p>
-                    <p class="card-text"><strong>Note Max :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['note_max']) ?></p>
-                    <p class="card-text"><strong>Coefficient :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['note_coef']) ?></p>
+                    <p class="card-text"><strong>Date
+                            :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['soutenance_date']) ?></p>
+                    <p class="card-text"><strong>Note Max
+                            :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['note_max']) ?></p>
+                    <p class="card-text"><strong>Coefficient
+                            :</strong> <?= htmlspecialchars($soutenanceEvaluations[0]['note_coef']) ?></p>
                 </div>
             </div>
 
@@ -505,7 +659,8 @@ class VueEvaluationProf extends VueGenerique
     private function formulaireNotationIndividuelle($allMembres, $id, $type_evaluation, $id_groupe, $criteres, $mode, $idSAE)
     {
         ?>
-        <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationIndividuelle&idProjet=<?= $idSAE; ?>"
+        <form method="POST"
+              action="index.php?module=evaluationprof&action=traitementNotationIndividuelle&idProjet=<?= $idSAE; ?>"
               id="form-individuel" <?= $mode === "groupe" ? 'style="display:none;"' : '' ?>>
 
             <input type="hidden" name="id" value="<?= $id ?>">
@@ -536,8 +691,10 @@ class VueEvaluationProf extends VueGenerique
             </div>
 
             <div class="mt-4">
-                <label for="commentaire_individuel" class="form-label fw-bold">Ajouter un commentaire (optionnel)</label>
-                <textarea class="form-control" id="commentaire_individuel" name="commentaire" rows="4" placeholder="Votre commentaire"></textarea>
+                <label for="commentaire_individuel" class="form-label fw-bold">Ajouter un commentaire
+                    (optionnel)</label>
+                <textarea class="form-control" id="commentaire_individuel" name="commentaire" rows="4"
+                          placeholder="Votre commentaire"></textarea>
             </div>
 
             <div class="text-center mt-4">
@@ -573,7 +730,8 @@ class VueEvaluationProf extends VueGenerique
     private function formulaireNotationGroupe($allMembres, $id, $type_evaluation, $id_groupe, $criteres, $mode, $idSAE)
     {
         ?>
-        <form method="POST" action="index.php?module=evaluationprof&action=traitementNotationGroupe&idProjet=<?= $idSAE; ?>"
+        <form method="POST"
+              action="index.php?module=evaluationprof&action=traitementNotationGroupe&idProjet=<?= $idSAE; ?>"
               id="form-groupe" <?= $mode === "individuel" ? 'style="display:none;"' : '' ?>>
 
             <div class="mt-4">
@@ -645,7 +803,8 @@ class VueEvaluationProf extends VueGenerique
 
             <div class="mt-4">
                 <label for="commentaire_groupe" class="form-label fw-bold">Ajouter un commentaire (optionnel)</label>
-                <textarea class="form-control" id="commentaire_groupe" name="commentaire" rows="4" placeholder="Votre commentaire"></textarea>
+                <textarea class="form-control" id="commentaire_groupe" name="commentaire" rows="4"
+                          placeholder="Votre commentaire"></textarea>
             </div>
 
             <input type="hidden" name="id_groupe" value="<?= $id_groupe ?>">
@@ -658,10 +817,6 @@ class VueEvaluationProf extends VueGenerique
         </form>
         <?php
     }
-
-
-
-
 
     public function afficherTableauRenduNonGerer($rendueEvaluations, $evaluateurs)
     {
@@ -752,8 +907,4 @@ class VueEvaluationProf extends VueGenerique
         </div>
         <?php
     }
-
-
 }
-
-?>

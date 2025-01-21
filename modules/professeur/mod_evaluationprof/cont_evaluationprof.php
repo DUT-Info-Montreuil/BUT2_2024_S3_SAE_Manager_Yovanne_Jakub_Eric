@@ -53,6 +53,18 @@ class ContEvaluationProf
                 case "versModifierEvaluation":
                     $this->versModifierEvaluation();
                     break;
+                case "versModifierCritere" :
+                    $this->versModifierCritere();
+                    break;
+                case "appliquerModifCritere" :
+                    $this->appliquerModifCritere();
+                    break;
+                case "supprimerCritere" :
+                    $this->supprimerCritere();
+                    break;
+                case "ajouterCritere" :
+                    $this->ajouterCritere();
+                    break;
             }
         } else {
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
@@ -93,7 +105,9 @@ class ContEvaluationProf
             $tabAllGerant = $this->modele->getAllGerantSae($idSAE);
             $tabAllGerantNonEvaluateur = $this->modele->getAllGerantNonEvaluateur($idSAE, $idEvaluation);
             $tabAllEvaluateur = $this->modele->getAllEvaluateurSansLePrincipal($idEvaluation);
-            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSAE);
+            $infoEval = $this->modele->getInfoEval($idEvaluation);
+            $criteres = $this->modele->getCritereEvaluation($idEvaluation);
+            $this->vue->formulaireModificationEvaluation($idEvaluation, $tabAllGerant, $tabAllGerantNonEvaluateur, $tabAllEvaluateur, $idSAE, $infoEval, $criteres);
         }
 
     }
@@ -619,5 +633,61 @@ class ContEvaluationProf
         }
         $this->gestionEvaluationsSAE();
     }
+
+    public function versModifierCritere(){
+        $idSae = $_GET['idProjet'];
+        if(isset($_POST['id_evaluation'])){
+            $id_evaluation = $_POST['id_evaluation'];
+            $critere = $this->modele->getCritereEvaluation($id_evaluation);
+            $this->vue->modifierCritereEval($id_evaluation, $critere, $idSae);
+        }
+    }
+
+    public function appliquerModifCritere()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_critere = htmlspecialchars($_POST['id_critere']);
+            $id_evaluation = htmlspecialchars($_POST['id_evaluation']);
+            $titre = isset($_POST['titre']) ? htmlspecialchars($_POST['titre']) : null;
+            $coefficient = isset($_POST['coefficient']) ? floatval($_POST['coefficient']) : null;
+            $note_max = isset($_POST['note_max']) ? floatval($_POST['note_max']) : null;
+            $description = isset($_POST['description']) ? htmlspecialchars($_POST['description']) : null;
+
+            if ($titre && $coefficient && $note_max) {
+                $critereModifie = [
+                    'id_critere' => $id_critere,
+                    'nom_critere' => $titre,
+                    'coefficient' => $coefficient,
+                    'note_max' => $note_max,
+                    'description' => $description,
+                ];
+                $this->modele->modifierCritere($critereModifie);
+            }
+        }
+        $this->versModifierCritere();
+    }
+
+    public function supprimerCritere(){
+        if(isset($_POST['id_critere'])){
+            $id_critere = htmlspecialchars($_POST['id_critere']);
+            $this->modele->supprimerCritere($id_critere);
+        }
+        $this->versModifierCritere();
+    }
+
+    public function ajouterCritere()
+    {
+        $titre = $_POST['titre'];
+        $description = $_POST['description'] ?? null;
+        $coefficient = $_POST['coefficient'];
+        $note_max = $_POST['note_max'];
+        $id_evaluation = $_POST['id_evaluation'];
+
+        if (!empty($titre) && !empty($coefficient) && !empty($note_max) && !empty($id_evaluation)) {
+           $this->modele->ajouterCritere($titre, $description, $coefficient, $note_max, $id_evaluation);
+        }
+        $this->versModifierCritere();
+    }
+
 
 }

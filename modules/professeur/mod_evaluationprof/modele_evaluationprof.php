@@ -7,11 +7,13 @@ class ModeleEvaluationProf extends Connexion
 {
     private $modeleRendu;
     private $modeleSoutenance;
+
     public function __construct()
     {
         $this->modeleRendu = new ModeleEvaluationRendu();
         $this->modeleSoutenance = new ModeleEvaluationSoutenance();
     }
+
     public function __call($method, $arguments)
     {
         $renduMethods = [
@@ -49,6 +51,7 @@ class ModeleEvaluationProf extends Connexion
         }
         throw new BadMethodCallException("La méthode $method n'existe pas");
     }
+
     public function getFichierRendu($idRendu, $idGroupe)
     {
         $bdd = $this->getBdd();
@@ -58,6 +61,22 @@ class ModeleEvaluationProf extends Connexion
         return $statement->fetchAll();
 
     }
+
+    public function getCritereEvaluation($idEvaluation)
+    {
+        $bdd = $this->getBdd();
+        $query = $bdd->prepare("
+        SELECT c.id_critere, c.nom_critere, c.description, c.coefficient, c.note_max
+        FROM Critere c
+        WHERE c.id_evaluation = ?
+    ");
+        $query->execute([$idEvaluation]);
+
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
     public function getCritereRenduById($id_rendu)
     {
         $bdd = $this->getBdd();
@@ -78,6 +97,7 @@ class ModeleEvaluationProf extends Connexion
         $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $criteres;
     }
+
     public function getCritereSoutenanceById($id_soutenance)
     {
         $bdd = $this->getBdd();
@@ -98,6 +118,7 @@ class ModeleEvaluationProf extends Connexion
         $criteres = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $criteres;
     }
+
     public function getAllGerantNonEvaluateur($idSAE, $idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -118,6 +139,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$idSAE, $idEvaluation]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function estDejaEvaluateur($idEvaluateur, $idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -126,12 +148,14 @@ class ModeleEvaluationProf extends Connexion
         $result = $req->fetch();
         return $result['nb'] > 0;
     }
+
     public function ajouterEvaluateur($idEvaluateur, $idEvaluation)
     {
         $bdd = $this->getBdd();
         $req = $bdd->prepare("INSERT INTO Evaluation_Evaluateur (id_utilisateur, id_evaluation) VALUES (?, ?)");
         $req->execute([$idEvaluateur, $idEvaluation]);
     }
+
     public function getAllEvaluateurSansLePrincipal($idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -147,6 +171,7 @@ class ModeleEvaluationProf extends Connexion
 
         return $req->fetchAll();
     }
+
     public function getAllEvaluateur($idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -168,6 +193,7 @@ class ModeleEvaluationProf extends Connexion
         $evaluateurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $evaluateurs;
     }
+
     public function supprimerEvaluateur($idEvaluateur, $idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -178,6 +204,7 @@ class ModeleEvaluationProf extends Connexion
     ");
         $req->execute([$idEvaluateur, $idEvaluation]);
     }
+
     public function getEtudiantsParEvaluation($idEvaluation)
     {
         $bdd = static::getBdd();
@@ -218,6 +245,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
     public function getAllGerantSae($idSAE)
     {
         $bdd = $this->getBdd();
@@ -231,6 +259,7 @@ class ModeleEvaluationProf extends Connexion
         $gerants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $gerants;
     }
+
     public function iAmEvaluateurPrincipal($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
@@ -247,6 +276,7 @@ class ModeleEvaluationProf extends Connexion
 
         return $result && $result['is_principal'] == 1;
     }
+
     public function isEvaluateur($id_evaluation, $id_evaluateur)
     {
         $bdd = $this->getBdd();
@@ -263,6 +293,7 @@ class ModeleEvaluationProf extends Connexion
 
         return $result && $result['count'] > 0;
     }
+
     public function modifierEvaluation($idEvaluation, $note_max, $coefficient)
     {
         $bdd = $this->getBdd();
@@ -270,6 +301,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt = $bdd->prepare($query);
         $stmt->execute([$note_max, $coefficient, $idEvaluation]);
     }
+
     public function modifierEvaluateurPrincipal($idNvEvalueur, $idEvaluation, $delegation_action)
     {
         $bdd = $this->getBdd();
@@ -317,6 +349,7 @@ class ModeleEvaluationProf extends Connexion
             throw $e;
         }
     }
+
     public function getAllMembreSAE($id_groupe)
     {
         $bdd = self::getBdd();
@@ -328,6 +361,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function creerEvaluation($id_rendu, $coefficient, $note_max, $evaluateur, $typeEvaluation)
     {
         $bdd = self::getBdd();
@@ -353,6 +387,7 @@ class ModeleEvaluationProf extends Connexion
         $this->insererEvaluateur($id_evaluation, $evaluateur, true);
         return $id_evaluation;
     }
+
     public function insererEvaluateur($id_evaluation, $id_utilisateur, $is_principal = false)
     {
         $bdd = self::getBdd();
@@ -378,6 +413,7 @@ class ModeleEvaluationProf extends Connexion
         $stmtInsert->execute([$id_evaluation, $id_utilisateur, $is_principal ? 1 : 0]);
         return true;
     }
+
     public function getChampsRemplisParGroupe($id_groupe)
     {
         $bdd = $this->getBdd();
@@ -391,6 +427,7 @@ class ModeleEvaluationProf extends Connexion
         $stmt->execute([$id_groupe]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getNotesParEvaluation($id_groupe, $id_evaluation, $type_evaluation)
     {
         if ($type_evaluation === 'rendu') {
@@ -411,6 +448,15 @@ class ModeleEvaluationProf extends Connexion
         $stmt = $bdd->prepare($query);
         $stmt->execute([$commentaire, $id_evaluation, $id_groupe]);
 
+    }
+
+    public function getInfoEval($idEvaluation)
+    {
+        $bdd = $this->getBdd();
+        $query = "SELECT * FROM Evaluation;";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function supprimerEvaluation($id_evaluation)
@@ -443,6 +489,7 @@ class ModeleEvaluationProf extends Connexion
             echo "Erreur lors de la suppression de l'évaluation : " . $e->getMessage();
         }
     }
+
     public function ajouterCritere($nom, $description, $coefficient, $note_max, $idEvaluation)
     {
         $bdd = $this->getBdd();
@@ -507,6 +554,7 @@ class ModeleEvaluationProf extends Connexion
             $stmtInsert->execute([$idCritere, $idGroupe, $idUtilisateur, $note]);
         }
     }
+
     public function sauvegarderNoteEvaluation($idGroupe, $idEvaluation, $idEtudiant, $idEvaluateur, $commentaire)
     {
         $queryCritere = "
@@ -557,5 +605,33 @@ class ModeleEvaluationProf extends Connexion
             $stmtInsert->execute([$idEvaluation, $idGroupe, $idEtudiant, $idEvaluateur, $noteGlobale, $commentaire]);
         }
     }
+
+    public function supprimerCritere($id_critere)
+    {
+        $bdd = $this->getBdd();
+        $sql = "DELETE FROM Critere WHERE id_critere = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$id_critere]);
+    }
+    public function modifierCritere($critereModifie)
+    {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Critere 
+            SET nom_critere = ?, 
+                description = ?, 
+                coefficient = ?, 
+                note_max = ? 
+            WHERE id_critere = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([
+            $critereModifie['nom_critere'],
+            $critereModifie['description'],
+            $critereModifie['coefficient'],
+            $critereModifie['note_max'],
+            $critereModifie['id_critere']
+        ]);
+    }
+
+
 
 }
