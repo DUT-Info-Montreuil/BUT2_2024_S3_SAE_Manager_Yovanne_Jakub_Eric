@@ -58,9 +58,16 @@ class ContSoutenanceProf
             $titre = $_POST['titre'];
             $dateSoutenance = $_POST['date_soutenance'];
             $this->modele->modifierSoutenance($idSoutenance, $titre, $dateSoutenance);
+            foreach ($_POST as $key => $value) {
+                if (strpos($key, 'heure_soutenance_') === 0) {
+                    $idGroupe = str_replace('heure_soutenance_', '', $key);
+                    $this->modele->modifierHeureSoutenance($idSoutenance, $idGroupe, $value);
+                }
+            }
         }
         $this->gestionSoutenancesSAE();
     }
+
 
     private function supprimerSoutenance()
     {

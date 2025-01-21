@@ -9,11 +9,63 @@ Class ModeleSoutenanceProf extends Connexion
 
     public function getAllSoutenance($idSae){
         $bdd = $this->getBdd();
-        $sql = "SELECT * FROM Soutenance WHERE id_projet = ?";
+
+        $sql = "
+    SELECT 
+        soutenance.id_soutenance, 
+        soutenance.id_projet, 
+        soutenance.titre,
+        soutenance.date_soutenance,
+        soutenance.id_evaluation,
+        groupe.id_groupe,
+        groupe.nom AS groupe_nom,
+        soutenance_groupe.heure_passage
+    FROM Soutenance soutenance
+    LEFT JOIN Soutenance_Groupe soutenance_groupe ON soutenance.id_soutenance = soutenance_groupe.id_soutenance
+    LEFT JOIN Groupe groupe ON soutenance_groupe.id_groupe = groupe.id_groupe
+    WHERE soutenance.id_projet = ?
+    ";
+
         $req = $bdd->prepare($sql);
         $req->execute([$idSae]);
-        return $req->fetchAll(PDO::FETCH_ASSOC);
+        $soutenances = $req->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+        foreach ($soutenances as $soutenance) {
+            if (!isset($result[$soutenance['id_soutenance']])) {
+                $result[$soutenance['id_soutenance']] = [
+                    'id_soutenance' => $soutenance['id_soutenance'],
+                    'id_projet' => $soutenance['id_projet'],
+                    'titre' => $soutenance['titre'],
+                    'date_soutenance' => $soutenance['date_soutenance'],
+                    'id_evaluation' => $soutenance['id_evaluation'],
+                    'groupes' => []
+                ];
+            }
+            $result[$soutenance['id_soutenance']]['groupes'][] = [
+                'id_groupe' => $soutenance['id_groupe'],
+                'groupe_nom' => $soutenance['groupe_nom'],
+                'heure_passage' => $soutenance['heure_passage']
+            ];
+        }
+        return array_values($result);
     }
+
+    public function modifierHeureSoutenance($idSoutenance, $idGroupe, $heurePassage)
+    {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Soutenance_Groupe 
+            SET heure_passage = :heure_passage 
+            WHERE id_soutenance = :id_soutenance AND id_groupe = :id_groupe";
+        $req = $bdd->prepare($sql);
+        $req->execute([
+            ':heure_passage' => $heurePassage,
+            ':id_soutenance' => $idSoutenance,
+            ':id_groupe' => $idGroupe
+        ]);
+    }
+
+
 
     public function getAllGroupeByIdSae($idSae) {
         $bdd = $this->getBdd();

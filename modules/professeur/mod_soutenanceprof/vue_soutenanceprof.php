@@ -49,15 +49,31 @@ class VueSoutenanceProf extends VueGenerique
                                 <div class="modal-body">
                                     <form action="index.php?module=soutenanceprof&action=modifierSoutenance&idProjet=<?php echo $idSae; ?>" method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
+
                                         <div class="mb-3">
                                             <label for="titre-<?= $index ?>" class="form-label">Titre</label>
                                             <input type="text" class="form-control" id="titre-<?= $index ?>" name="titre"
                                                    value="<?= htmlspecialchars($soutenance['titre']) ?>" required>
                                         </div>
+
                                         <div class="mb-3">
                                             <label for="date_soutenance-<?= $index ?>" class="form-label">Date de Soutenance</label>
                                             <input type="date" class="form-control" id="date_soutenance-<?= $index ?>" name="date_soutenance"
                                                    value="<?= htmlspecialchars($soutenance['date_soutenance']) ?>" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="groupes" class="form-label">Groupes associés</label>
+                                            <?php
+                                            foreach ($soutenance['groupes'] as $groupe) {
+                                                ?>
+                                                <div class="form-group">
+                                                    <label for="heure_soutenance_<?= $groupe['id_groupe'] ?>">Heure pour le groupe <?= htmlspecialchars($groupe['groupe_nom']) ?></label>
+                                                    <input type="time" class="form-control" id="heure_soutenance_<?= $groupe['id_groupe'] ?>" name="heure_soutenance_<?= $groupe['id_groupe'] ?>"
+                                                           value="<?= htmlspecialchars($groupe['heure_passage']) ?>" required>
+                                                </div>
+                                                <?php
+                                            }
+                                            ?>
                                         </div>
 
                                         <div class="d-flex justify-content-center">
@@ -65,13 +81,8 @@ class VueSoutenanceProf extends VueGenerique
                                             <button type="submit" class="btn btn-primary">Enregistrer</button>
                                         </div>
                                     </form>
-
-                                    <form action="index.php?module=soutenanceprof&action=supprimerSoutenance&idProjet=<?php echo $idSae; ?>" method="post" class="mt-3 d-flex justify-content-center" onsubmit="return confirmationSupprimer();">
-                                        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
-                                        <input type="hidden" name="id_soutenance" value="<?= htmlspecialchars($soutenance['id_soutenance']) ?>">
-                                        <button type="submit" class="btn btn-danger">Supprimer la Soutenance</button>
-                                    </form>
                                 </div>
+
                             </div>
                         </div>
                     </div>
