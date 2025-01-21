@@ -78,7 +78,7 @@ Class ModeleGestUser extends Connexion
     }
 
 
-    public function updateUsers($csvFilePath) {
+    public function updateUserCSV($csvFilePath) {
         $bdd = $this->getBdd();
         $handle = fopen($csvFilePath, 'r');
         if ($handle) {
@@ -103,6 +103,56 @@ Class ModeleGestUser extends Connexion
             fclose($handle);
         }
     }
+
+    public function addUserCSV($csvFilePath) {
+        $bdd = $this->getBdd();
+        $handle = fopen($csvFilePath, 'r');
+
+        if ($handle) {
+            // Lire le fichier ligne par ligne
+            while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                // Vérifier si la ligne contient au moins 6 colonnes
+                if (count($data) >= 6) {
+                    // Supposons que le fichier CSV ait les colonnes suivantes :
+                    // [login, nom, prenom, email, password, type_utilisateur]
+                    $login = $data[0];            // Login est en 1ère colonne
+                    $nom = $data[1];              // Nom est en 2ème colonne
+                    $prenom = $data[2];           // Prénom est en 3ème colonne
+                    $email = $data[3];            // Email est en 4ème colonne
+                    $password = $data[4];         // Mot de passe est en 5ème colonne
+                    $type_utilisateur = $data[5]; // Type utilisateur est en 6ème colonne
+
+                    // Vérifier que le type_utilisateur est valide (facultatif mais recommandé)
+                    $type_utilisateur = strtolower($type_utilisateur); // Mettre en minuscule
+                    if (!in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
+                        echo "Type d'utilisateur invalide pour l'utilisateur : $nom $prenom. Ignoré.<br>";
+                        continue; // Ignorer cette ligne si le type est invalide
+                    }
+
+                    // Ajouter l'utilisateur dans la base de données
+                    $query = $bdd->prepare(
+                        "INSERT INTO Utilisateur (nom, prenom, email, login_utilisateur, password_utilisateur, type_utilisateur) 
+                    VALUES (?, ?, ?, ?, ?, ?)"
+                    );
+                    $query->execute([$nom, $prenom, $email, $login, $password, $type_utilisateur]);
+
+                    echo "Utilisateur $nom $prenom ajouté avec succès.<br>";
+                } else {
+                    // Afficher la ligne ignorée si elle contient moins de 6 colonnes
+                    echo "Ligne incomplète : " . implode(", ", $data) . "<br>";
+                }
+            }
+            fclose($handle);
+        } else {
+            echo "Erreur lors de l'ouverture du fichier CSV.";
+        }
+    }
+
+
+
+
+
+
 
 
 

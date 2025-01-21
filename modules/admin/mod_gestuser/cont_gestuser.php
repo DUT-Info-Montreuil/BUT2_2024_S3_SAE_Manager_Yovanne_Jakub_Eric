@@ -39,9 +39,11 @@ class ContGestUser
                 case "ajouterUser" :
                     $this->ajouterUser();
                     break;
-                case "traiterCSV" :
-                    $this->traiterCSV();
+                case "modifierUserCSV" :
+                    $this->modifierUserCSV();
                     break;
+                case 'ajouterUserCSV' :
+                    $this->ajouterUserCSV();
             }
         }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
@@ -105,7 +107,7 @@ class ContGestUser
         $this->menuGestUser();
     }
 
-    public function traiterCSV() {
+    public function modifierUserCSV() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST'&& isset($_FILES['csv_file'])) {
             $csvFile = $_FILES['csv_file'];
 
@@ -113,7 +115,7 @@ class ContGestUser
                 $filePath = $csvFile['tmp_name'];
 
                 // Appeler la méthode du modèle pour traiter le fichier CSV
-                $this->modele->updateUsers($filePath);
+                $this->modele->updateUserCSV($filePath);
 
                 // Retourner à la liste des utilisateurs avec un message de succès
                 echo "Mise à jour réussie depuis le fichier CSV.";
@@ -125,5 +127,32 @@ class ContGestUser
             echo "Aucun fichier CSV fourni.";
         }
     }
+
+    public function ajouterUserCSV() {
+        // Vérification de la méthode de requête pour s'assurer que c'est une requête POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Vérification de l'existence du fichier CSV
+            $csvFile = $_FILES['csv_file'];
+
+            // Si le fichier a été téléchargé sans erreur
+            if ($csvFile['error'] === UPLOAD_ERR_OK) {
+                // Récupérer le chemin temporaire du fichier
+                $filePath = $csvFile['tmp_name'];
+
+                // Appeler la méthode du modèle pour ajouter les utilisateurs depuis le CSV
+                $this->modele->addUserCSV($filePath);
+
+                // Message de succès
+                echo "Ajout des utilisateurs réussi depuis le fichier CSV.";
+
+                // Rediriger ou afficher la liste des utilisateurs
+                $this->versModifierDesUsers();  // Redirige vers la liste des utilisateurs ou une autre page
+            } else {
+                // Message d'erreur si le fichier n'est pas téléchargé correctement
+                echo "Erreur lors du téléchargement du fichier CSV.";
+            }
+        }
+    }
+
 
 }
