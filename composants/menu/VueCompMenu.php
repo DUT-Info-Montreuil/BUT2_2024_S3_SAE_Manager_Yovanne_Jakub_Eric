@@ -10,11 +10,12 @@ class VueCompMenu extends VueCompGenerique
 
     }
 
-    public function afficherMenu($login) {
+    public function afficherMenu($login, $profilPicture) {
         $this->affichage = '
     <div class="dropdown">
         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span style="color: white; font-size: 1.2rem;">' . $login . '</span>
+            <img src="' . htmlspecialchars($profilPicture) . '" alt="Profil" class="rounded-circle" style="width: 30px; height: 30px; margin-right: 10px;">
+            <span style="color: white; font-size: 1.2rem; margin-left: 10px;">' . htmlspecialchars($login) . '</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li>
@@ -30,6 +31,7 @@ class VueCompMenu extends VueCompGenerique
         </ul>
     </div>';
     }
+
 
 
 }
