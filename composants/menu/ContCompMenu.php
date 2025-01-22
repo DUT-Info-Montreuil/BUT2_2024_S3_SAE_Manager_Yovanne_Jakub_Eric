@@ -17,7 +17,10 @@ class ControleurCompMenu {
         if (isset($_SESSION['id_utilisateur'])) {
             $idUser = $_SESSION['id_utilisateur'];
             $login = $this->modele->getLoginById($idUser);
-            $this->vue->afficherMenu(htmlspecialchars($login));
+            $picture = $this->modele->getProfilPictureById($idUser);
+            $files = glob("photo_profil/" . $picture);
+            $path = !empty($files) ? $files[0] : glob("photo_profil/default_avatar.png");
+            $this->vue->afficherMenu(htmlspecialchars($login), $path);
         }
     }
 

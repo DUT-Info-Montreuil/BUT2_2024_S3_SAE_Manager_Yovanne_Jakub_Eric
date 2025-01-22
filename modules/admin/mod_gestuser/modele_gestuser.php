@@ -76,9 +76,10 @@ Class ModeleGestUser extends Connexion
         $bdd = $this->getBdd();
 
         try {
-            $query = $bdd->prepare("INSERT INTO Utilisateur (nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur) 
-                               VALUES (?, ?, ?, ?, ?, ?)");
-            $query->execute([$nom, $prenom, $email, $type, $login, $password]);
+            $profil_picture = "photo_profil/default_avatar.png";
+            $query = $bdd->prepare("INSERT INTO Utilisateur (nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur,profil_picture) 
+                               VALUES (?, ?, ?, ?, ?, ?,?)");
+            $query->execute([$nom, $prenom, $email, $type, $login, $password,$profil_picture]);
         } catch (PDOException $e) {
             echo "Erreur lors de l'ajout de l'utilisateur : " . $e->getMessage();
         }
@@ -95,7 +96,7 @@ Class ModeleGestUser extends Connexion
                 $nom = $data[1];
                 $prenom = $data[2];
                 $email = $data[3];
-                $password = $data[4];
+                $password = password_hash($data[4], PASSWORD_DEFAULT);
                 $type_utilisateur = $data[5];
                 if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
                     $query = $bdd->prepare(
@@ -123,16 +124,15 @@ Class ModeleGestUser extends Connexion
                     $nom = $data[1];
                     $prenom = $data[2];
                     $email = $data[3];
-                    $password = $data[4];
+                    $password = password_hash($data[4], PASSWORD_DEFAULT);
                     $type_utilisateur = $data[5];
-
-                    $type_utilisateur = strtolower($type_utilisateur);
+                    $profil_picture = "photo_profil/default_avatar.png";
                     if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant','admin'])) {
                         $query = $bdd->prepare(
-                            "INSERT INTO Utilisateur (nom, prenom, email, login_utilisateur, password_utilisateur, type_utilisateur) 
-                    VALUES (?, ?, ?, ?, ?, ?)"
+                            "INSERT INTO Utilisateur (nom, prenom, email, login_utilisateur, password_utilisateur, type_utilisateur,profil_picture) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)"
                         );
-                        $query->execute([$nom, $prenom, $email, $login, $password, $type_utilisateur]);
+                        $query->execute([$nom, $prenom, $email, $login, $password, $type_utilisateur,$profil_picture]);
                     }else {
                         echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant','admin']";
                     }
