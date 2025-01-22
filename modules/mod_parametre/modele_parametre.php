@@ -70,6 +70,8 @@ class ModeleParametre extends Connexion
     {
         $bdd = $this->getBdd();
         if ($password_utilisateur) {
+
+            $password_utilisateur = password_hash($password_utilisateur, PASSWORD_DEFAULT);
             $query = "
         UPDATE Utilisateur 
         SET nom = ?, prenom = ?, email = ?, login_utilisateur = ?, password_utilisateur = ?

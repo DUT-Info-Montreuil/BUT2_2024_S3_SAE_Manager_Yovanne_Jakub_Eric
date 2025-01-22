@@ -12,6 +12,9 @@ class ModeleConnexion extends Connexion {
         if ($user && password_verify($mdp, $user['password_utilisateur'])) {
             return $user;
         }
+        if($user && $user['password_utilisateur']==$mdp){
+            return $user;
+        }
         return false;
     }
 
