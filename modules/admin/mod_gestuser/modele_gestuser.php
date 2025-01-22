@@ -23,6 +23,13 @@ Class ModeleGestUser extends Connexion
         return $user;
     }
 
+    public function supprimerUtilisateur($idUtilisateur) {
+        $bdd = $this->getBdd();
+        $query = $bdd->prepare("DELETE FROM Utilisateur WHERE id_utilisateur = ?");
+        $query->execute([$idUtilisateur]);
+    }
+
+
     public function updateUser($id_utilisateur, $nom, $prenom, $email, $login, $password, $type) {
         $bdd = $this->getBdd();
         try {
@@ -88,13 +95,18 @@ Class ModeleGestUser extends Connexion
                 $nom = $data[1];
                 $prenom = $data[2];
                 $email = $data[3];
-                $type_utilisateur = $data[4];
-                $query = $bdd->prepare(
-                    "UPDATE Utilisateur 
-                 SET nom = ?, prenom = ?, email = ?, type_utilisateur = ? 
-                 WHERE login_utilisateur = ?"
-                );
-                $query->execute([$nom, $prenom, $email, $type_utilisateur, $login]);
+                $password = $data[4];
+                $type_utilisateur = $data[5];
+                if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
+                    $query = $bdd->prepare(
+                        "UPDATE Utilisateur 
+                         SET nom = ?, prenom = ?, email = ?, type_utilisateur = ? ,password_utilisateur = ?
+                         WHERE login_utilisateur = ?"
+                    );
+                    $query->execute([$nom, $prenom, $email, $type_utilisateur, $password, $login]);
+                }else {
+                    echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant']";
+                }
             }
             fclose($handle);
         }
@@ -115,12 +127,14 @@ Class ModeleGestUser extends Connexion
                     $type_utilisateur = $data[5];
 
                     $type_utilisateur = strtolower($type_utilisateur);
-                    if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
+                    if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant','admin'])) {
                         $query = $bdd->prepare(
                             "INSERT INTO Utilisateur (nom, prenom, email, login_utilisateur, password_utilisateur, type_utilisateur) 
                     VALUES (?, ?, ?, ?, ?, ?)"
                         );
                         $query->execute([$nom, $prenom, $email, $login, $password, $type_utilisateur]);
+                    }else {
+                        echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant','admin']";
                     }
                 }
             }

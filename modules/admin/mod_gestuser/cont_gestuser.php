@@ -50,6 +50,9 @@ class ContGestUser
                 case "telechargerTemplateAjout" :
                     $this->telechargerTemplateAjout();
                     break;
+                case "supprimerUser" :
+                    $this->supprimerUser();
+                    break;
             }
         }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
@@ -62,32 +65,77 @@ class ContGestUser
         $this->vue->afficherMenuGestionuser();
     }
 
-    public function telechargerTemplateUpdate() {
-        $templatePath = $_SERVER['DOCUMENT_ROOT'] . '/template/template_modif.csv';
-        if (!file_exists($templatePath)) {
-            die("Le fichier $templatePath n'existe pas.");
+    public function supprimerUser() {
+        if (isset($_GET['id_utilisateur'])) {
+            $idUtilisateur = intval($_GET['id_utilisateur']);
+            $modele = new ModeleGestUser();
+            $modele->supprimerUtilisateur($idUtilisateur);
+            // Redirection après suppression
+            header('Location: index.php?module=gestuser&action=versModifierDesUsers');
+            exit;
+        } else {
+            // Gestion d'une tentative sans ID
+            header('Location: index.php?module=gestuser');
+            exit;
         }
+    }
+
+
+    //Bug script template CSV
+    public function telechargerTemplateUpdate() {
+        $templateFichier = $_SERVER['DOCUMENT_ROOT'] . '/template';
+        $templatePath = $templateFichier . '/template_modif.csv';
+
+        // Vérification si le dossier 'template' existe
+        if (!is_dir($templateFichier)) {
+            // Création du dossier si nécessaire
+            if (!mkdir($templateFichier, 0755, true)) {
+                die("Le dossier $templateFichier n'a pas pu être créé.");
+            }
+        }
+
+        // Vérification si le fichier existe
+        if (!file_exists($templatePath)) {
+            // Création d'un fichier exemple si nécessaire
+            $example = "login,nouveau_nom,nouveau_prenom,nouveau_email,nouveau_password,nouveau_type_d_utilisateur\n";
+            file_put_contents($templatePath, $example);
+        }
+
+        // Configuration des en-têtes pour le téléchargement
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="template_modif.csv"');
         header('Content-Length: ' . filesize($templatePath));
 
+        // Lecture et envoi du fichier
         readfile($templatePath);
         exit;
     }
 
+    //Bug script template CSV
     public function telechargerTemplateAjout() {
-        $templatePath = $_SERVER['DOCUMENT_ROOT'] . '/template/template_ajout.csv';
-        if (!file_exists($templatePath)) {
-            die("Le fichier $templatePath n'existe pas.");
+        $templateDir = $_SERVER['DOCUMENT_ROOT'] . '/template';
+        $templatePath = $templateDir . '/template_ajout.csv';
+
+        // Vérification si le dossier 'template' existe
+        if (!is_dir($templateDir)) {
+            // Tentative de création du dossier
+            if (!mkdir($templateDir, 0755, true)) {
+                die("Le dossier $templateDir n'a pas pu être créé.");
+            }
         }
+        // Vérification si le fichier existe
+        if (!file_exists($templatePath)) {
+            // Création d'un fichier exemple si nécessaire
+            $example = "login,nom,prenom,email,password,type_d_utilisateur\n";
+            file_put_contents($templatePath, $example);
+        }
+
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="template_ajout.csv"');
         header('Content-Length: ' . filesize($templatePath));
         readfile($templatePath);
         exit;
     }
-
-
 
 
     public function versModifierDesUsers()

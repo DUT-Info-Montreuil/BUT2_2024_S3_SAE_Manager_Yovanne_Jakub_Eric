@@ -135,6 +135,12 @@ Class VueGestUser extends VueGenerique
                     <button type="submit" class="btn btn-success">Enregistrer</button>
                     <a href="index.php?module=gestuser&action=versModifierDesUsers" class="btn btn-secondary">Annuler</a>
                 </div>
+                <div class="text-center mt-3">
+                    <a href="index.php?module=gestuser&action=supprimerUser&id_utilisateur=<?= $user['id_utilisateur'] ?>"
+                       class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        Supprimer l'utilisateur
+                    </a>
+                </div>
             </form>
         </div>
         <?php
