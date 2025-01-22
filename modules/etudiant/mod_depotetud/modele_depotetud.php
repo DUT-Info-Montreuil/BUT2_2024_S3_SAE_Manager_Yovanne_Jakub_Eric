@@ -158,7 +158,7 @@ class ModeleDepotEtud extends Connexion
     public function getNomRendu($idRendu)
     {
         $bdd = $this->getBdd();
-        $query = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $query = "SELECT titre FROM Rendu WHERE id_rendu = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idRendu]);
         $rendu = $stmt->fetch(PDO::FETCH_ASSOC);

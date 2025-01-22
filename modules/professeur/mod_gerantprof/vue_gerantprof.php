@@ -29,8 +29,8 @@ class VueGerantProf extends VueGenerique
                             <td><?= htmlspecialchars($group['role_utilisateur']) ?></td>
                             <td>
                                 <?php if ($group['role_utilisateur'] !== 'Responsable'): ?>
-                                    <a href="index.php?module=gerantprof&action=versModifierGerant&idGerant=<?= $group['id_utilisateur'] ?>&idProjet=<?= $idSae ?>" class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-cog"></i>
+                                    <a href="index.php?module=gerantprof&action=versModifierGerant&idGerant=<?= $group['id_utilisateur'] ?>&idProjet=<?= $idSae ?>">
+                                        <img src="../../../assets/modif.png" alt="Modifier le groupe" class="img-fluid" style="max-width: 20px; height: auto;" />
                                     </a>
                                 <?php endif; ?>
                             </td>

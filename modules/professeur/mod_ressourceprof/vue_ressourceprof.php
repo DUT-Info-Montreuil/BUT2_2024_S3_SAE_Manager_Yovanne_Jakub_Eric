@@ -27,11 +27,10 @@ class VueRessourceProf extends VueGenerique
                                 <strong>Lien :</strong> <a href="<?= htmlspecialchars($ressource['lien']) ?>" target="_blank">
                                     <?= htmlspecialchars($ressource['lien']) ?></a><br>
                                 <strong>Mise en avant :</strong> <?= $ressource['mise_en_avant'] ? 'Oui' : 'Non' ?>
-                                <button type="button" class="btn btn-link float-end p-0" data-bs-toggle="modal"
-                                        data-bs-target="#editModal-<?= $index ?>">
-                                    <img src="assets/edit-icon.png" alt="Modifier" width="24" height="24"
-                                         style="cursor: pointer;">
+                                <button type="button" class="btn btn-link float-end p-0 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editModal-<?= $index ?>">
+                                    <img src="../../../assets/modif.png" alt="Modifier le groupe" class="img-fluid" style="max-width: 20px; height: auto;" />
                                 </button>
+
                             </div>
                         </div>
                     </div>

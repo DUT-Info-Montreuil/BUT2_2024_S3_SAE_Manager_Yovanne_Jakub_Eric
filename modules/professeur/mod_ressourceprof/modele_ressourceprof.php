@@ -48,7 +48,7 @@ Class ModeleRessourceProf extends Connexion
 
     public function mettreAJoursRessourceSansFichier($titre, $mise_en_avant, $idRessource){
         $bdd = $this->getBdd();
-        $query = "UPDATE ressource SET titre = ?, mise_en_avant = ? WHERE id_ressource = ?";
+        $query = "UPDATE Ressource SET titre = ?, mise_en_avant = ? WHERE id_ressource = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$titre, $mise_en_avant, $idRessource]);
     }
