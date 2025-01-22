@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="../../styleConnexion.css">
-
 <?php
 include_once 'generique/vue_generique.php';
 
@@ -9,7 +7,7 @@ class VueConnexion extends VueGenerique{
     }
     public function formConnexion() {
         ?>
-        <div class="formulaire-wrapper">
+        <div style="margin-top: 200px" class="formulaire-wrapper">
             <div class="d-flex justify-content-center align-items-center">
                 <div class="bg-light p-4 rounded shadow" style="width: 500px;">
                     <h2 class="text-center">Connexion</h2>

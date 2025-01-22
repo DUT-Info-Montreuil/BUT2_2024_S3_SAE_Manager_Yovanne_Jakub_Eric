@@ -3,6 +3,7 @@ include_once "modules/professeur/mod_accueilprof/modele_accueilprof.php";
 include_once "modules/professeur/mod_accueilprof/vue_accueilprof.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
 
 class ContAccueilProf
 {
@@ -19,33 +20,25 @@ class ContAccueilProf
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "accueil";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "accueil":
+                    $this->accueil();
+                    break;
+                case "creerSAEForm":
+                    $this->creerSAEForm();
+                    break;
+                case "choixSae" :
+                    $this->choixSae();
+                    break;
+                case "creerSAE":
+                    $this->creerSAE();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "accueil":
-                $this->accueil();
-                break;
-            case "creerSAEForm":
-                $this->creerSAEForm();
-                break;
-            case "choixSae" :
-                $this->choixSae();
-                break;
-            case "infoGeneralSae" :
-                $this->infoGeneralSae();
-                break;
-            case "updateSae";
-                $this->updateSae();
-                break;
-            case "creerSAE":
-                $this->creerSAE();
-                break;
-            case "supprimerSAE" :
-                $this->supprimerSAE();
-                break;
-        }
+
     }
 
     public function accueil()
@@ -75,75 +68,54 @@ class ContAccueilProf
 
             $idSae = $this->modele->ajouterProjet($titre, $annee, $description, $semestre);
 
-            $nomSae = $this->modele->getTitreSAE($idSae);
+            $nomSae = ModeleCommun::getTitreSAE($idSae);
             DossierManager::creerDossiersSAE($idSae, $nomSae);
         }
         $this->accueil();
-    }
-
-
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
     }
 
     public function choixSae()
     {
         if (isset($_GET['id'])) {
             $idProjet = $_GET['id'];
-            $_SESSION['id_projet'] = $idProjet;
+            $sections = [
+                "Responsable" => [
+                    ["href" => "index.php?module=infosae&idProjet=$idProjet", "title" => "Gestion de la SAE"],
+                    ["href" => "index.php?module=dashboard&idProjet=$idProjet", "title" => "Dashboard"],
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof&idProjet=$idProjet", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
+                ],
+                "Co-Responsable" => [
+                    ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE&idProjet=$idProjet", "title" => "Groupe"],
+                    ["href" => "index.php?module=gerantprof&idProjet=$idProjet", "title" => "Gérant"],
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"],
+                    ["href" => "index.php?module=dashboard&idProjet=$idProjet", "title" => "Dashboard"]
+                ],
+                "Intervenant" => [
+                    ["href" => "index.php?module=depotprof&idProjet=$idProjet", "title" => "Dépôt"],
+                    ["href" => "index.php?module=soutenanceprof&idProjet=$idProjet", "title" => "Soutenance"],
+                    ["href" => "index.php?module=ressourceprof&idProjet=$idProjet", "title" => "Ressource"],
+                    ["href" => "index.php?module=evaluationprof&idProjet=$idProjet", "title" => "Évaluation"]
+                ]
+            ];
+
             $titre = ModeleCommun::getTitreSAE($idProjet);
+            $desc = ModeleCommun::getDescriptionSAE($idProjet);
             $idUtilisateur = $_SESSION['id_utilisateur'];
             $role = ModeleCommun::getRoleSAE($idProjet, $idUtilisateur);
-            $this->vue->afficherSaeDetails($titre, $role);
+            $availableSections = $sections[$role];
+            $this->vue->afficherSaeDetails($titre, $desc, $availableSections);
         } else {
             $this->accueil();
         }
     }
 
-
-
-    public function infoGeneralSae()
-    {
-        $idProjet = $_SESSION['id_projet'];
-        if ($idProjet) {
-            $saeTabDetails = $this->modele->getSaeDetails($idProjet);
-            $this->vue->afficherSaeInfoGeneral($saeTabDetails);
-        } else {
-            $this->accueil();
-        }
-    }
-
-    public function updateSae()
-    {
-        $idSae = $_SESSION['id_projet'];
-        if ($idSae) {
-            if (isset($_POST['titre']) && isset($_POST['annee_universitaire']) && isset($_POST['semestre']) && isset($_POST['description_projet'])) {
-                $nouveauTitre = trim($_POST['titre']);
-                $annee = trim($_POST['annee_universitaire']);
-                $semestre = trim($_POST['semestre']);
-                $description = trim($_POST['description_projet']);
-                $nomSae = $this->modele->getTitreSAE($idSae);
-
-                $dossierRenomme = DossierManager::renomerBaseDossier($idSae, $nomSae, $nouveauTitre);
-
-                if ($dossierRenomme) {
-                    $this->modele->modifierInfoGeneralSae($idSae, $nouveauTitre, $annee, $semestre, $description);
-                } else {
-                    error_log("Erreur : Impossible de renommer le dossier de la SAE.");
-                }
-            }
-        }
-        $this->accueil();
-    }
-
-
-    public function supprimerSAE()
-    {
-        $idSae = $_SESSION['id_projet'];
-        DossierManager::supprimerDossiersSAE($idSae, $this->modele->getTitreSAE($idSae));
-        $this->modele->supprimerSAE($idSae);
-        $this->accueil();
-    }
 
 }

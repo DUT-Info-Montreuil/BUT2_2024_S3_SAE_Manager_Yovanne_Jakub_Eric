@@ -4,22 +4,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const formIndividuel = document.getElementById('form-individuel');
     const formGroupe = document.getElementById('form-groupe');
 
+    formIndividuel.style.display = 'block';
+    formGroupe.style.display = 'none';
+
     btnIndividuel.addEventListener('click', function (e) {
         e.preventDefault();
         formIndividuel.style.display = 'block';
         formGroupe.style.display = 'none';
-        console.log('Forme individuelle affichée');
+        console.log('Formulaire individuel affiché');
     });
 
     btnGroupe.addEventListener('click', function (e) {
         e.preventDefault();
         formGroupe.style.display = 'block';
         formIndividuel.style.display = 'none';
-        console.log('Forme groupe affichée');
+        console.log('Formulaire groupe affiché');
     });
-
 });
-
-
-
-

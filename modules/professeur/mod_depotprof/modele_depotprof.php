@@ -2,9 +2,6 @@
 include_once 'Connexion.php';
 
 Class ModeleDepotProf extends Connexion {
-    public function __construct()
-    {
-    }
 
     public function getAllDepotSAE($idSae) {
         $bdd = $this->getBdd();
@@ -21,7 +18,7 @@ Class ModeleDepotProf extends Connexion {
 
     public function getNomDepot($idRendue){
         $bdd = $this->getBdd();
-        $sql = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $sql = "SELECT titre FROM Rendu WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$idRendue]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,11 +31,11 @@ Class ModeleDepotProf extends Connexion {
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$titre, $dateLimite, $idSae]);
         $idRendue = $bdd->lastInsertId();
-        $this->creerDepotAllSae($idSae, $idRendue);
+        $this->creerDepotAllSae($idSae, $idRendue, $dateLimite);
         return $idRendue;
     }
 
-    public function creerDepotAllSae($idSae, $idRendue) {
+    public function creerDepotAllSae($idSae, $idRendue, $dateLimite) {
         $bdd = $this->getBdd();
 
         $sql = "SELECT id_groupe FROM Projet_Groupe WHERE id_projet = ?";
@@ -47,9 +44,9 @@ Class ModeleDepotProf extends Connexion {
         $groupes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($groupes as $groupe) {
-            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, contenu_rendu, statut) VALUES (?, ?, NULL, 'En attente')";
+            $sqlInsert = "INSERT INTO Rendu_Groupe (id_rendu, id_groupe, statut, date_limite) VALUES (?, ?, 'En attente', ?)";
             $stmtInsert = $bdd->prepare($sqlInsert);
-            $stmtInsert->execute([$idRendue, $groupe['id_groupe']]);
+            $stmtInsert->execute([$idRendue, $groupe['id_groupe'], $dateLimite]);
         }
     }
 
@@ -58,6 +55,14 @@ Class ModeleDepotProf extends Connexion {
         $sql = "UPDATE Rendu SET titre = ?, date_limite = ? WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$titre, $dateLimite, $id_rendu]);
+        $this->modifierDateRenduAllGroupe($id_rendu, $dateLimite);
+    }
+
+    public function modifierDateRenduAllGroupe($idRendu, $dateLimite) {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Rendu_Groupe SET date_limite = ? WHERE id_rendu = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$dateLimite, $idRendu]);
     }
 
     public function supprimerDepot($id_rendu) {
@@ -87,5 +92,29 @@ Class ModeleDepotProf extends Connexion {
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getEtudiantsParProjet($idSae)
+    {
+        $bdd = static::getBdd();
+        $query = "
+        SELECT GE.id_utilisateur, GE.id_groupe
+        FROM Groupe_Etudiant GE
+        JOIN Projet_Groupe PG ON GE.id_groupe = PG.id_groupe
+        WHERE PG.id_projet = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    public function ajouterTempsSupplementairePourGroupe($idRendu, $idGroupe, $newDateLimite)
+    {
+        $bdd = $this->getBdd();
+        $sql = "UPDATE Rendu_Groupe SET date_limite = ? WHERE id_rendu = ? AND id_groupe = ?";
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$newDateLimite, $idRendu, $idGroupe]);
     }
 }

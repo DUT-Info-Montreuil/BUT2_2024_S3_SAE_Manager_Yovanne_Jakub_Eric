@@ -46,7 +46,22 @@ Class VueGestUser extends VueGenerique
     public function afficherTableauAllUser($tabUser) {
         ?>
         <div class="container mt-5">
+            <h2 class="text-center">Mise à jour des Utilisateurs via un Fichier CSV</h2>
+            <form method="post" action="index.php?module=gestuser&action=modifierUserCSV" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                    <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">Exécuter</button>
+                    <a href="index.php?module=gestuser&action=telechargerTemplateUpdate" class="btn btn-secondary">
+                        Télécharger le modèle CSV
+                    </a>
+                </div>
+            </form>
+
             <h2 class="text-center">Liste des Utilisateurs</h2>
+
             <form method="post" action="index.php?module=gestuser&action=modifierUser">
                 <table class="table table-striped table-hover mt-4">
                     <thead class="thead-dark">
@@ -120,6 +135,12 @@ Class VueGestUser extends VueGenerique
                     <button type="submit" class="btn btn-success">Enregistrer</button>
                     <a href="index.php?module=gestuser&action=versModifierDesUsers" class="btn btn-secondary">Annuler</a>
                 </div>
+                <div class="text-center mt-3">
+                    <a href="index.php?module=gestuser&action=supprimerUser&id_utilisateur=<?= $user['id_utilisateur'] ?>"
+                       class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        Supprimer l'utilisateur
+                    </a>
+                </div>
             </form>
         </div>
         <?php
@@ -128,6 +149,21 @@ Class VueGestUser extends VueGenerique
     public function formulaireAjoutUser(){
         ?>
         <div class="container mt-5">
+
+            <h2 class="text-center">Ajouter des Utilisateurs via un Fichier CSV</h2>
+            <form method="post" action="index.php?module=gestuser&action=ajouterUserCSV" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                    <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">Exécuter</button>
+                    <a href="index.php?module=gestuser&action=telechargerTemplateAjout" class="btn btn-secondary">
+                        Télécharger le modèle CSV
+                    </a>
+                </div>
+            </form>
+
             <h2 class="text-center">Ajouter un Nouvel Utilisateur</h2>
             <form method="post" action="index.php?module=gestuser&action=ajouterUser">
                 <div class="mb-3">

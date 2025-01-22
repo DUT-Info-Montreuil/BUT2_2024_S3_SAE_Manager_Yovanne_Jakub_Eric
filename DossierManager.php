@@ -2,6 +2,28 @@
 
 class DossierManager
 {
+    const EXTENSIONS_AUTORISEES = [
+        'pdf',
+        'docx',
+        'doc',
+        'odt',
+        'txt',
+        'csv',
+        'png',
+        'jpg',
+        'jpeg',
+        'gif',
+        'svg',
+        'zip',
+        '7z',
+        'json',
+        'xml',
+        'mp3',
+        'wav',
+        'mp4',
+        'rar'
+    ];
+
 
     public static function getBaseDossierSAE($idSae, $nomSae)
     {
@@ -184,8 +206,7 @@ class DossierManager
 
     public static function uploadFichier($fichierSource, $dossierCible)
     {
-        $extensionsAutorisees = ['pdf', 'docx', 'png', 'jpg', 'php', 'java', 'c'];
-        $tailleMax = 10485760;
+        $tailleMax = 10 * 1024 * 1024; // 10 Mo
 
         if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
             throw new Exception("Erreur lors du téléchargement du fichier.");
@@ -195,23 +216,37 @@ class DossierManager
         $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
         $tailleFichier = $fichierSource['size'];
 
-        if (!in_array($extensionFichier, $extensionsAutorisees)) {
+        // extension du fichier
+        if (!in_array($extensionFichier, self::EXTENSIONS_AUTORISEES)) {
             throw new Exception("Extension non autorisée : $extensionFichier");
         }
+
+        //taille du fichier
         if ($tailleFichier > $tailleMax) {
             throw new Exception("Le fichier dépasse la taille maximale autorisée de " . ($tailleMax / 1024 / 1024) . " Mo.");
         }
+
+        //type MIME
+        $mimeType = mime_content_type($fichierSource['tmp_name']);
+        // application/vnd.openxmlformats-officedocument.wordprocessingml.document = .docx
+        $mimeAutorises = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'image/png', 'image/jpeg', 'image/gif', 'text/plain', 'application/json', 'audio/mpeg', 'video/mp4', 'video/x-msvideo', 'application/x-rar', 'application/vnd.rar'];
+
+        if (!in_array($mimeType, $mimeAutorises)) {
+            throw new Exception("Type MIME non autorisé : $mimeType");
+        }
+
         if (!is_dir($dossierCible)) {
             if (!mkdir($dossierCible, 0777, true)) {
                 throw new Exception("Impossible de créer le dossier cible : $dossierCible");
             }
         }
+
         $cheminFichierFinal = $dossierCible . DIRECTORY_SEPARATOR . uniqid() . '-' . $nomFichier;
 
-        // Déplacer le fichier vers son emplacement final
         if (!move_uploaded_file($fichierSource['tmp_name'], $cheminFichierFinal)) {
             throw new Exception("Erreur lors du déplacement du fichier vers $cheminFichierFinal");
         }
+
         return $cheminFichierFinal;
     }
 
@@ -231,7 +266,6 @@ class DossierManager
 
     public static function uploadRessource($fichierSource, $idSae, $nomSae)
     {
-        $extensionsAutorisees = ['pdf', 'docx', 'png', 'jpg'];
         $tailleMax = 10 * 1024 * 1024; // 10 Mo
 
         if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
@@ -242,7 +276,7 @@ class DossierManager
         $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
         $tailleFichier = $fichierSource['size'];
 
-        if (!in_array($extensionFichier, $extensionsAutorisees)) {
+        if (!in_array($extensionFichier, self::EXTENSIONS_AUTORISEES)) {
             throw new Exception("Extension non autorisée : $extensionFichier");
         }
 
@@ -263,6 +297,43 @@ class DossierManager
         }
 
         return $cheminFichierFinal;
+    }
+
+    public static function uploadPhotoProfil($fichierSource, $idUtilisateur)
+    {
+        $tailleMax = 10 * 1024 * 1024; // 10 Mo
+
+        if (!isset($fichierSource) || $fichierSource['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception("Erreur lors du téléchargement du fichier.");
+        }
+
+        $nomFichier = basename($fichierSource['name']);
+        $extensionFichier = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
+        $tailleFichier = $fichierSource['size'];
+
+        if (!in_array($extensionFichier, ['jpg', 'jpeg', 'png'])) {
+            throw new Exception("Extension non autorisée : $extensionFichier");
+        }
+
+        if ($tailleFichier > $tailleMax) {
+            throw new Exception("Le fichier dépasse la taille maximale autorisée de " . ($tailleMax / 1024) . " Ko.");
+        }
+
+        $uploadDir = __DIR__ . '/photo_profil/';
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0777, true)) {
+                throw new Exception("Impossible de créer le dossier cible : $uploadDir");
+            }
+        }
+
+        $imageName = 'photo_de_profil_' . $idUtilisateur . '.' . $extensionFichier;
+        $uploadPath = $uploadDir . $imageName;
+
+        if (!move_uploaded_file($fichierSource['tmp_name'], $uploadPath)) {
+            throw new Exception("Erreur lors du déplacement du fichier vers $uploadPath");
+        }
+
+        return $uploadPath;
     }
 
 

@@ -9,10 +9,9 @@ class ModeleConnexion extends Connexion {
         $stmt = $bdd->prepare("SELECT * FROM Utilisateur WHERE login_utilisateur = ?");
         $stmt->execute([$login]);
         $user = $stmt->fetch();
-        // A REMETTRE A LA FIN (JUSTE PR LES TEST)
-//        if ($user && password_verify($mdp, $user['password_utilisateur'])) {
-//            return $user;
-//        }
+        if ($user && password_verify($mdp, $user['password_utilisateur'])) {
+            return $user;
+        }
         if($user && $user['password_utilisateur']==$mdp){
             return $user;
         }
@@ -29,23 +28,14 @@ class ModeleConnexion extends Connexion {
         }
         return false;
     }
-
-    public function typeUtilisateur($identifiant){
-        $bdd = $this->getBdd();
-        $stmt = $bdd->prepare("SELECT type_utilisateur FROM Utilisateur WHERE login_utilisateur = ?");
-        $stmt->execute([$identifiant]);
-        $type = $stmt->fetch();
-        return $type[0];
-
-    }
-
-
     public function ajouterUtilisateur ($nom, $prenom, $email, $login, $password_hash) {
         if(!$this->utilisateurExiste($login)){
+            $defaultPathAvatar = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'profil_picture' . DIRECTORY_SEPARATOR . 'default_avatar.png';
             $bdd = $this->getBdd();
-            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur)
-                                    VALUES (DEFAULT, ?, ?, ?, 'etudiant', ?, ?)");
-            $stmt->execute([$nom,$prenom,$email,$login,$password_hash]);
+            $stmt = $bdd->prepare("INSERT INTO Utilisateur (id_utilisateur, nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur, profil_picture)
+                       VALUES (DEFAULT, ?, ?, ?, 'etudiant', ?, ?, ?)");
+            $stmt->execute([$nom, $prenom, $email, $login, $password_hash, $defaultPathAvatar]);
+
         }
     }
 
