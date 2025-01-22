@@ -25,11 +25,11 @@ class ModeleParametre extends Connexion
     public function modifierAnneeScolaire($idUtilisateur, $annee_debut, $annee_fin, $semestre)
     {
         $bdd = $this->getBdd();
+
         $sqlCheck = "SELECT id_annee FROM Annee_Scolaire 
                  WHERE annee_debut = ? 
                    AND annee_fin = ? 
                    AND semestre = ?";
-
         $stmtCheck = $bdd->prepare($sqlCheck);
         $stmtCheck->execute([$annee_debut, $annee_fin, $semestre]);
 
@@ -50,10 +50,20 @@ class ModeleParametre extends Connexion
                          AND id_annee != ?";
         $stmtDeleteAssoc = $bdd->prepare($sqlDeleteAssoc);
         $stmtDeleteAssoc->execute([$idUtilisateur, $idAnneeScolaire]);
-        $sqlInsertAssoc = "INSERT INTO Etudiant_Annee (id_utilisateur, id_annee) 
-                       VALUES (?, ?)";
-        $stmtInsertAssoc = $bdd->prepare($sqlInsertAssoc);
-        $stmtInsertAssoc->execute([$idUtilisateur, $idAnneeScolaire]);
+
+        $sqlCheckAssoc = "SELECT 1 FROM Etudiant_Annee 
+                      WHERE id_utilisateur = ? 
+                        AND id_annee = ?";
+        $stmtCheckAssoc = $bdd->prepare($sqlCheckAssoc);
+        $stmtCheckAssoc->execute([$idUtilisateur, $idAnneeScolaire]);
+        $existingAssoc = $stmtCheckAssoc->fetch(PDO::FETCH_ASSOC);
+
+        if (!$existingAssoc) {
+            $sqlInsertAssoc = "INSERT INTO Etudiant_Annee (id_utilisateur, id_annee) 
+                           VALUES (?, ?)";
+            $stmtInsertAssoc = $bdd->prepare($sqlInsertAssoc);
+            $stmtInsertAssoc->execute([$idUtilisateur, $idAnneeScolaire]);
+        }
     }
 
 

@@ -46,7 +46,7 @@ class ContParametre
             $imagePath = glob("photo_profil/" . $pictureName);
         }
         $anneeScolaire = null;
-        if(ModeleCommun::getTypeUtilisateur($idUtilisateur)==='Etudiant'){
+        if(ModeleCommun::getTypeUtilisateur($idUtilisateur)==='etudiant'){
             $anneeScolaire = $this->modele->getAnneeScolaireByEtudiant($idUtilisateur);
         }
 
