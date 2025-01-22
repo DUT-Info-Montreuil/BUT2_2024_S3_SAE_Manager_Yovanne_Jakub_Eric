@@ -23,7 +23,7 @@ class ModeleDepotEtud extends Connexion
     SELECT 
         r.id_rendu, 
         r.titre, 
-        r.date_limite, 
+        rg.date_limite, 
         rg.statut,
         e.coefficient, 
         e.note_max,
@@ -34,7 +34,7 @@ class ModeleDepotEtud extends Connexion
     INNER JOIN Rendu_Groupe rg ON r.id_rendu = rg.id_rendu
     INNER JOIN Projet_Groupe pg ON rg.id_groupe = pg.id_groupe
     LEFT JOIN Rendu_Fichier rf ON r.id_rendu = rf.id_rendu
-    LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation  -- Ajout de la jointure avec Evaluation
+    LEFT JOIN Evaluation e ON r.id_evaluation = e.id_evaluation
     WHERE pg.id_projet = ? AND rg.id_groupe = ?
     GROUP BY r.id_rendu, r.titre, r.date_limite, rg.statut, e.coefficient, e.note_max
     ";
