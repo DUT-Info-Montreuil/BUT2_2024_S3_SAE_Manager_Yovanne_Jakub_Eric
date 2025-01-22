@@ -90,23 +90,27 @@ Class ModeleGestUser extends Connexion
         $bdd = $this->getBdd();
         $handle = fopen($csvFilePath, 'r');
         if ($handle) {
+
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                // [login, nom, prenom, email, type_utilisateur]
-                $login = $data[0];
-                $nom = $data[1];
-                $prenom = $data[2];
-                $email = $data[3];
-                $password = password_hash($data[4], PASSWORD_DEFAULT);
-                $type_utilisateur = $data[5];
-                if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
-                    $query = $bdd->prepare(
-                        "UPDATE Utilisateur 
+                if (count($data) >= 6) {
+                    $login = $data[0];
+                    $nom = $data[1];
+                    $prenom = $data[2];
+                    $email = $data[3];
+                    $password = password_hash($data[4], PASSWORD_DEFAULT);
+                    $type_utilisateur = $data[5];
+                    if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant'])) {
+                        $query = $bdd->prepare(
+                            "UPDATE Utilisateur 
                          SET nom = ?, prenom = ?, email = ?, type_utilisateur = ? ,password_utilisateur = ?
                          WHERE login_utilisateur = ?"
-                    );
-                    $query->execute([$nom, $prenom, $email, $type_utilisateur, $password, $login]);
-                }else {
-                    echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant']";
+                        );
+                        $query->execute([$nom, $prenom, $email, $type_utilisateur, $password, $login]);
+                    } else {
+                        echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant']";
+                    }
+                }else{
+                    echo "Erreur nombre d'argument incorrect.";
                 }
             }
             fclose($handle);
@@ -119,7 +123,6 @@ Class ModeleGestUser extends Connexion
         if ($handle) {
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 if (count($data) >= 6) {
-                    // [login, nom, prenom, email, password, type_utilisateur]
                     $login = $data[0];
                     $nom = $data[1];
                     $prenom = $data[2];
@@ -136,6 +139,8 @@ Class ModeleGestUser extends Connexion
                     }else {
                         echo "Erreur lors de l'ajout de l'utilisateur : " . $type_utilisateur . " n'est pas un type d'utilisateur valise. ['etudiant', 'professeur', 'intervenant','admin']";
                     }
+                }else{
+                    echo "Erreur nombre d'argument incorrect.";
                 }
             }
             fclose($handle);
