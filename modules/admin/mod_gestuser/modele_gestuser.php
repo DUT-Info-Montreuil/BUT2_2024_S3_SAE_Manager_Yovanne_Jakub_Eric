@@ -76,7 +76,7 @@ Class ModeleGestUser extends Connexion
         $bdd = $this->getBdd();
 
         try {
-            $profil_picture = "photo_profil/default_avatar.png";
+            $profil_picture = "C:\\xampp\htdocs\\photo_profil\\default_avatar.png";
             $query = $bdd->prepare("INSERT INTO Utilisateur (nom, prenom, email, type_utilisateur, login_utilisateur, password_utilisateur,profil_picture) 
                                VALUES (?, ?, ?, ?, ?, ?,?)");
             $query->execute([$nom, $prenom, $email, $type, $login, $password,$profil_picture]);
@@ -126,7 +126,7 @@ Class ModeleGestUser extends Connexion
                     $email = $data[3];
                     $password = password_hash($data[4], PASSWORD_DEFAULT);
                     $type_utilisateur = $data[5];
-                    $profil_picture = "photo_profil/default_avatar.png";
+                    $profil_picture = "C:\\xampp\htdocs\\photo_profil\\default_avatar.png";
                     if (in_array($type_utilisateur, ['etudiant', 'professeur', 'intervenant','admin'])) {
                         $query = $bdd->prepare(
                             "INSERT INTO Utilisateur (nom, prenom, email, login_utilisateur, password_utilisateur, type_utilisateur,profil_picture) 

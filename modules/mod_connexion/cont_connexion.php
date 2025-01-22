@@ -56,8 +56,8 @@ class ContConnexion {
         }
     }
 
-    public function testConnexion($identifiant, $mdp) {
-        $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
+    public function testConnexion($login, $mdp) {
+        $utilisateur = $this->modele->verifierUtilisateur($login, $mdp);
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
             $_SESSION['token_connexion'] = bin2hex(random_bytes(32));
