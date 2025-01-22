@@ -46,15 +46,15 @@ Class VueGestUser extends VueGenerique
     public function afficherTableauAllUser($tabUser) {
         ?>
         <div class="container mt-5">
-            <h2 class="text-center">Mise à jour des Utilisateurs via un Fichier CSV</h2>
+            <h2 class="text-center" style="margin-bottom: 20px">Mise à jour des informations des Utilisateurs via un Fichier CSV</h2>
             <form method="post" action="index.php?module=gestuser&action=modifierUserCSV" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                <div style="margin-bottom: 20px"  class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier au format .csv :</label>
                     <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
                 </div>
-                <div style="text-align: center;">
+                <div style="text-align: center; margin-bottom: 20px">
                     <button type="submit" class="btn btn-primary">Exécuter</button>
-                    <a href="index.php?module=gestuser&action=telechargerTemplateUpdate" class="btn btn-secondary">
+                    <a href="index.php?module=gestuser&action=telechargerTemplateUpdate" class="btn btn-success">
                         Télécharger le modèle CSV
                     </a>
                 </div>
@@ -132,7 +132,7 @@ Class VueGestUser extends VueGenerique
                 </div>
                 <input type="hidden" name="id_utilisateur" value="<?= $user['id_utilisateur'] ?>">
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
                     <a href="index.php?module=gestuser&action=versModifierDesUsers" class="btn btn-secondary">Annuler</a>
                 </div>
                 <div class="text-center mt-3">
@@ -150,15 +150,15 @@ Class VueGestUser extends VueGenerique
         ?>
         <div class="container mt-5">
 
-            <h2 class="text-center">Ajouter des Utilisateurs via un Fichier CSV</h2>
+            <h2 style="margin-bottom: 20px" class="text-center">Ajouter des Utilisateurs via un Fichier CSV</h2>
             <form method="post" action="index.php?module=gestuser&action=ajouterUserCSV" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                <div style="margin-bottom: 20px" class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier au format .csv :</label>
                     <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
                 </div>
-                <div style="text-align: center;">
+                <div style="text-align: center;margin-bottom: 20px">
                     <button type="submit" class="btn btn-primary">Exécuter</button>
-                    <a href="index.php?module=gestuser&action=telechargerTemplateAjout" class="btn btn-secondary">
+                    <a href="index.php?module=gestuser&action=telechargerTemplateAjout" class="btn btn-success">
                         Télécharger le modèle CSV
                     </a>
                 </div>
