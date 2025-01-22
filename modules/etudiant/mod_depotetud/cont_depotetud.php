@@ -4,6 +4,8 @@ include_once "modules/etudiant/mod_depotetud/vue_depotetud.php";
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
 require_once "modules/etudiant/ModeleCommunEtudiant.php";
+require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContDepotEtud
 {
     private $modele;
@@ -19,54 +21,59 @@ class ContDepotEtud
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "afficherDepot";
-        if (!$this->estEtudiant()) {
+        if (ControllerCommun::estEtudiant()) {
+            switch ($this->action) {
+                case "afficherDepot":
+                    $this->afficherDepot();
+                    break;
+                case "upload" :
+                    $this->upload();
+                    break;
+                case "supprimerTravailRemis" :
+                    $this->supprimerTravailRemis();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "afficherDepot":
-                $this->afficherDepot();
-                break;
-            case "upload" :
-                $this->upload();
-                break;
-            case "supprimerTravailRemis" :
-                //popup de suppresion
-                $this->supprimerTravailRemis();
-                break;
-        }
-    }
 
-    public function estEtudiant()
-    {
-        return ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']) === "etudiant";
     }
-
 
     public function afficherDepot()
     {
-        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($_SESSION['id_projet'], $_SESSION['id_utilisateur']);
-        $id_projet = $_SESSION["id_projet"];
-        $tabAllDepot = $this->modele->getAllDepot($id_groupe, $id_projet);
+        TokenManager::stockerAndGenerateToken();
+        $idSae = $_GET['idProjet'];
+        $id_groupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
+        $tabAllDepot = $this->modele->getAllDepot($id_groupe, $idSae);
 
-        foreach ($tabAllDepot as &$depot) {
-            $evaluation = $this->modele->getNoteEtCommentaire($depot['id_rendu'], $id_groupe);
-            $depot['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
-            $depot['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : null;
+        if (!empty($tabAllDepot)){
+            foreach ($tabAllDepot as &$depot) {
+                $evaluation = $this->modele->getNoteEtCommentaire($depot['id_rendu'], $id_groupe);
+                $depot['note'] = isset($evaluation['note']) ? $evaluation['note'] : null;
+                $depot['commentaire'] = isset($evaluation['commentaire']) ? $evaluation['commentaire'] : null;
 
-            $auteurEtDate = $this->modele->getAuteurEtDateRemise($depot['id_rendu'], $id_groupe);
-            $depot['auteur'] = isset($auteurEtDate['nom']) && isset($auteurEtDate['prenom']) ? $auteurEtDate['nom'] . ' ' . $auteurEtDate['prenom'] : null;
-            $depot['date_remise'] = isset($auteurEtDate['date_remise']) ? $auteurEtDate['date_remise'] : null;
+                $auteurEtDate = $this->modele->getAuteurEtDateRemise($depot['id_rendu'], $id_groupe);
+                $depot['auteur'] = isset($auteurEtDate['nom']) && isset($auteurEtDate['prenom']) ? $auteurEtDate['nom'] . ' ' . $auteurEtDate['prenom'] : null;
+                $depot['date_remise'] = isset($auteurEtDate['date_remise']) ? $auteurEtDate['date_remise'] : null;
+            }
+        }
+        if(empty($tabAllDepot)){
+            $this->vue->afficherMessageAucunDepot();
+        }else{
+            $this->vue->afficherAllDepot($tabAllDepot, $idSae);
         }
 
-        $this->vue->afficherAllDepot($tabAllDepot);
     }
 
 
     public function upload()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
+
         if (isset($_FILES['uploaded_files']) && isset($_POST['id_rendu'])) {
-            $idSae = $_SESSION["id_projet"];
+            $idSae = $_GET['idProjet'];
             $idUser = $_SESSION["id_utilisateur"];
             $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
             $idRendu = $_POST['id_rendu'];
@@ -99,11 +106,17 @@ class ContDepotEtud
 
         $this->afficherDepot();
     }
+
+
     public function supprimerTravailRemis()
     {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
+
         if (isset($_POST['id_rendu'])) {
             $idRendu = $_POST['id_rendu'];
-            $idSae = $_SESSION["id_projet"];
+            $idSae = $_GET['idProjet'];
             $idUser = $_SESSION["id_utilisateur"];
             $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $idUser);
 
@@ -127,6 +140,9 @@ class ContDepotEtud
 
         $this->afficherDepot();
     }
+
+
+
 
 
 

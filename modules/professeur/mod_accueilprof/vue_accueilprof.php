@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../../../styleprof.css">
+<link rel="stylesheet" href="../../../styleaccueil.css">
 <?php
 include_once 'generique/vue_generique.php';
 
@@ -8,23 +8,25 @@ class VueAccueilProf extends VueGenerique
     {
         parent::__construct();
     }
+
     public function afficherSaeGerer($saeGerer, $typeUser) {
         ?>
         <div class="container">
             <div class="row justify-content-center g-4">
                 <?php foreach ($saeGerer as $sae): ?>
                     <div class="col-md-4 col-lg-3 d-flex justify-content-center">
+                        <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>"
+                           style="color: #495057;">
                         <div class="card shadow border-0"
                              style="width: 250px; height: 250px; border-radius: 15px;
                          background-color: #f8f9fa; display: flex; flex-direction: column;
                          justify-content: center; align-items: center; text-align: center;">
-                            <a class="text-decoration-none" href="index.php?module=accueilprof&action=choixSae&id=<?php echo htmlspecialchars($sae['id_projet']); ?>"
-                               style="color: #495057;">
+
                                 <h3 style="font-weight: 600; font-size: 1.2rem;">
                                     <?php echo htmlspecialchars($sae['titre']); ?>
                                 </h3>
-                            </a>
                         </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
 
@@ -72,7 +74,9 @@ class VueAccueilProf extends VueGenerique
         </div>
         <?php
     }
-    public function afficherSaeDetails($titre, $role, $desc)
+
+
+    public function afficherSaeDetails($titre, $desc, $availableSections)
     {
         ?>
         <div class="container mt-5">
@@ -89,33 +93,6 @@ class VueAccueilProf extends VueGenerique
                 <div class="container">
                     <div class="row justify-content-center">
                         <?php
-                        $sections = [
-                            "Responsable" => [
-                                ["href" => "index.php?module=infosae", "title" => "Gestion de la SAE"],
-                                ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                                ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ],
-                            "Co-Responsable" => [
-                                ["href" => "index.php?module=groupeprof&action=gestionGroupeSAE", "title" => "Groupe"],
-                                ["href" => "index.php?module=gerantprof", "title" => "Gérant"],
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ],
-                            "Intervenant" => [
-                                ["href" => "index.php?module=depotprof", "title" => "Dépôt"],
-                                ["href" => "index.php?module=soutenanceprof", "title" => "Soutenance"],
-                                ["href" => "index.php?module=ressourceprof", "title" => "Ressource"],
-                                ["href" => "index.php?module=evaluationprof", "title" => "Évaluation"]
-                            ]
-                        ];
-
-                        $availableSections = isset($sections[$role]) ? $sections[$role] : [];
                         foreach ($availableSections as $section):
                             ?>
                             <div class="col-12 mb-3">

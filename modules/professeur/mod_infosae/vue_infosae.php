@@ -12,21 +12,14 @@ class VueInfoSae extends VueGenerique
     {
         ?>
         <div class="container mt-5">
-            <h2 class="text-center mb-4" style="font-weight: bold; color: #343a40;">Gestion SAE</h2>
+            <h2 class="text-center mb-5" style="font-weight: bold; color: #000000;">Gestion SAE</h2>
             <div class="row justify-content-center g-4">
                 <?php foreach ($choix as $option): ?>
-                    <div class="col-md-4 col-lg-3 d-flex justify-content-center">
-                        <div class="card border-0"
-                             style="width: 250px; height: 250px; border-radius: 10px;
-                         background-color: #f5f5f5; display: flex; justify-content: center;
-                         align-items: center; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                            <a class="text-decoration-none" href="<?php echo htmlspecialchars($option['link']); ?>"
-                               style="color: #495057; text-align: center;">
-                                <h3 style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">
-                                    <?php echo htmlspecialchars($option['title']); ?>
-                                </h3>
-                            </a>
-                        </div>
+                    <div class="col-md-4 col-lg-3 d-flex justify-content-center mb-4">
+                        <a href="<?php echo htmlspecialchars($option['link']); ?>"
+                           class="btn btn-outline-secondary w-100 text-center p-4 rounded-3 shadow-sm">
+                            <h3 style="font-weight: bold; color: #000000;"><?php echo htmlspecialchars($option['title']); ?></h3>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -34,12 +27,15 @@ class VueInfoSae extends VueGenerique
         <?php
     }
 
-    public function afficherFormAddChamp()
+
+
+
+    public function afficherFormAddChamp($idSae)
     {
         ?>
         <div class="container mt-4">
             <h2>Ajouter un Champ à Remplir</h2>
-            <form method="POST" action="index.php?module=infosae&action=ajouterChamp">
+            <form method="POST" action="index.php?module=infosae&action=ajouterChamp&idProjet=<?php echo $idSae; ?>">
                 <div class="mb-3">
                     <label for="champ_nom" class="form-label"><strong>Nom du champ :</strong></label>
                     <input type="text" class="form-control" id="champ_nom" name="champ_nom" required>
@@ -61,12 +57,13 @@ class VueInfoSae extends VueGenerique
     }
 
 
-    public function afficherSaeInfoGeneral($saeDetails)
+    public function afficherSaeInfoGeneral($saeDetails, $idSae)
     {
         ?>
         <div class="container mt-4">
             <h2>Détails de la SAE</h2>
-            <form method="POST" action="index.php?module=infosae&action=updateSae">
+            <form method="POST" action="index.php?module=infosae&action=updateSae&idProjet=<?php echo $idSae; ?>">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <div class="mb-3">
                     <label for="titre" class="form-label"><strong>Titre :</strong></label>
                     <input type="text" class="form-control" id="titre" name="titre"
@@ -90,15 +87,16 @@ class VueInfoSae extends VueGenerique
 
                 <button type="submit" class="btn btn-primary">Mettre à jour</button>
             </form>
-            <form action="index.php?module=infosae&action=supprimerSAE" method="post" onsubmit="return confirmationSupprimer();">
+            <form action="index.php?module=infosae&action=supprimerSAE&idProjet=<?php echo $idSae; ?>" method="post"
+                  onsubmit="return confirmationSupprimer();">
+                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                 <button type="submit" class="btn btn-danger">Supprimer la SAE</button>
             </form>
-            <script src="scriptConfirmationSuppr.js"></script>
         </div>
         <?php
     }
 
-    public function afficherAllChamp($allChamp)
+    public function afficherAllChamp($allChamp, $idSae)
     {
         ?>
         <div class="container mt-4">
@@ -134,7 +132,8 @@ class VueInfoSae extends VueGenerique
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form method="POST" action="index.php?module=infosae&action=modifierChamp">
+                                        <form method="POST"
+                                              action="index.php?module=infosae&action=modifierChamp&idProjet=<?php echo $idSae; ?>">
                                             <input type="hidden" name="id_champ"
                                                    value="<?php echo htmlspecialchars($champ['id_champ']); ?>">
 
@@ -169,7 +168,10 @@ class VueInfoSae extends VueGenerique
                                             </div>
                                         </form>
                                         <div class="modal-footer d-flex justify-content-center">
-                                            <form method="POST" action="index.php?module=infosae&action=supprimerChamp">
+                                            <form method="POST"
+                                                  action="index.php?module=infosae&action=supprimerChamp&idProjet=<?php echo $idSae; ?>"
+                                                  onsubmit="return confirmationSupprimer();">
+                                                <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                                 <input type="hidden" name="id_champ"
                                                        value="<?php echo htmlspecialchars($champ['id_champ']); ?>">
                                                 <button type="submit" class="btn btn-danger w-50">Supprimer</button>
@@ -183,7 +185,8 @@ class VueInfoSae extends VueGenerique
                     </tbody>
                 </table>
                 <div class="text-center mt-4">
-                    <a href="index.php?module=infosae&action=formAddChamp" class="btn btn-primary btn-lg">
+                    <a href="index.php?module=infosae&action=formAddChamp&idProjet=<?php echo $idSae; ?>"
+                       class="btn btn-primary btn-lg">
                         <i class="fas fa-plus"></i> Ajouter un Champ
                     </a>
                 </div>

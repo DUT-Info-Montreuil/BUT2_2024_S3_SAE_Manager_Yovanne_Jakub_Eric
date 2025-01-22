@@ -1,6 +1,7 @@
 <?php
 include_once 'modules/mod_connexion/modele_connexion.php';
 include_once 'modules/mod_connexion/vue_connexion.php';
+include_once 'ModeleCommun.php';
 class ContConnexion {
     private $modele;
     private $vue;
@@ -13,21 +14,32 @@ class ContConnexion {
 
     public function exec() {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "connexion";
-
-        switch ($this->action) {
-            case "inscription":
-                $this->inscription();
-                break;
-            case "connexion":
-                $this->connexion();
-                break;
-            case "deconnexion":
-                $this->deconnexion();
-                break;
-            default:
-                $this->connexion();
-                break;
+        if(!$this->userDejaConnecter()){
+            switch ($this->action) {
+                case "inscription":
+                    $this->inscription();
+                    break;
+                case "connexion":
+                    $this->connexion();
+                    break;
+                case "deconnexion":
+                    $this->deconnexion();
+                    break;
+            }
+        }else{
+            $this->redirectionAccueil();
         }
+
+    }
+
+    public function userDejaConnecter(){
+        if (isset($_SESSION['id_utilisateur'])) {
+            if ($this->action == 'connexion' || $this->action == 'inscription') {
+                return true;
+            }
+        }
+
+        return false;
     }
     public function connexion() {
        if (!isset($_SESSION['id_utilisateur']) && isset($_POST['login']) && isset($_POST['password'])) {
@@ -44,22 +56,34 @@ class ContConnexion {
         }
     }
 
-
     public function testConnexion($identifiant, $mdp) {
         $utilisateur = $this->modele->verifierUtilisateur($identifiant, $mdp);
         if ($utilisateur) {
             $_SESSION['id_utilisateur'] = $utilisateur['id_utilisateur'];
-            $_SESSION['login_utilisateur'] = $utilisateur['login_utilisateur'];
-            $typeUtilisateur = $this->modele->typeUtilisateur($identifiant);
-            if($typeUtilisateur=="etudiant"){
-                header('Location: index.php?module=accueiletud');
-            }else if ($typeUtilisateur=="professeur" ||$typeUtilisateur=="intervenant"){
-                header('Location: index.php?module=accueilprof');
-            }else if ($typeUtilisateur=="admin"){
-                header('Location: index.php?module=accueiladmin');
-            }
+            $_SESSION['token_connexion'] = bin2hex(random_bytes(32));
+            setcookie('token_connexion', $_SESSION['token_connexion'], time() + 1800, '/', null, true, true); // token dans le cookie
+            /*
+             * $_SESSION['token_connexion'],temps de vie,
+             *                              chemin pour lequel le cookie est valide,
+             *                              domaine actuel du site (ici c'est tout),
+             *                              uniquement https ?,
+             *                              accessible via http ?);
+             */
+            $_SESSION['timestamp'] = time();
+            $this->redirectionAccueil();
         } else {
             $this->vue->formConnexion();
+        }
+    }
+
+    public function redirectionAccueil(){
+        $typeUtilisateur = ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
+        if($typeUtilisateur=="etudiant"){
+            header('Location: index.php?module=accueiletud');
+        }else if ($typeUtilisateur=="professeur" ||$typeUtilisateur=="intervenant"){
+            header('Location: index.php?module=accueilprof');
+        }else if ($typeUtilisateur=="admin"){
+            header('Location: index.php?module=accueiladmin');
         }
     }
 

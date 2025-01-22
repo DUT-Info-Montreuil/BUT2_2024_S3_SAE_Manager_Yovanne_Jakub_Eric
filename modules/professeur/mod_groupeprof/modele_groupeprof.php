@@ -66,26 +66,33 @@ class ModeleGroupeProf extends Connexion
     public function getEtudiantsSansGroupe($idSae)
     {
         $bdd = $this->getBdd();
-        $query = "
-        SELECT 
-            login_utilisateur, 
-            id_utilisateur, 
-            CONCAT(prenom, ' ', nom) AS nom_complet 
-        FROM 
-            Utilisateur 
-        WHERE 
-            type_utilisateur = 'etudiant' 
-            AND id_utilisateur NOT IN (
-                SELECT ge.id_utilisateur 
-                FROM Groupe_Etudiant ge
-                JOIN Projet_Groupe pg ON ge.id_groupe = pg.id_groupe
-                WHERE pg.id_projet = ?
-            )
-    ";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idSae]);
+
+        $sql = "
+    SELECT 
+        u.login_utilisateur,
+        u.id_utilisateur,
+        CONCAT(u.prenom, ' ', u.nom) AS nom_complet,
+        a.semestre
+    FROM 
+        Utilisateur u
+    JOIN Etudiant_Annee ea ON u.id_utilisateur = ea.id_utilisateur
+    JOIN Annee_Scolaire a ON ea.id_annee = a.id_annee
+    JOIN Projet p ON p.semestre = a.semestre
+    WHERE 
+        u.type_utilisateur = 'etudiant' 
+        AND u.id_utilisateur NOT IN (
+            SELECT ge.id_utilisateur 
+            FROM Groupe_Etudiant ge
+            JOIN Projet_Groupe pg ON ge.id_groupe = pg.id_groupe
+            WHERE pg.id_projet = ?
+        )
+        AND p.id_projet = ?";
+
+        $stmt = $bdd->prepare($sql);
+        $stmt->execute([$idSae, $idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
     public function ajouterGroupe($nomGroupe, $idProjet)
@@ -167,7 +174,7 @@ class ModeleGroupeProf extends Connexion
     public function lieeProjetGrp($idGroupe, $idSae)
     {
         $bdd = $this->getBdd();
-        $projetgrp = "INSERT INTO projet_groupe (id_groupe, id_projet) VALUES (?, ?)";
+        $projetgrp = "INSERT INTO Projet_Groupe (id_groupe, id_projet) VALUES (?, ?)";
         $stmt2 = $bdd->prepare($projetgrp);
         $stmt2->execute([$idGroupe, $idSae]);
     }
@@ -175,7 +182,7 @@ class ModeleGroupeProf extends Connexion
     public function ajouterEtudiantAuGroupe($idGroupe, $idEtudiant)
     {
         $bdd = $this->getBdd();
-        $query = "INSERT INTO groupe_etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
+        $query = "INSERT INTO Groupe_Etudiant (id_utilisateur, id_groupe) VALUES (?, ?)";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idEtudiant, $idGroupe]);
     }

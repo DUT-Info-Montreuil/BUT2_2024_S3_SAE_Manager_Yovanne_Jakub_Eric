@@ -1,0 +1,21 @@
+header {
+    position: relative;
+    height: 80px;
+    color: white;
+    padding: 20px;
+}
+
+.profil {
+    position: absolute;
+    top: 25px;
+    right: 40px;
+}
+
+.hover-grow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-grow:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}

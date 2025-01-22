@@ -4,6 +4,8 @@ include_once 'modules/professeur/mod_depotprof/modele_depotprof.php';
 include_once 'modules/professeur/mod_depotprof/vue_depotprof.php';
 require_once "DossierManager.php";
 require_once "ModeleCommun.php";
+require_once "ControllerCommun.php";
+require_once "TokenManager.php";
 class ContDepotProf{
     private $modele;
     private $vue;
@@ -18,54 +20,55 @@ class ContDepotProf{
     public function exec()
     {
         $this->action = isset($_GET['action']) ? $_GET['action'] : "gestionDepotSAE";
-        if (!$this->estProfOuIntervenant()) {
+        if (ControllerCommun::estProfOuIntervenant()) {
+            switch ($this->action) {
+                case "gestionDepotSAE":
+                    $this->gestionDepotSAE();
+                    break;
+                case "creerDepot" :
+                    $this->creerDepot();
+                    break;
+                case "submitDepot" :
+                    $this->submitDepot();
+                    break;
+                case "modifierDepot" :
+                    $this->modifierDepot();
+                    break;
+                case "supprimerDepot" :
+                    $this->supprimerDepot();
+                    break;
+                case "ajouterTemps" :
+                    $this->ajouterTempsSupplementaire();
+                    break;
+            }
+        }else{
             echo "Accès interdit. Vous devez être professeur ou intervenant pour accéder à cette page.";
-            return;
         }
-        switch ($this->action) {
-            case "gestionDepotSAE":
-                $this->gestionDepotSAE();
-                break;
-            case "creerDepot" :
-                $this->creerDepot();
-                break;
-            case "submitDepot" :
-                $this->submitDepot();
-                break;
-            case "modifierDepot" :
-                $this->modifierDepot();
-                break;
-            case "supprimerDepot" :
-                $this->supprimerDepot();
-                break;
-            case "ajouterTemps" :
-                $this->ajouterTempsSupplementaire();
-                break;
-        }
-    }
-    public function estProfOuIntervenant(){
-        $typeUser =  ModeleCommun::getTypeUtilisateur($_SESSION['id_utilisateur']);
-        return $typeUser==="professeur" || $typeUser==="intervenant";
-    }
 
+    }
     public function gestionDepotSAE(){
-        $idSae = $_SESSION['id_projet'];
+        TokenManager::stockerAndGenerateToken();
+        $idSae = $_GET['idProjet'];
         if($idSae){
             $allDepot = $this->modele->getAllDepotSAE($idSae);
             $allGroupe = $this->modele->getGroupesParSae($idSae);
-            $this->vue->afficheAllDepotSAE($allDepot, $allGroupe);
+            $this->vue->afficheAllDepotSAE($allDepot, $allGroupe, $idSae);
         }
     }
 
     public function creerDepot(){
-        $this->vue->formulaireCreerDepot();
+        $idProjet = $_GET['idProjet'];
+        $this->vue->formulaireCreerDepot($idProjet);
     }
 
     public function submitDepot(){
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['titre']) && trim($_POST['titre']) !== '' && isset($_POST['date_limite'])) {
             $titre = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $idRendu = $this->modele->creerDepot($titre, $dateLimite, $idSae);
             $nomRendu = $this->modele->getNomDepot($idRendu);
@@ -86,7 +89,7 @@ class ContDepotProf{
             $nouveauNomDepot = trim($_POST['titre']);
             $dateLimite = $_POST['date_limite'];
             $id_rendu = $_POST['id_rendu'];
-            $idSae = $_SESSION['id_projet'];
+            $idSae = $_GET['idProjet'];
 
             $ancienNomDepot = $this->modele->getNomDepot($id_rendu);
             $this->modele->modifierRendu($id_rendu, $nouveauNomDepot, $dateLimite);
@@ -102,30 +105,31 @@ class ContDepotProf{
         }
         $this->gestionDepotSAE();
     }
-    public function supprimerDepot(){
+    public function supprimerDepot()
+    {
+        if (!TokenManager::verifierToken()) {
+            die("Token invalide ou expiré.");
+        }
         if (isset($_POST['id_rendu'])) {
-            $id_rendu = $_POST['id_rendu'];
-            $nomDepot = $this->modele->getNomDepot($id_rendu);
+            $idRendu = $_POST['id_rendu'];
+            $idSae = $_GET['idProjet'];
 
-            $idSae = $_SESSION['id_projet'];
-            $groupes = $this->modele->getGroupesParSae($idSae);
+            $etudiants = $this->modele->getEtudiantsParProjet($idSae);
+            $this->modele->supprimerDepot($idRendu);
 
-            $nomSae = ModeleCommun::getTitreSAE($idSae);
-
-            foreach ($groupes as $groupe) {
-                $idGroupe = $groupe['id_groupe'];
-                $nomGroupe = $groupe['nom'];
-
-                DossierManager::supprimerDepotPourGroupe($idSae, $nomSae, $idGroupe, $nomGroupe, $id_rendu, $nomDepot);
+            foreach ($etudiants as $etudiant) {
+                $idEtudiant = $etudiant['id_utilisateur'];
+                $idGroupe = $etudiant['id_groupe'];
+                ModeleCommun::mettreAJourNoteFinale($idEtudiant, $idGroupe);
             }
-
-            $this->modele->supprimerDepot($id_rendu);
         }
         $this->gestionDepotSAE();
     }
 
+
     public function ajouterTempsSupplementaire()
     {
+
         if (isset($_POST['id_rendu'], $_POST['new_date_limite'], $_POST['groupes'])) {
             $idRendu = $_POST['id_rendu'];
             $newDateLimite = $_POST['new_date_limite'];

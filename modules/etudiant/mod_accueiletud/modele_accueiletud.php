@@ -22,21 +22,35 @@ Class ModeleAccueilEtud extends Connexion{
 
         return $projets;
     }
-    public function getGroupeForUser($idProjet, $idUtilisateur) {
+    public function getAllChamp($idProjet, $idGroupe) {
         $bdd = $this->getBdd();
-
         $query = "
-        SELECT g.id_groupe
-        FROM Groupe g
-        INNER JOIN Groupe_Etudiant ge ON g.id_groupe = ge.id_groupe
-        INNER JOIN Projet_Groupe pg ON g.id_groupe = pg.id_groupe
-        WHERE pg.id_projet = ? AND ge.id_utilisateur = ?
-    ";
+            SELECT c.id_champ, c.champ_nom, cg.champ_valeur
+            FROM Champ c
+            LEFT JOIN Champ_Groupe cg 
+                ON c.id_champ = cg.id_champ AND cg.id_groupe = ?
+            WHERE c.id_projet = ?
+        ";
 
         $stmt = $bdd->prepare($query);
-        $stmt->execute([$idProjet, $idUtilisateur]);
-        $groupe = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $groupe ? $groupe['id_groupe'] : null;
+        $stmt->execute([$idGroupe, $idProjet]);
+        $champs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $this->formaterChamps($champs);
     }
+
+    private function formaterChamps($champs) {
+        if (empty($champs)) {
+            return "Aucun champ n'a encore été rempli.";
+        }
+
+        $champsRemplis = [];
+        foreach ($champs as $champ) {
+            $champsRemplis[] = "<strong>" . htmlspecialchars($champ['champ_nom']) . ":</strong> " . htmlspecialchars($champ['champ_valeur']);
+        }
+
+        return implode(' | ', $champsRemplis);
+    }
+
 
 }

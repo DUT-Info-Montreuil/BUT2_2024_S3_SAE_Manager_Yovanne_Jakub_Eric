@@ -2,9 +2,6 @@
 include_once 'Connexion.php';
 
 Class ModeleDepotProf extends Connexion {
-    public function __construct()
-    {
-    }
 
     public function getAllDepotSAE($idSae) {
         $bdd = $this->getBdd();
@@ -21,7 +18,7 @@ Class ModeleDepotProf extends Connexion {
 
     public function getNomDepot($idRendue){
         $bdd = $this->getBdd();
-        $sql = "SELECT titre FROM rendu WHERE id_rendu = ?";
+        $sql = "SELECT titre FROM Rendu WHERE id_rendu = ?";
         $stmt = $bdd->prepare($sql);
         $stmt->execute([$idRendue]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -96,6 +93,22 @@ Class ModeleDepotProf extends Connexion {
         $stmt->execute([$idSae]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getEtudiantsParProjet($idSae)
+    {
+        $bdd = static::getBdd();
+        $query = "
+        SELECT GE.id_utilisateur, GE.id_groupe
+        FROM Groupe_Etudiant GE
+        JOIN Projet_Groupe PG ON GE.id_groupe = PG.id_groupe
+        WHERE PG.id_projet = ?
+    ";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$idSae]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 
     public function ajouterTempsSupplementairePourGroupe($idRendu, $idGroupe, $newDateLimite)
     {
