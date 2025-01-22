@@ -161,8 +161,7 @@ class ContGestUser
             $prenom = htmlspecialchars($_POST['prenom']);
             $email = htmlspecialchars($_POST['email']);
             $login = htmlspecialchars($_POST['login']);
-//            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
-            $password = htmlspecialchars($_POST['password']);
+            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
             $type = htmlspecialchars($_POST['type']);
             $this->modele->updateUser($id_utilisateur, $nom, $prenom, $email, $login, $password, $type);
         }
@@ -181,8 +180,7 @@ class ContGestUser
             $prenom = htmlspecialchars($_POST['prenom']);
             $email = htmlspecialchars($_POST['email']);
             $login = htmlspecialchars($_POST['login']);
-//            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
-            $password = htmlspecialchars($_POST['password']);
+            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
             $type = htmlspecialchars($_POST['type']);
             $this->modele->addUser($nom, $prenom, $email, $login, $password, $type);
         }
