@@ -9,10 +9,24 @@ class VueGroupeEtud extends VueGenerique
         parent::__construct();
     }
 
-    public function afficherGroupeSAE($grpSAE, $nomGrp, $champsPrepares, $idSae) {
+    public function afficherGroupeSAE($grpSAE, $infoGrp, $champsPrepares, $idSae) {
         ?>
         <div class="container mt-4">
-            <h2 style="text-align: center"> Groupe : <?php echo htmlspecialchars($nomGrp); ?> </h2>
+            <h2 style="text-align: center">
+                Groupe :
+                <?php echo htmlspecialchars($infoGrp['nom']); ?>
+            </h2>
+
+            <?php if (!empty($infoGrp['modifiable_par_groupe'])): ?>
+                <form method="POST" action="index.php?module=groupeetud&action=updateNomGroupe&idProjet=<?php echo $idSae; ?>">
+                    <div class="form-group mt-3 text-center">
+                        <label for="nomGroupe">Modifier le nom du groupe :</label>
+                        <input type="text" id="nomGroupe" name="nomGroupe" class="form-control d-inline-block w-auto mx-2"
+                               value="<?php echo htmlspecialchars($infoGrp['nom']); ?>" required>
+                        <button type="submit" class="btn btn-success">Mettre à jour</button>
+                    </div>
+                </form>
+            <?php endif; ?>
 
             <table style="margin-bottom: 50px" class="table table-bordered table-striped mt-4">
                 <thead class="thead-dark">
@@ -46,11 +60,11 @@ class VueGroupeEtud extends VueGenerique
                         <tbody>
                         <?php foreach ($champsPrepares as $champ): ?>
                             <tr>
-                                <td><?php echo $champ['nom']; ?></td>
+                                <td><?php echo htmlspecialchars($champ['nom']); ?></td>
                                 <td>
                                     <input type="text" name="champ_<?php echo $champ['id']; ?>"
                                            class="form-control"
-                                           value="<?php echo $champ['valeur']; ?>">
+                                           value="<?php echo htmlspecialchars($champ['valeur']); ?>">
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -62,6 +76,7 @@ class VueGroupeEtud extends VueGenerique
         </div>
         <?php
     }
+
 
 
 

@@ -21,13 +21,23 @@ Class ModeleGroupeEtud extends Connexion
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getNomGroupe($idGroupe){
+    public function getNomEtModifiableGroupe($idGroupe) {
         $bdd = $this->getBdd();
-        $query = "SELECT nom FROM Groupe WHERE id_groupe = ?";
+        $query = "SELECT nom, modifiable_par_groupe FROM Groupe WHERE id_groupe = ?";
         $stmt = $bdd->prepare($query);
         $stmt->execute([$idGroupe]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['nom'];
+        return [
+            'nom' => $result['nom'],
+            'modifiable_par_groupe' => $result['modifiable_par_groupe']
+        ];
+    }
+
+    public function modifierNomGroupe($idGroupe, $nouveauNom) {
+        $bdd = $this->getBdd();
+        $query = "UPDATE Groupe SET nom = ? WHERE id_groupe = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$nouveauNom, $idGroupe]);
     }
 
     public function getChampARemplir($idGroupe, $idSae) {

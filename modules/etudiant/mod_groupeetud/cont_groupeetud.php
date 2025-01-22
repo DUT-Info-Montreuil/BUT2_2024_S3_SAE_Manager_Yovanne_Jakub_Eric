@@ -27,6 +27,9 @@ Class ContGroupeEtud
                 case "updateChamps" :
                     $this->updateChamps();
                     break;
+                case "updateNomGroupe":
+                    $this->updateNomGroupe();
+                    break;
             }
         }else{
             echo "Accès interdit. Vous devez être étudiant pour accéder à cette page.";
@@ -34,11 +37,12 @@ Class ContGroupeEtud
 
     }
 
+
     public function membreGroupeSAE() {
         $idSae = $_GET['idProjet'];
         $idGroupe = ModeleCommunEtudiant::getGroupeForUser($idSae, $_SESSION['id_utilisateur']);
         $grpSAE = $this->modele->getGroupeSAE($idGroupe);
-        $nomGrp = $this->modele->getNomGroupe($idGroupe);
+        $infoGrp = $this->modele->getNomEtModifiableGroupe($idGroupe);
 
         $champARemplir = $this->modele->getChampARemplir($idGroupe, $idSae);
 
@@ -51,7 +55,16 @@ Class ContGroupeEtud
             ];
         }
 
-        $this->vue->afficherGroupeSAE($grpSAE, $nomGrp, $champsPrepares, $idSae);
+        $this->vue->afficherGroupeSAE($grpSAE, $infoGrp, $champsPrepares, $idSae);
+    }
+
+    public function updateNomGroupe() {
+        if (!empty($_POST['nomGroupe'])) {
+            $idGroupe = ModeleCommunEtudiant::getGroupeForUser($_GET['idProjet'], $_SESSION['id_utilisateur']);
+            $nouveauNom = $_POST['nomGroupe'];
+            $this->modele->modifierNomGroupe($idGroupe, $nouveauNom);
+        }
+        $this->membreGroupeSAE();
     }
 
 
