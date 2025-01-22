@@ -1,7 +1,3 @@
-<?php
-include "headerController.php";
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -18,13 +14,7 @@ include "headerController.php";
     </a>
 
     <div class="d-flex justify-content-center flex-grow-1">
-        <?php if (isset($headerUrl)): ?>
-            <a href="<?= $headerUrl ?>" class="text-white text-decoration-none">
-                <h1 class="mb-0">SAE MANAGER</h1>
-            </a>
-        <?php else: ?>
             <h1 class="mb-0">SAE MANAGER</h1>
-        <?php endif; ?>
     </div>
 </header>
 

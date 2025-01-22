@@ -3,7 +3,6 @@ include_once "modules/admin/mod_gestuser/modele_gestuser.php";
 include_once "modules/admin/mod_gestuser/vue_gestuser.php";
 require_once "ModeleCommun.php";
 require_once "ControllerCommun.php";
-
 class ContGestUser
 {
     private $modele;
@@ -44,6 +43,13 @@ class ContGestUser
                     break;
                 case 'ajouterUserCSV' :
                     $this->ajouterUserCSV();
+                    break;
+                case "telechargerTemplateUpdate" :
+                    $this->telechargerTemplateUpdate();
+                    break;
+                case "telechargerTemplateAjout" :
+                    $this->telechargerTemplateAjout();
+                    break;
             }
         }else{
             echo "Accès interdit. Vous devez être administrateur pour accéder à cette page.";
@@ -55,6 +61,34 @@ class ContGestUser
     {
         $this->vue->afficherMenuGestionuser();
     }
+
+    public function telechargerTemplateUpdate() {
+        $templatePath = $_SERVER['DOCUMENT_ROOT'] . '/template/template_modif.csv';
+        if (!file_exists($templatePath)) {
+            die("Le fichier $templatePath n'existe pas.");
+        }
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="template_modif.csv"');
+        header('Content-Length: ' . filesize($templatePath));
+
+        readfile($templatePath);
+        exit;
+    }
+
+    public function telechargerTemplateAjout() {
+        $templatePath = $_SERVER['DOCUMENT_ROOT'] . '/template/template_ajout.csv';
+        if (!file_exists($templatePath)) {
+            die("Le fichier $templatePath n'existe pas.");
+        }
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="template_ajout.csv"');
+        header('Content-Length: ' . filesize($templatePath));
+        readfile($templatePath);
+        exit;
+    }
+
+
+
 
     public function versModifierDesUsers()
     {
@@ -110,48 +144,24 @@ class ContGestUser
     public function modifierUserCSV() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST'&& isset($_FILES['csv_file'])) {
             $csvFile = $_FILES['csv_file'];
-
             if ($csvFile['error'] === UPLOAD_ERR_OK) {
                 $filePath = $csvFile['tmp_name'];
-
-                // Appeler la méthode du modèle pour traiter le fichier CSV
                 $this->modele->updateUserCSV($filePath);
-
-                // Retourner à la liste des utilisateurs avec un message de succès
-                echo "Mise à jour réussie depuis le fichier CSV.";
                 $this->versModifierDesUsers();
-            } else {
-                echo "Erreur lors du téléchargement du fichier CSV.";
             }
-        } else {
-            echo "Aucun fichier CSV fourni.";
         }
     }
 
     public function ajouterUserCSV() {
-        // Vérification de la méthode de requête pour s'assurer que c'est une requête POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Vérification de l'existence du fichier CSV
             $csvFile = $_FILES['csv_file'];
-
-            // Si le fichier a été téléchargé sans erreur
             if ($csvFile['error'] === UPLOAD_ERR_OK) {
-                // Récupérer le chemin temporaire du fichier
                 $filePath = $csvFile['tmp_name'];
-
-                // Appeler la méthode du modèle pour ajouter les utilisateurs depuis le CSV
                 $this->modele->addUserCSV($filePath);
-
-                // Message de succès
-                echo "Ajout des utilisateurs réussi depuis le fichier CSV.";
-
-                // Rediriger ou afficher la liste des utilisateurs
-                $this->versModifierDesUsers();  // Redirige vers la liste des utilisateurs ou une autre page
-            } else {
-                // Message d'erreur si le fichier n'est pas téléchargé correctement
-                echo "Erreur lors du téléchargement du fichier CSV.";
+                $this->versModifierDesUsers();
             }
         }
+
     }
 
 

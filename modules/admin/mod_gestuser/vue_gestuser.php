@@ -46,19 +46,19 @@ Class VueGestUser extends VueGenerique
     public function afficherTableauAllUser($tabUser) {
         ?>
         <div class="container mt-5">
-
-
-                <h2 class="text-center">Mise à jour des Utilisateurs via un Fichier CSV</h2>
-                <form method="post" action="index.php?module=gestuser&action=modifierUserCSV" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
-                        <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
-                    </div>
-                    <div style="text-align: center;">
-                        <button type="submit" class="btn btn-primary">Exécuter</button>
-                    </div>
-                </form>
-
+            <h2 class="text-center">Mise à jour des Utilisateurs via un Fichier CSV</h2>
+            <form method="post" action="index.php?module=gestuser&action=modifierUserCSV" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Sélectionnez un fichier CSV :</label>
+                    <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">Exécuter</button>
+                    <a href="index.php?module=gestuser&action=telechargerTemplateUpdate" class="btn btn-secondary">
+                        Télécharger le modèle CSV
+                    </a>
+                </div>
+            </form>
 
             <h2 class="text-center">Liste des Utilisateurs</h2>
 
@@ -152,6 +152,9 @@ Class VueGestUser extends VueGenerique
                 </div>
                 <div style="text-align: center;">
                     <button type="submit" class="btn btn-primary">Exécuter</button>
+                    <a href="index.php?module=gestuser&action=telechargerTemplateAjout" class="btn btn-secondary">
+                        Télécharger le modèle CSV
+                    </a>
                 </div>
             </form>
 
