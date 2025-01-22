@@ -9,11 +9,10 @@ Class ModeleCompMenu extends Connexion
 
     public function getProfilPictureById($idUtilisateur){
         $bdd = $this->getBdd();
-        $query = "SELECT profil_picture FROM Utilisateur WHERE id_utilisateur = ?";
-        $stmt = $bdd->prepare($query);
-        $stmt->execute([$idUtilisateur]);
+        $query = $bdd->prepare("SELECT profil_picture FROM Utilisateur WHERE id_utilisateur = ?");
+        $query->execute([$idUtilisateur]);
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($result && isset($result['profil_picture'])) {
             $profilPictureName = basename($result['profil_picture']);

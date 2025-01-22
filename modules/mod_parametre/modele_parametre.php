@@ -66,8 +66,6 @@ class ModeleParametre extends Connexion
         }
     }
 
-
-
     public function modifierCompte($idUtilisateur, $nom, $prenom, $email, $login_utilisateur, $password_utilisateur)
     {
         $bdd = $this->getBdd();
@@ -87,7 +85,6 @@ class ModeleParametre extends Connexion
             $stmt->execute([$nom, $prenom, $email, $login_utilisateur, $idUtilisateur]);
         }
     }
-
 
     public function modifierPhotoDeProfil($id_utilisateur, $logo)
     {

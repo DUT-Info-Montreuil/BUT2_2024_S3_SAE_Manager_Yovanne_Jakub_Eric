@@ -16,3 +16,5 @@ $module->exec_module();
 
 $module_html = $module->get_module()->getAffichage();
 include_once 'site.php';
+
+//test

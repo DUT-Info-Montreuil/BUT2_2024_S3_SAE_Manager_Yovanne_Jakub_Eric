@@ -25,19 +25,25 @@ class VueParametre extends VueGenerique
                                     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                                     <div style="margin-bottom: 20px; text-align: center">
                                         <?php if (!empty($compte[0]['profil_picture'])): ?>
+                                        <div>
                                             <label for="logoFile">
                                                 <img height="75" width="75" style="cursor: pointer;"
                                                      src="<?php echo htmlspecialchars($imagePath[0]); ?>">
                                             </label>
                                             <input type="file" id="logoFile" name="logoFile"
                                                    accept="image/jpeg, image/jpg, image/png" style="display:none;">
+                                        </div>
+                                        <a style="margin-top: 5px; font-style: italic; font-size: small">Taille recommendée : 100 à 150 pixels</a>
                                         <?php else: ?>
+                                        <div>
                                             <label for="logoFile">
                                                 <img height="75" width="75" style="cursor: pointer;"
                                                      src="<?php echo htmlspecialchars($imagePath[0]); ?>">
                                             </label>
                                             <input type="file" id="logoFile" name="logoFile"
                                                    accept="image/jpeg, image/jpg, image/png" style="display:none;">
+                                        </div>
+                                            <a style="margin-top: 5px; font-style: italic; font-size: small">Taille recommendée : 100 à 150 pixels</a>
                                         <?php endif; ?>
                                     </div>
 
