@@ -649,10 +649,8 @@ private function afficherFormulaireSupprimerEvaluation($idSae, $id)
                 <button class="btn btn-outline-secondary" id="btn-groupe">Noter en Groupe</button>
             </div>
 
-            <!-- Formulaire de notation individuelle -->
             <?= $this->formulaireNotationIndividuelle($allMembres, $id, $type_evaluation, $id_groupe, $criteres, $mode, $idSAE); ?>
 
-            <!-- Formulaire de notation de groupe -->
             <?= $this->formulaireNotationGroupe($allMembres, $id, $type_evaluation, $id_groupe, $criteres, $mode, $idSAE); ?>
 
         </div>

@@ -223,7 +223,6 @@ class ContEvaluationProf
      */
     private function gererEvaluateurs($idEvaluation)
     {
-        // Ajouter des évaluateurs
         if (!empty($_POST['ajouter_evaluateurs'])) {
             foreach ($_POST['ajouter_evaluateurs'] as $idEvaluateur) {
                 if (!$this->modele->estDejaEvaluateur($idEvaluateur, $idEvaluation)) {
@@ -232,7 +231,6 @@ class ContEvaluationProf
             }
         }
 
-        // Supprimer des évaluateurs
         if (!empty($_POST['supprimer_evaluateurs'])) {
             foreach ($_POST['supprimer_evaluateurs'] as $idEvaluateur) {
                 $this->modele->supprimerEvaluateur($idEvaluateur, $idEvaluation);
@@ -404,7 +402,7 @@ class ContEvaluationProf
             $id_evaluation = $_POST['id_evaluation'];
             $type_evaluation = $_POST['type_evaluation'];
             $notes = $_POST['notes'];
-            $commentaire = trim($_POST['commentaire']); // Récupération du commentaire
+            $commentaire = trim($_POST['commentaire']);
             $noteMax = $this->getNoteMaxByType($type_evaluation, $id_evaluation);
             $id_evaluateur = $_SESSION['id_utilisateur'];
 

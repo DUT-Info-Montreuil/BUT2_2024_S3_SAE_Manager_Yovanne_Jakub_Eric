@@ -197,7 +197,6 @@ class ModeleEvaluationRendu extends Connexion
 {
     $bdd = $this->getBdd();
     
-    // Vérifiez si l'entrée existe déjà
     $checkQuery = "SELECT COUNT(*) FROM Rendu_Evaluation
                    WHERE id_evaluation = ? AND id_rendu = ? AND id_groupe = ? AND id_etudiant = ?";
     $checkStmt = $bdd->prepare($checkQuery);
@@ -205,14 +204,12 @@ class ModeleEvaluationRendu extends Connexion
     $exists = $checkStmt->fetchColumn();
     
     if ($exists > 0) {
-        // Mise à jour si une entrée existe déjà
         $updateQuery = "UPDATE Rendu_Evaluation
                         SET note = ?, commentaire = ?, id_evaluateur = ?
                         WHERE id_evaluation = ? AND id_rendu = ? AND id_groupe = ? AND id_etudiant = ?";
         $updateStmt = $bdd->prepare($updateQuery);
         $updateStmt->execute([$note, $commentaire, $idEvaluateur, $id_evaluation, $id_rendu, $id_groupe, $idEtudiant]);
     } else {
-        // Insérer une nouvelle entrée si elle n'existe pas
         $insertQuery = "INSERT INTO Rendu_Evaluation (id_evaluation, id_rendu, id_groupe, id_etudiant, id_evaluateur, note, commentaire)
                         VALUES (?, ?, ?, ?, ?, ?, ?)";
         $insertStmt = $bdd->prepare($insertQuery);
